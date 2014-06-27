@@ -1,0 +1,26 @@
+# The Supplejack Client code is Crown copyright (C) 2014, New Zealand Government, 
+# and is licensed under the GNU General Public License, version 3.
+# One component is a third party component. See https://github.com/DigitalNZ/supplejack_api for details. 
+# 
+# Supplejack was created by DigitalNZ at the National Library of NZ and 
+# the Department of Internal Affairs. http://digitalnz.org/supplejack
+
+require 'supplejack_client'
+require 'rails'
+
+module Supplejack
+  class Engine < Rails::Engine
+
+    initializer "supplejack.helpers" do
+      ActionView::Base.send :include, Supplejack::Controllers::Helpers
+      ActionController::Base.send :include, Supplejack::Controllers::Helpers
+    end
+
+    # TODO: DNZ?
+    # initializer "supplejack.favourite_helpers" do
+    #   ActionView::Base.send :include, Supplejack::Controllers::FavouriteHelpers
+    #   ActionController::Base.send :include, Supplejack::Controllers::FavouriteHelpers
+    # end
+
+  end
+end
