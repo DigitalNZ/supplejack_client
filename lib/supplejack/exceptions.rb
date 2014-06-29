@@ -9,6 +9,9 @@ module Supplejack
   class RecordNotFound < StandardError
   end
 
+  class SetNotFound < StandardError
+  end
+
   class MalformedRequest < StandardError
   end
 end

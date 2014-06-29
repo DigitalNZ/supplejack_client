@@ -23,36 +23,26 @@ module Supplejack
     API_KEY                   = nil
     API_URL                   = 'http://api.digitalnz.org'
     URL_FORMAT                = :item_hash
-    # CUSTOM_SEARCH             = nil
     FACETS                    = []
     FACETS_PER_PAGE           = 10
     FACETS_SORT               = nil
-    # STICKY_FACETS             = false
     PER_PAGE                  = 20
     PAGINATION_LIMIT          = nil
     TIMEOUT                   = 30
     RECORD_KLASS              = 'Record'
-    # CURRENT_USER_METHOD       = :current_user
     SEARCH_KLASS              = nil
     FIELDS                    = [:default]
-    # DC_FIELDS                 = []
     SUPPLEJACK_FIELDS                = []
     ADMIN_FIELDS              = []
-    # DCTERMS_FIELDS            = []
-    # ATTRIBUTE_TAG             = :p
-    # LABEL_TAG                 = :strong
-    # LABEL_CLASS               = nil
     ENABLE_DEBUGGING          = false
     ENABLE_CACHING            = false
 
     VALID_OPTIONS_KEYS = [
       :api_key,
       :api_url,
-    #   :custom_search,
       :facets,
       :facets_per_page,
       :facets_sort,
-    #   :sticky_facets,
       :single_value_methods,
       :search_attributes,
       :url_format,
@@ -60,42 +50,20 @@ module Supplejack
       :pagination_limit,
       :timeout,
       :record_klass,
-    #   :current_user_method,
       :search_klass,
       :fields,
-    #   :dc_fields,
       :supplejack_fields,
       :admin_fields,
-    #   :dcterms_fields,
-    #   :attribute_tag,
-    #   :label_tag,
-    #   :label_class,
       :enable_debugging,
       :enable_caching
     ]
 
     SINGLE_VALUE_METHODS = [
       :description
-      # :author,
-      # :collection_name,
-      # :content_partner,
-      # :object_url,
-      # :thumbnail_url
     ]
 
     SEARCH_ATTRIBUTES = [
       :location
-      # :category,
-      # :placename,
-      # :content_partner,
-      # :creator,
-      # :rights,
-      # :language,
-      # :century,
-      # :decade,
-      # :year,
-      # :collection,
-      # :dc_type
     ]
 
     attr_accessor *VALID_OPTIONS_KEYS
@@ -117,11 +85,9 @@ module Supplejack
     def reset
       self.api_key                  = API_KEY
       self.api_url                  = API_URL
-      # self.custom_search            = CUSTOM_SEARCH
       self.facets                   = FACETS
       self.facets_per_page          = FACETS_PER_PAGE
       self.facets_sort              = FACETS_SORT
-      # self.sticky_facets            = STICKY_FACETS
       self.single_value_methods     = SINGLE_VALUE_METHODS
       self.search_attributes        = SEARCH_ATTRIBUTES
       self.url_format               = URL_FORMAT
@@ -129,16 +95,10 @@ module Supplejack
       self.pagination_limit         = PAGINATION_LIMIT
       self.timeout                  = TIMEOUT
       self.record_klass             = RECORD_KLASS
-      # self.current_user_method      = CURRENT_USER_METHOD
       self.search_klass             = SEARCH_KLASS
       self.fields                   = FIELDS
-      # self.dc_fields                = DC_FIELDS
       self.supplejack_fields               = SUPPLEJACK_FIELDS
       self.admin_fields             = ADMIN_FIELDS
-      # self.dcterms_fields           = DCTERMS_FIELDS
-      # self.attribute_tag            = ATTRIBUTE_TAG
-      # self.label_tag                = LABEL_TAG
-      # self.label_class              = LABEL_CLASS
       self.enable_debugging         = ENABLE_DEBUGGING
       self.enable_caching           = ENABLE_CACHING
       

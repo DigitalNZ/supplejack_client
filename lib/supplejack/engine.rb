@@ -16,11 +16,5 @@ module Supplejack
       ActionController::Base.send :include, Supplejack::Controllers::Helpers
     end
 
-    # TODO: DNZ?
-    # initializer "supplejack.favourite_helpers" do
-    #   ActionView::Base.send :include, Supplejack::Controllers::FavouriteHelpers
-    #   ActionController::Base.send :include, Supplejack::Controllers::FavouriteHelpers
-    # end
-
   end
 end
