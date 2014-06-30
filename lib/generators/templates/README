@@ -1,0 +1,19 @@
+======================================
+
+You are almost finished:
+
+An initializer was created at config/initializers/supplejack_client.rb
+
+You should set the variables needed by the Supplejack API:
+- Api Key
+- Api URL
+
+To start using Supplejack gem you have add the following line to any plain ruby class
+
+class Item
+  include Supplejack::Record
+end
+
+Then do Search.new(params) or Item.find(id)
+
+======================================
