@@ -36,6 +36,9 @@ module Supplejack
     ADMIN_FIELDS              = []
     ENABLE_DEBUGGING          = false
     ENABLE_CACHING            = false
+    ATTRIBUTE_TAG             = :p
+    LABEL_TAG                 = :strong
+    LABEL_CLASS               = nil
 
     VALID_OPTIONS_KEYS = [
       :api_key,
@@ -55,7 +58,10 @@ module Supplejack
       :supplejack_fields,
       :admin_fields,
       :enable_debugging,
-      :enable_caching
+      :enable_caching,
+      :attribute_tag,
+      :label_tag,
+      :label_class
     ]
 
     SINGLE_VALUE_METHODS = [
@@ -97,11 +103,13 @@ module Supplejack
       self.record_klass             = RECORD_KLASS
       self.search_klass             = SEARCH_KLASS
       self.fields                   = FIELDS
-      self.supplejack_fields               = SUPPLEJACK_FIELDS
+      self.supplejack_fields        = SUPPLEJACK_FIELDS
       self.admin_fields             = ADMIN_FIELDS
       self.enable_debugging         = ENABLE_DEBUGGING
       self.enable_caching           = ENABLE_CACHING
-      
+      self.attribute_tag            = ATTRIBUTE_TAG
+      self.label_tag                = LABEL_TAG
+      self.label_class              = LABEL_CLASS
       self
     end
   end

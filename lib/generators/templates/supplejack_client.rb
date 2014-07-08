@@ -102,4 +102,19 @@ Supplejack.configure do |config|
   # Set this flag to true in order to cache the facet_value response and the search counts
   #
   # config.enable_caching = true  
+  # 
+  # ===> Attribute Tag
+  # HTML tag used by default to display the record attributes
+  #
+  # config.attribute_tag = :p
+  #
+  # ===> Label Tag
+  # HTML tag used by default to display the record attributes label
+  #
+  # config.label_tag = :span
+  #
+  # ===> Label class
+  # The CSS class used by the attribute label
+  #
+  # config.label_class = "label"
 end

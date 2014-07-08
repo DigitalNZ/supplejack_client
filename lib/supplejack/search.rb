@@ -213,13 +213,13 @@ module Supplejack
       params
     end
 
-    # Gets the category facet unrestricted by the current category filter
+    # Gets the type facet unrestricted by the current type filter
     #
-    # @return [Hash{String => Integer}] A hash of category names and counts
+    # @return [Hash{String => Integer}] A hash of type names and counts
     #
-    def categories(options={})
-      return @categories if @categories
-      @categories = facet_values('category', options)
+    def types(options={})
+      return @types if @types
+      @types = facet_values('type', options)
     end
 
     # Gets the facet values unrestricted by the current filter
