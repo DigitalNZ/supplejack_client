@@ -533,7 +533,7 @@ module Supplejack
       end
     end
 
-    describe '#types' do
+    describe '#categories' do
       before(:each) do
         @search = Search.new({:i => {:category => 'Books', :year => 2001}, :text => 'Dogs'})
         @search.stub(:get) { {'search' => {'facets' => {'category' => {'Books' => 123}}, 'result_count' => 123}} }
@@ -541,30 +541,30 @@ module Supplejack
 
       it 'should call the fetch_values method' do
         @search.should_receive(:facet_values).with('category', {})
-        @search.types
+        @search.categories
       end
 
       it 'removes category filter from the search request' do
         @search.should_receive(:get).with('/records', hash_including(:and => {:year => 2001})).and_return({'search' => {'facets' => {'category' => {'Books' => 123}}}})
-        @search.types
+        @search.categories
       end
 
       it 'returns the category facet hash ' do
-        @search.types.should include('Books' => 123)
+        @search.categories.should include('Books' => 123)
       end
 
       it 'asks the API for 0 results' do
         @search.should_receive(:get).with('/records', hash_including({:per_page => 0}))
-        @search.types
+        @search.categories
       end
 
       it 'should return add the All count to the hash' do
-        @search.types['All'].should eq 123
+        @search.categories['All'].should eq 123
       end
 
       it 'orders the category values by :count' do
         @search.should_receive(:facet_values).with('category', {:sort => :count})
-        @search.types({:sort => :count})
+        @search.categories({:sort => :count})
       end
     end
 
