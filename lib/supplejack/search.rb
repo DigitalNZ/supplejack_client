@@ -217,9 +217,9 @@ module Supplejack
     #
     # @return [Hash{String => Integer}] A hash of type names and counts
     #
-    def types(options={})
-      return @types if @types
-      @types = facet_values('type', options)
+    def categories(options={})
+      return @categories if @categories
+      @categories = facet_values('category', options)
     end
 
     # Gets the facet values unrestricted by the current filter
