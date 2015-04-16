@@ -18,9 +18,9 @@ class TestItem
 end
 
 module Supplejack
-	describe Search do
+  describe Search do
 
-		describe '#initalize' do
+    describe '#initalize' do
       it 'doesn\'t break when initalized with nil' do
         Search.new(nil)
       end
@@ -723,5 +723,5 @@ module Supplejack
       end
     end
 
-	end
+  end
 end

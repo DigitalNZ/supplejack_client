@@ -10,6 +10,7 @@ require 'spec_helper'
 module Supplejack
   describe User do
     let(:user) { Supplejack::User.new({'id' => 'abc', 'authentication_token' => '12345'}) }
+    let(:relation) { Supplejack::UserSetRelation.new(user) }
 
     before(:each) do
       Supplejack::User.stub(:get) { {'user' => {'id' => 'abc', 'authentication_token' => '12345'}} }
@@ -34,6 +35,14 @@ module Supplejack
 
       it 'initializes the regenerate_api_key attribute' do
         Supplejack::User.new({'regenerate_api_key' => true}).regenerate_api_key.should be_true
+      end
+    end
+
+    describe "#sets" do
+      it "initializes a Dnz::UserSetRelation object" do
+        @relation = relation
+        Supplejack::UserSetRelation.should_receive(:new).with(user) { @relation }
+        user.sets.should be_a Supplejack::UserSetRelation
       end
     end
 

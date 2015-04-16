@@ -82,10 +82,16 @@ module Supplejack
     end
 
     describe '#metadata' do
-      it 'returns an array of hashes with supplejack fields their values and schemas' do
-        Supplejack.stub(:supplejack_fields) { [:location] }
+      it 'returns an array of hashes with special fields their values and schemas' do
+        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}} }
         record = SupplejackRecord.new({:location => 'Wellington'})
-        record.metadata.should include({:name => 'location', :schema => 'supplejack', :value => 'Wellington'})
+        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'})
+      end
+
+      it 'returns an array of hashes with special fields their values and schemas for multiple special_fields configured' do
+        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}, dnz: {fields: [:description]}} }
+        record = SupplejackRecord.new({:location => 'Wellington', :description => "Some description"})
+        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'}, {:name => 'description', :schema => 'dnz', :value => 'Some description'})
       end
 
       it 'should not return metadata for inexistent attribtues' do
@@ -95,9 +101,9 @@ module Supplejack
       end
 
       it 'returns multiple elements for a multi value field' do
-        Supplejack.stub(:supplejack_fields) { [:location] }
+        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}} }
         record = SupplejackRecord.new({:location => ['Wellington', 'Auckland']})
-        record.metadata.should include({:name => 'location', :schema => 'supplejack', :value => 'Wellington'}, {:name => 'location', :schema => 'supplejack', :value => 'Auckland'})
+        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'}, {:name => 'location', :schema => 'admin', :value => 'Auckland'})
       end
 
       it 'returns a empty array for a empty field' do
@@ -107,27 +113,27 @@ module Supplejack
       end
 
       it 'works for boolean fields too' do
-        Supplejack.stub(:supplejack_fields) { [:is_human] }
+        Supplejack.stub(:special_fields) { {admin: {fields: [:is_human]}} }
         record = SupplejackRecord.new({:is_human => true})
-        record.metadata.should include({:name => 'is_human', :schema => 'supplejack', :value => true})
+        record.metadata.should include({:name => 'is_human', :schema => 'admin', :value => true})
       end
 
-      it 'works for boolean fields when they are true' do
-        Supplejack.stub(:admin_fields) { [:is_animal] }
-        record = SupplejackRecord.new({:is_animal => true})
-        record.metadata.should include({:name => 'is_animal', :schema => 'admin', :value => true})
-      end
+      # it 'works for boolean fields when they are true' do
+      #   Supplejack.stub(:admin_fields) { [:is_animal] }
+      #   record = SupplejackRecord.new({:is_animal => true})
+      #   record.metadata.should include({:name => 'is_animal', :schema => 'admin', :value => true})
+      # end
 
       it 'works for boolean fields when they are false' do
-        Supplejack.stub(:admin_fields) { [:is_animal] }
-        record = SupplejackRecord.new({:is_animal => false})
-        record.metadata.should include({:name => 'is_animal', :schema => 'admin', :value => false})
+        Supplejack.stub(:special_fields) { {admin: {fields: [:is_human]}} }
+        record = SupplejackRecord.new({:is_human => false})
+        record.metadata.should include({:name => 'is_human', :schema => 'admin', :value => false})
       end
 
       it 'returns names with the schema removed' do
-        Supplejack.stub(:supplejack_fields) { [:identifier] }
-        record = SupplejackRecord.new({:identifier => 'sj:IE1174615'})
-        record.metadata.should include({:name => 'identifier', :schema => 'supplejack', :value => 'sj:IE1174615'})
+        Supplejack.stub(:special_fields) { {admin: {fields: [:admin_identifier]}} }
+        record = SupplejackRecord.new({:admin_identifier => 'sj:IE1174615'})
+        record.metadata.should include({:name => 'identifier', :schema => 'admin', :value => 'sj:IE1174615'})
       end
     end
 

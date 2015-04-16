@@ -34,12 +34,13 @@ module Supplejack
     SEARCH_KLASS              = nil
     FIELDS                    = [:default]
     SUPPLEJACK_FIELDS         = []
-    ADMIN_FIELDS              = []
+    SPECIAL_FIELDS            = []
     ENABLE_DEBUGGING          = false
     ENABLE_CACHING            = false
     ATTRIBUTE_TAG             = :p
     LABEL_TAG                 = :strong
     LABEL_CLASS               = nil
+    STICKY_FACETS             = false
 
     VALID_OPTIONS_KEYS = [
       :api_key,
@@ -58,17 +59,22 @@ module Supplejack
       :search_klass,
       :fields,
       :supplejack_fields,
-      :admin_fields,
+      :special_fields,
       :enable_debugging,
       :enable_caching,
       :attribute_tag,
       :label_tag,
-      :label_class
+      :label_class,
+      :sticky_facets
     ]
 
-    SINGLE_VALUE_METHODS = []
+    SINGLE_VALUE_METHODS = [
+      :description
+    ]
 
-    SEARCH_ATTRIBUTES = []
+    SEARCH_ATTRIBUTES = [
+      :location
+    ]
 
     attr_accessor *VALID_OPTIONS_KEYS
 
@@ -92,6 +98,7 @@ module Supplejack
       self.facets                   = FACETS
       self.facets_per_page          = FACETS_PER_PAGE
       self.facets_sort              = FACETS_SORT
+      self.sticky_facets            = STICKY_FACETS
       self.single_value_methods     = SINGLE_VALUE_METHODS
       self.search_attributes        = SEARCH_ATTRIBUTES
       self.url_format               = URL_FORMAT
@@ -103,7 +110,7 @@ module Supplejack
       self.search_klass             = SEARCH_KLASS
       self.fields                   = FIELDS
       self.supplejack_fields        = SUPPLEJACK_FIELDS
-      self.admin_fields             = ADMIN_FIELDS
+      self.special_fields           = SPECIAL_FIELDS
       self.enable_debugging         = ENABLE_DEBUGGING
       self.enable_caching           = ENABLE_CACHING
       self.attribute_tag            = ATTRIBUTE_TAG

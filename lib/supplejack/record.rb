@@ -17,6 +17,16 @@ module Supplejack
       extend Supplejack::Request
       extend ActiveModel::Naming
       include ActiveModel::Conversion
+
+      # Some of the records in the API return an array of values, but in practice
+      # most of them have on only one value. What this does is just convert the array
+      # to a string for the methods defined in the configuration.
+      Supplejack.single_value_methods.each do |method|
+        define_method("#{method}") do
+          values = @attributes[method]
+          values.is_a?(Array) ? values.first : values
+        end
+      end
     end
 
     def initialize(attributes={})
@@ -49,18 +59,25 @@ module Supplejack
     def metadata
       metadata = []
 
-      ['supplejack', 'admin'].each do |schema|
-        Supplejack.send("#{schema}_fields").each do |field|
+      Supplejack.send("special_fields").each do |schema, fields|
+        fields[:fields].each do |field|
           if @attributes.has_key?(field)
             values = @attributes[field]
             values ||= [] unless !!values == values #Testing if boolean
             values = [values] unless values.is_a?(Array)
-            field = field.to_s.camelcase(:lower) if schema == "dcterms"
+
+            case fields[:format]
+            when "uppercase" then field = field.to_s.upcase
+            when "lowercase" then field = field.to_s.downcase
+            when "camelcase" then field = field.to_s.camelcase
+            end
+
+            # field = field.to_s.camelcase(:lower) if schema == :dcterms
             field = field.to_s.sub(/#{schema}_/, '')
             values.each do |value|
-              metadata << {:name => field, :schema => schema, :value => value }
+              metadata << {:name => field, :schema => schema.to_s, :value => value }
             end
-          end
+          end          
         end
       end
 
@@ -70,16 +87,6 @@ module Supplejack
     def format
       raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module" unless @attributes.has_key?(:format)
       @attributes[:format]
-    end
-
-    # Some of the records in the API return an array of values, but in practice
-    # most of them have on only one value. What this does is just convert the array
-    # to a string for the methods defined in the configuration.
-    Supplejack.single_value_methods.each do |method|
-      define_method("#{method}") do
-        values = @attributes[method]
-        values.is_a?(Array) ? values.first : values
-      end
     end
 
     [:next_page, :previous_page, :next_record, :previous_record].each do |pagination_field|
@@ -92,7 +99,25 @@ module Supplejack
       true
     end
 
+    # def build_authorities(name)
+    #   @attributes[:authorities] ||= []
+    #   authorities = @attributes[:authorities].find_all {|authority| authority["name"] == name }
+    #   authorities.map {|attributes| Supplejack::Authority.new(attributes) }
+    # end
+
     def method_missing(symbol, *args, &block)
+      if symbol.to_s.match(/(.+)_authorities/)
+        return build_authorities("#{$1}_authority")
+      end
+
+      if symbol.to_s.match(/(.+)_terms/)
+        return build_authorities("#{$1}_term")
+      end
+
+      if [:series_parent, :child_series, :collection_parent, :collection_root, :collection_mid].include?(symbol)
+        return build_authorities(symbol.to_s)
+      end
+
       raise NoMethodError, "undefined method '#{symbol.to_s}' for Supplejack::Record:Module" unless @attributes.has_key?(symbol)
       @attributes[symbol]
     end
