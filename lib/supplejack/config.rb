@@ -30,9 +30,10 @@ module Supplejack
     PAGINATION_LIMIT          = nil
     TIMEOUT                   = 30
     RECORD_KLASS              = 'Record'
+    CURRENT_USER_METHOD       = :current_user
     SEARCH_KLASS              = nil
     FIELDS                    = [:default]
-    SUPPLEJACK_FIELDS                = []
+    SUPPLEJACK_FIELDS         = []
     ADMIN_FIELDS              = []
     ENABLE_DEBUGGING          = false
     ENABLE_CACHING            = false
@@ -53,6 +54,7 @@ module Supplejack
       :pagination_limit,
       :timeout,
       :record_klass,
+      :current_user_method,
       :search_klass,
       :fields,
       :supplejack_fields,
@@ -101,6 +103,7 @@ module Supplejack
       self.pagination_limit         = PAGINATION_LIMIT
       self.timeout                  = TIMEOUT
       self.record_klass             = RECORD_KLASS
+      self.current_user_method      = CURRENT_USER_METHOD
       self.search_klass             = SEARCH_KLASS
       self.fields                   = FIELDS
       self.supplejack_fields        = SUPPLEJACK_FIELDS
