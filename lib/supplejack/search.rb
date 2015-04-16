@@ -10,13 +10,13 @@ require 'digest/md5'
 
 module Supplejack
   class Search
-  	include Supplejack::Request
+    include Supplejack::Request
 
-  	attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction, :sort, :filters, :record_type, :record_klass
-  	attr_accessor :url_format, :without, :and, :or, :params, :api_params
+    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction, :sort, :filters, :record_type, :record_klass
+    attr_accessor :url_format, :without, :and, :or, :params, :api_params
 
-  	def initialize(params={})
-  		@params = params.clone rescue {}
+    def initialize(params={})
+      @params = params.clone rescue {}
       @params[:facets] ||= Supplejack.facets.join(',')
       @params[:facets_per_page] ||= Supplejack.facets_per_page
       [:action, :controller].each {|p| @params.delete(p) }
@@ -30,10 +30,10 @@ module Supplejack
       @pagination_limit = @params[:pagination_limit] || Supplejack.pagination_limit
       @sort             = @params[:sort]
       @direction        = @params[:direction]
-      @url_format     	= Supplejack.url_format_klass.new(@params, self)
-      @filters        	= @url_format.filters
-      @api_params     	= @url_format.to_api_hash
-      @record_klass 		= @params[:record_klass] || Supplejack.record_klass
+      @url_format       = Supplejack.url_format_klass.new(@params, self)
+      @filters          = @url_format.filters
+      @api_params       = @url_format.to_api_hash
+      @record_klass     = @params[:record_klass] || Supplejack.record_klass
 
       # Do not execute the actual search right away, it should be lazy loaded
       # when the user needs one of the following values.
@@ -49,7 +49,7 @@ module Supplejack
         self.class.send(:attr_accessor, attribute)
         self.send("#{attribute}=", @filters[attribute]) unless @filters[attribute] == 'all'
       end
-  	end
+    end
 
     # Returns by default a array of two element arrays with all the active filters
     # in the search object and their values
@@ -309,6 +309,15 @@ module Supplejack
       return true
     end
 
+    # Gets the category facet unrestricted by the current category filter
+    #
+    # @return [Hash{String => Integer}] A hash of category names and counts
+    #
+    def categories(options={})
+      return @categories if @categories
+      @categories = facet_values("category", options)
+    end    
+
     # Convienence method to find out if the search object has any specific filter
     # applied to it. It works for both single and multiple value filters.
     # This methods are actually defined on method_missing.
@@ -341,6 +350,6 @@ module Supplejack
 
       Util.deep_merge(existing_filters, extra_filters)
     end
-  	
+    
   end
 end

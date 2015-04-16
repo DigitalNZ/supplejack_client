@@ -23,7 +23,9 @@ module Supplejack
   class Item
     include Supplejack::Request
     
-    ATTRIBUTES = [:record_id, :date]
+    ATTRIBUTES = [:record_id, :title, :description, :large_thumbnail_url, :thumbnail_url, 
+                  :contributing_partner, :display_content_partner, :display_collection, :landing_url, :category, :date, 
+                  :dnz_type, :dc_identifier, :creator]
 
     attr_reader *ATTRIBUTES
     attr_reader :attributes, :user_set_id

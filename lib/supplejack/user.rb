@@ -40,6 +40,10 @@ module Supplejack
       end
     end
 
+    def sets
+      @sets ||= UserSetRelation.new(self)
+    end
+
     # Initializes a UserSetRelation class which adds behaviour to build, create
     # find and order sets related to this particular User instance
     #
