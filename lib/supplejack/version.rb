@@ -6,5 +6,5 @@
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
 
 module Supplejack
-  VERSION = '1.0.2'
+  VERSION = '1.0.3'
 end
