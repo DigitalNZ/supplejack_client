@@ -66,13 +66,9 @@ module Supplejack
       :label_class
     ]
 
-    SINGLE_VALUE_METHODS = [
-      :description
-    ]
+    SINGLE_VALUE_METHODS = []
 
-    SEARCH_ATTRIBUTES = [
-      :location
-    ]
+    SEARCH_ATTRIBUTES = []
 
     attr_accessor *VALID_OPTIONS_KEYS
 
