@@ -21,7 +21,7 @@ module Supplejack
     end
 
     describe '#initialize' do
-      [:id, :name, :description, :privacy, :url, :priority, :count, :tag_list, :homepage, :approved].each do |attribute|
+      [:id, :name, :description, :privacy, :url, :priority, :count, :tag_list, :featured, :approved].each do |attribute|
         it "initializes the #{attribute}" do
           Supplejack::UserSet.new({attribute => 'value'}).send(attribute).should eq 'value'
         end
@@ -69,9 +69,9 @@ module Supplejack
         supplejack_set.api_attributes
       end
 
-      it 'should send the homepage value' do
-        supplejack_set.homepage = true
-        supplejack_set.api_attributes.should include(homepage: true)
+      it 'should send the featured value' do
+        supplejack_set.featured = true
+        supplejack_set.api_attributes.should include(featured: true)
       end
 
       it 'returns a array of records with only id and position' do
@@ -443,20 +443,20 @@ module Supplejack
       end
     end
 
-    describe '#homepage_sets' do
+    describe '#featured_sets' do
       before :each do
         Supplejack::UserSet.stub(:get) { {'sets' => [{'id' => '123', 'name' => 'Dog'}]} }
       end
 
       it 'fetches the public sets from the api' do
-        Supplejack::UserSet.should_receive(:get).with('/sets/home')
-        Supplejack::UserSet.homepage_sets
+        Supplejack::UserSet.should_receive(:get).with('/sets/featured')
+        Supplejack::UserSet.featured_sets
       end
 
       it 'returns an array of user set objects' do
         @set = supplejack_set
         Supplejack::UserSet.should_receive(:new).once.with({'id' => '123', 'name' => 'Dog'}) { @set }
-        sets = Supplejack::UserSet.homepage_sets
+        sets = Supplejack::UserSet.featured_sets
         sets.should be_a Array
         sets.size.should eq 1
       end

@@ -27,7 +27,7 @@ module Supplejack
     include ActiveModel::Conversion
     extend ActiveModel::Naming
 
-    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list, :homepage, :records, :created_at, :updated_at, :approved, :record]
+    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list, :featured, :records, :created_at, :updated_at, :approved, :record]
     attr_accessor *ATTRIBUTES
     attr_accessor :api_key, :errors, :user
 
@@ -55,7 +55,7 @@ module Supplejack
     #
     def api_attributes
       api_attributes = {}
-      [:name, :description, :privacy, :priority, :tag_list, :homepage, :approved].each do |attr|
+      [:name, :description, :privacy, :priority, :tag_list, :featured, :approved].each do |attr|
         api_attributes[attr] = self.send(attr)
       end
       api_attributes[:records] = self.api_records
@@ -316,13 +316,13 @@ module Supplejack
       Supplejack::PaginatedCollection.new(user_sets, options[:page].to_i, options[:per_page].to_i, response["total"].to_i)
     end
 
-    # Execute a GET request to the API /sets/home endpoint to retrieve
-    # all UserSet objects which have the :homepage flag set to true
+    # Execute a GET request to the API /sets/featured endpoint to retrieve
+    # all UserSet objects which have the :featured flag set to true
     #
     # @return [ Array ] A array of Supplejack::UserSet objects
     #
-    def self.homepage_sets
-      path = "/sets/home"
+    def self.featured_sets
+      path = "/sets/featured"
       if Supplejack.enable_caching
         response = Rails.cache.fetch(path, expires_in: 1.day) do
           get(path)
