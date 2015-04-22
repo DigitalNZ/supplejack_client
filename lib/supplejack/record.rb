@@ -59,11 +59,11 @@ module Supplejack
     def metadata
       metadata = []
 
-      Supplejack.send("special_fields").each do |schema, fields|
+      Supplejack.send('special_fields').each do |schema, fields|
         fields[:fields].each do |field|
           if @attributes.has_key?(field)
             values = @attributes[field]
-            values ||= [] unless !!values == values #Testing if boolean
+            values ||= [] unless !!values == values # Testing if boolean
             values = [values] unless values.is_a?(Array)
 
             case fields[:format]
@@ -72,7 +72,6 @@ module Supplejack
             when "camelcase" then field = field.to_s.camelcase
             end
 
-            # field = field.to_s.camelcase(:lower) if schema == :dcterms
             field = field.to_s.sub(/#{schema}_/, '')
             values.each do |value|
               metadata << {:name => field, :schema => schema.to_s, :value => value }
