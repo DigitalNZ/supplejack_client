@@ -98,25 +98,7 @@ module Supplejack
       true
     end
 
-    # def build_authorities(name)
-    #   @attributes[:authorities] ||= []
-    #   authorities = @attributes[:authorities].find_all {|authority| authority["name"] == name }
-    #   authorities.map {|attributes| Supplejack::Authority.new(attributes) }
-    # end
-
     def method_missing(symbol, *args, &block)
-      if symbol.to_s.match(/(.+)_authorities/)
-        return build_authorities("#{$1}_authority")
-      end
-
-      if symbol.to_s.match(/(.+)_terms/)
-        return build_authorities("#{$1}_term")
-      end
-
-      if [:series_parent, :child_series, :collection_parent, :collection_root, :collection_mid].include?(symbol)
-        return build_authorities(symbol.to_s)
-      end
-
       raise NoMethodError, "undefined method '#{symbol.to_s}' for Supplejack::Record:Module" unless @attributes.has_key?(symbol)
       @attributes[symbol]
     end
