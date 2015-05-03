@@ -132,5 +132,10 @@ module Supplejack
       response = post("/users", {}, {user: attributes})
       new(response["user"])
     end
+
+    def self.update(attributes={})
+      response = put("/users/#{attributes[:api_key]}", {}, {user: attributes})
+      new(response["user"])
+    end
   end
 end
