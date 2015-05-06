@@ -12,7 +12,7 @@ module Supplejack
   class Search
     include Supplejack::Request
 
-    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction, :sort, :filters, :record_type, :record_klass
+    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction, :sort, :filters, :record_type, :record_klass, :geo_bbox
     attr_accessor :url_format, :without, :and, :or, :params, :api_params
 
     def initialize(params={})
