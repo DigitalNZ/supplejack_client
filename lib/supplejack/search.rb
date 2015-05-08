@@ -32,6 +32,7 @@ module Supplejack
       @direction        = @params[:direction]
       @url_format       = Supplejack.url_format_klass.new(@params, self)
       @filters          = @url_format.filters
+
       @api_params       = @url_format.to_api_hash
       @record_klass     = @params[:record_klass] || Supplejack.record_klass
 
@@ -94,7 +95,7 @@ module Supplejack
     #
     # @return [ Array<Supplejack::Facet> ] Every element in the array is a Supplejack::Facet object, and responds to name and values
     #
-    def facets(options={})
+    def facets(options={})     
       return @facets if @facets
       self.execute_request
 

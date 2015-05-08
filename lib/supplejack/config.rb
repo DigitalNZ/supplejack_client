@@ -41,6 +41,7 @@ module Supplejack
     LABEL_TAG                 = :strong
     LABEL_CLASS               = nil
     STICKY_FACETS             = false
+    NON_TEXT_FIELDS           = []
 
     VALID_OPTIONS_KEYS = [
       :api_key,
@@ -65,7 +66,8 @@ module Supplejack
       :attribute_tag,
       :label_tag,
       :label_class,
-      :sticky_facets
+      :sticky_facets,
+      :non_text_fields
     ]
 
     SINGLE_VALUE_METHODS = [
@@ -116,6 +118,7 @@ module Supplejack
       self.attribute_tag            = ATTRIBUTE_TAG
       self.label_tag                = LABEL_TAG
       self.label_class              = LABEL_CLASS
+      self.non_text_fields          = NON_TEXT_FIELDS
       self
     end
   end

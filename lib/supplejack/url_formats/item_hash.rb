@@ -36,7 +36,7 @@ module Supplejack
         hash[:fields]           = params[:fields] || Supplejack.fields.join(',')
         hash[:query_fields]     = query_fields if query_fields
         hash[:solr_query]       = params[:solr_query] if params[:solr_query].present?
-        
+
         if params[:sort].present?
           hash[:sort] = params[:sort]
           hash[:direction] = params[:direction] || "asc"
@@ -72,7 +72,7 @@ module Supplejack
       end
 
       def is_text_field?(filter)
-        return false if filter.nil?
+        return false if filter.nil? || Supplejack.non_text_fields.include?(filter.to_sym)
         filter.to_s.split(//).last(5).join('').to_s == '_text'
       end
       
