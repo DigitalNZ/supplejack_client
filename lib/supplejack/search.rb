@@ -208,7 +208,7 @@ module Supplejack
       params = {:facet_query => query_with_filters, :record_type => "all"}
       params[:text] = self.url_format.text
       params[:text] = self.text if self.text.present?
-      # params[:geo_bbox] = self.geo_bbox if self.geo_bbox.present?
+      params[:geo_bbox] = self.geo_bbox if self.geo_bbox.present?
       params[:query_fields] = self.url_format.query_fields
       params = merge_extra_filters(params)
       params
