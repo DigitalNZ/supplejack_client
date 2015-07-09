@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Supplejack::VERSION
 
-  gem.add_dependency 'rails', '~> 3.2.12'
+  gem.add_dependency 'rails', '>= 3.2.12', '< 5.0'
   gem.add_dependency 'rest-client', '~> 1.6'
   gem.add_dependency 'rails_autolink', '~> 1.0'
   

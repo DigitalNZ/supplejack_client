@@ -7,6 +7,7 @@
 
 require 'supplejack_client'
 require 'rails'
+require 'active_model'
 
 module Supplejack
   class Engine < Rails::Engine
