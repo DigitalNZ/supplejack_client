@@ -13,10 +13,18 @@ module Supplejack
 
 		def get(path, params={}, options={})
       params ||= {}
+
+      Rails.logger.info "LOG VIEW DASH: in get logger fields : #{Supplejack.request_logger_field} | #{Supplejack.request_logger} | condition: #{Supplejack.request_logger && Supplejack.request_logger_field}"
+      
+      params = params.merge({request_logger: true, request_logger_field: Supplejack.request_logger_field}) if (Supplejack.request_logger && Supplejack.request_logger_field)
       url = full_url(path, options[:format], params)
+
+      Rails.logger.info "LOG VIEW DASH: in get params : #{params}"
 
       started = Time.now
       payload = {:path => path, :params => params, :options => options}
+
+      Rails.logger.info "LOG VIEW DASH: in get payload : #{payload}"
 
       begin
         result = RestClient::Request.execute(:url => url, :method => :get, :timeout => timeout(options))
