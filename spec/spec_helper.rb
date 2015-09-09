@@ -13,6 +13,9 @@ Bundler.require(:default)
 require 'supplejack_client'
 require 'active_support/all'
 
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 RSpec.configure do |config|
   # some (optional) config here
   config.mock_with :rspec
