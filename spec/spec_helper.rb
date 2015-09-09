@@ -7,6 +7,7 @@
 
 require 'rubygems'
 require 'bundler/setup'
+require 'simplecov'
 
 Bundler.require(:default)
 
@@ -15,6 +16,8 @@ require 'active_support/all'
 
 require "codeclimate-test-reporter"
 CodeClimate::TestReporter.start
+
+#SimpleCov.start
 
 RSpec.configure do |config|
   # some (optional) config here

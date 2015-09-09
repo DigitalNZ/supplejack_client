@@ -18,6 +18,7 @@ module Supplejack
         params = params.merge({request_logger: true, request_logger_field: Supplejack.request_logger_field}) 
       end
       url = full_url(path, options[:format], params)
+
       started = Time.now
       payload = {:path => path, :params => params, :options => options}
 
