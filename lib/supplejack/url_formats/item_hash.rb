@@ -68,7 +68,9 @@ module Supplejack
       
       def and_filters(filter_type=nil)
         @and_filters ||= {}
-        @and_filters[filter_symbol(filter_type)] ||= filters(filter_type).reject {|filter, value| filter.to_s.match(/-(.+)/) or is_text_field?(filter)}
+        valid_filters = filters(filter_type).reject {|filter, value| filter.to_s.match(/-(.+)/)}
+                                            .reject {|filter, value| is_text_field?(filter)}
+        @and_filters[filter_symbol(filter_type)] ||= valid_filters
       end
 
       def is_text_field?(filter)
@@ -153,6 +155,8 @@ module Supplejack
       # @filter_option option [ Array ] :except A array of filter names to be removed
       # @filter_options option [ Hash ] :plus A hash with filters and their values to be added
       #
+      # rubocop:disable Metrics/MethodLength
+      # FIXME: make me smaller!
       def options(filter_options={})
         filter_options.reverse_merge!({:except => [], :plus => {}})
         filter_options[:except] ||= []
@@ -202,6 +206,7 @@ module Supplejack
         hash.merge!(:record_type => 1) if search.record_type > 0
         return hash
       end
+      # rubocop:enable Metrics/MethodLength
       
     end
   end

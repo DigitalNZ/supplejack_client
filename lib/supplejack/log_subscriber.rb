@@ -8,6 +8,8 @@
 module Supplejack
   class LogSubscriber < ActiveSupport::LogSubscriber
 
+    # rubocop:disable Metrics/LineLength
+    # FIXME: make line 24 (request = "") shorter
     def log_request(duration, payload, solr_request_params={})
       return unless Supplejack.enable_debugging
       

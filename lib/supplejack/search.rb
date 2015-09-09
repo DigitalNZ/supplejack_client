@@ -9,10 +9,13 @@ require 'supplejack/request'
 require 'digest/md5'
 
 module Supplejack
+  # rubocop:disable Metrics/ClassLength
+  # FIXME: make me smaller!
   class Search
     include Supplejack::Request
 
-    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction, :sort, :filters, :record_type, :record_klass, :geo_bbox
+    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction
+    attr_accessor :sort, :filters, :record_type, :record_klass, :geo_bbox
     attr_accessor :url_format, :without, :and, :or, :params, :api_params
 
     def initialize(params={})
@@ -93,7 +96,8 @@ module Supplejack
     #
     # @param [ Hash ] options Supported options: :drill_dates
     #
-    # @return [ Array<Supplejack::Facet> ] Every element in the array is a Supplejack::Facet object, and responds to name and values
+    # @return [ Array<Supplejack::Facet> ] Every element in the array is a Supplejack::Facet object, 
+    # and responds to name and values
     #
     def facets(options={})     
       return @facets if @facets
@@ -156,9 +160,10 @@ module Supplejack
     # @example Returns the following hash:
     #   {"photos" => 100}
     #
+    # rubocop:disable Metrics/LineLength
     # @param [Hash{String => Hash{String => String}}] a hash with query names as keys and a hash with filters as values.
     # @return [Hash{String => Integer}] A hash with the query names as keys and the result count for every query as values
-    #
+    # rubocop:enable Metrics/LineLength
     def counts(query_parameters={})
       if Supplejack.enable_caching
         cache_key = Digest::MD5.hexdigest(counts_params(query_parameters).to_query)

@@ -6,7 +6,9 @@ AllCops:
     - 'config/**/*'
     - 'script/**/*'
     - 'spec/**/*'
-  RunRailsCops: true
+    # Excluded because it's in such a bad state
+    - 'lib/supplejack/controllers/helpers.rb'
+    - 'lib/supplejack/config.rb'
   DisplayStyleGuide: true
   # prevent bug caused by https://github.com/bbatsov/rubocop/issues/2213 on travis
   # TODO remove
@@ -15,3 +17,5 @@ Metrics/LineLength:
   Max: 120
 Metrics/MethodLength:
   Max: 25
+Style/MultilineOperationIndentation:
+  Enabled: false

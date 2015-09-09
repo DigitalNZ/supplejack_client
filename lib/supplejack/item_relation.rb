@@ -24,7 +24,9 @@ module Supplejack
     def initialize(user_set)
       @user_set = user_set
       items_array = user_set.attributes[:records] || []
-      @items = items_array.map { |hash| Supplejack::Item.new(hash.merge(user_set_id: user_set.id, api_key: user_set.api_key)) }
+      @items = items_array.map do |hash| 
+        Supplejack::Item.new(hash.merge(user_set_id: user_set.id, api_key: user_set.api_key))
+      end
     end
 
     # Returns an Array with all items for the current UserSet
