@@ -7,6 +7,8 @@
 
 require 'rails_autolink'
 
+# rubocop:disable All
+# FIXME: make this module presentable
 module Supplejack
   module Controllers
     module Helpers

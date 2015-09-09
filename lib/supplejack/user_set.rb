@@ -27,7 +27,8 @@ module Supplejack
     include ActiveModel::Conversion
     extend ActiveModel::Naming
 
-    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list, :featured, :records, :created_at, :updated_at, :approved, :record]
+    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list, 
+                  :featured, :records, :created_at, :updated_at, :approved, :record]
     attr_accessor *ATTRIBUTES
     attr_accessor :api_key, :errors, :user
 
@@ -203,7 +204,7 @@ module Supplejack
     # @return [ Array ] A array of hashes in the format {record_id: 1, position: 1}
     #
     # @example
-    #   user_set.ordered_records_from_array([89,66])      => [{record_id: 89, position: 1}, {record_id: 66, position: 2}]
+    #   user_set.ordered_records_from_array([89,66]) => [{record_id: 89, position: 1}, {record_id: 66, position: 2}]
     #
     def ordered_records_from_array(record_ids)
       records = []
@@ -313,7 +314,10 @@ module Supplejack
       response = get("/sets/public", options)
       sets_array = response["sets"] || []
       user_sets = sets_array.map {|attrs| new(attrs) }
-      Supplejack::PaginatedCollection.new(user_sets, options[:page].to_i, options[:per_page].to_i, response["total"].to_i)
+      Supplejack::PaginatedCollection.new(user_sets, 
+                                          options[:page].to_i, 
+                                          options[:per_page].to_i, 
+                                          response["total"].to_i)
     end
 
     # Execute a GET request to the API /sets/featured endpoint to retrieve

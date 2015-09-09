@@ -27,4 +27,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rails_autolink', '~> 1.0'
   
   gem.add_development_dependency 'rspec', '~> 2.8'
+  gem.add_development_dependency 'codeclimate-test-reporter'
 end

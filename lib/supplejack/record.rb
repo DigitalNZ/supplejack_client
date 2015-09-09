@@ -84,7 +84,9 @@ module Supplejack
     end
 
     def format
-      raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module" unless @attributes.has_key?(:format)
+      unless @attributes.has_key?(:format)
+        raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module" 
+      end
       @attributes[:format]
     end
 
@@ -99,7 +101,9 @@ module Supplejack
     end
 
     def method_missing(symbol, *args, &block)
-      raise NoMethodError, "undefined method '#{symbol.to_s}' for Supplejack::Record:Module" unless @attributes.has_key?(symbol)
+      unless @attributes.has_key?(symbol)
+        raise NoMethodError, "undefined method '#{symbol.to_s}' for Supplejack::Record:Module" 
+      end
       @attributes[symbol]
     end
 
@@ -111,7 +115,8 @@ module Supplejack
       # @params [ Hash ] options Search options used to perform a search in order to get the next/previous
       #   records within the search results.
       #
-      # @return [ Supplejack::Record ] A record or array of records initialized with the class of where the Supplejack::Record module was included
+      # @return [ Supplejack::Record ] A record or array of records initialized with the class of where the 
+      # Supplejack::Record module was included
       #
       def find(id_or_array, options={})
         if id_or_array.is_a?(Array)

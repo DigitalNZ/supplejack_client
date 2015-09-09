@@ -14,7 +14,10 @@ Bundler.require(:default)
 require 'supplejack_client'
 require 'active_support/all'
 
-SimpleCov.start
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
+#SimpleCov.start
 
 RSpec.configure do |config|
   # some (optional) config here
