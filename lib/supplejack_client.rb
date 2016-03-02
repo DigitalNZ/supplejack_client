@@ -10,11 +10,12 @@ require 'supplejack/version'
 
 module Supplejack
   extend Config
-  
+
   require 'supplejack/engine'
   require 'supplejack/exceptions'
   require 'supplejack/log_subscriber'
   require 'supplejack/record'
+  require 'supplejack/concept'
   require "supplejack/request"
   require 'supplejack/paginated_collection'
   require 'supplejack/controllers/helpers'
