@@ -107,12 +107,12 @@ module Supplejack
         end
 
         it 'requests the concept from the API' do
-          SupplejackConcept.should_receive(:get).with('/concepts/1', {:fields => 'default'}).and_return({'concept' => {}})
+          SupplejackConcept.should_receive(:get).with('/concepts/1', {}).and_return({'concept' => {}})
           SupplejackConcept.find(1)
         end
 
         it 'initializes a new SupplejackConcept object' do
-          SupplejackConcept.stub(:get).and_return({'concept' => {'concept_id' => '1', 'name' => 'Wellington'}})
+          SupplejackConcept.stub(:get).and_return({'concept_id' => '1', 'name' => 'Wellington'})
           concept = SupplejackConcept.find(1)
           concept.class.should eq SupplejackConcept
           concept.id.should eq 1
@@ -121,7 +121,7 @@ module Supplejack
 
         it 'send the fields defined in the configuration' do
           Supplejack.stub(:fields) { [:verbose,:default] }
-          SupplejackConcept.should_receive(:get).with('/concepts/1', {:fields => 'verbose,default'}).and_return({'concept' => {}})
+          SupplejackConcept.should_receive(:get).with('/concepts/1', {}).and_return({'concept' => {}})
           SupplejackConcept.find(1)
         end
       end
