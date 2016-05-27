@@ -42,8 +42,6 @@ module Supplejack
     LABEL_CLASS               = nil
     STICKY_FACETS             = false
     NON_TEXT_FIELDS           = []
-    REQUEST_LOGGER            = false
-    REQUEST_LOGGER_FIELD      = nil
 
 
     VALID_OPTIONS_KEYS = [
@@ -70,9 +68,7 @@ module Supplejack
       :label_tag,
       :label_class,
       :sticky_facets,
-      :non_text_fields,
-      :request_logger,
-      :request_logger_field
+      :non_text_fields
     ]
 
     SINGLE_VALUE_METHODS = [
@@ -124,8 +120,6 @@ module Supplejack
       self.label_tag                = LABEL_TAG
       self.label_class              = LABEL_CLASS
       self.non_text_fields          = NON_TEXT_FIELDS
-      self.request_logger           = REQUEST_LOGGER
-      self.request_logger_field     = REQUEST_LOGGER_FIELD
       self
     end
   end
