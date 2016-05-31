@@ -16,7 +16,7 @@ module Supplejack
 
     attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction
     attr_accessor :sort, :filters, :record_type, :record_klass, :geo_bbox
-    attr_accessor :url_format, :without, :and, :or, :params, :api_params
+    attr_accessor :url_format, :without, :and, :or, :params, :api_params, :ignore_metrics
 
     def initialize(params={})
       @params = params.clone rescue {}
@@ -44,6 +44,7 @@ module Supplejack
       @total    = nil
       @results  = nil
       @facets   = nil
+      @ignore_metrics = params[:ignore_metrics]
 
       Supplejack.search_attributes.each do |attribute|
         # We have to define the attribute accessors for the filters at initialization of the search instance
