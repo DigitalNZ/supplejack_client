@@ -36,7 +36,7 @@ module Supplejack
         hash[:fields]           = params[:fields] || Supplejack.fields.join(',')
         hash[:query_fields]     = query_fields if query_fields
         hash[:solr_query]       = params[:solr_query] if params[:solr_query].present?
-        hash[:ignore_metrics]   = @search.ignore_metrics if @search.ignore_metrics.present?
+        hash[:ignore_metrics]   = params[:ignore_metrics] if params[:ignore_metrics].present?
 
         if params[:sort].present?
           hash[:sort] = params[:sort]
