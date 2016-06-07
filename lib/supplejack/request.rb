@@ -14,9 +14,6 @@ module Supplejack
 		def get(path, params={}, options={})
       params ||= {}
 
-      if (Supplejack.request_logger && Supplejack.request_logger_field)
-        params = params.merge({request_logger: true, request_logger_field: Supplejack.request_logger_field}) 
-      end
       url = full_url(path, options[:format], params)
 
       started = Time.now
@@ -41,9 +38,9 @@ module Supplejack
     def post(path, params={}, payload={}, options={})
       payload ||= {}
       log_request(:post, path, params, payload) do
-        response = RestClient::Request.execute(:url => full_url(path, nil, params), 
-                                               :method => :post, :payload => payload.to_json, 
-                                               :timeout => timeout(options), 
+        response = RestClient::Request.execute(:url => full_url(path, nil, params),
+                                               :method => :post, :payload => payload.to_json,
+                                               :timeout => timeout(options),
                                                :headers => {:content_type => :json, :accept => :json})
         JSON.parse(response) rescue {}.to_json
       end
@@ -51,8 +48,8 @@ module Supplejack
 
     def delete(path, params={}, options={})
       log_request(:delete, path, params, {}) do
-        RestClient::Request.execute(:url => full_url(path, nil, params), 
-                                    :method => :delete, 
+        RestClient::Request.execute(:url => full_url(path, nil, params),
+                                    :method => :delete,
                                     :timeout => timeout(options))
       end
     end
@@ -60,10 +57,10 @@ module Supplejack
     def put(path, params={}, payload={}, options={})
       payload ||= {}
       log_request(:put, path, params, payload) do
-        response = RestClient::Request.execute(:url => full_url(path, nil, params), 
-                                               :method => :put, 
-                                               :payload => payload.to_json, 
-                                               :timeout => timeout(options), 
+        response = RestClient::Request.execute(:url => full_url(path, nil, params),
+                                               :method => :put,
+                                               :payload => payload.to_json,
+                                               :timeout => timeout(options),
                                                :headers => {:content_type => :json, :accept => :json})
         JSON.parse(response) rescue {}.to_json
       end
@@ -104,5 +101,5 @@ module Supplejack
       end
     end
 
-	end	
+	end
 end

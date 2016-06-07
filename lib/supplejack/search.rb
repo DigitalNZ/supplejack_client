@@ -96,10 +96,10 @@ module Supplejack
     #
     # @param [ Hash ] options Supported options: :drill_dates
     #
-    # @return [ Array<Supplejack::Facet> ] Every element in the array is a Supplejack::Facet object, 
+    # @return [ Array<Supplejack::Facet> ] Every element in the array is a Supplejack::Facet object,
     # and responds to name and values
     #
-    def facets(options={})     
+    def facets(options={})
       return @facets if @facets
       self.execute_request
 
@@ -202,10 +202,10 @@ module Supplejack
         query_record_type = count_filters[:record_type].to_i
         type = query_record_type == 0 ? :items : :headings
         filters = self.url_format.and_filters(type).dup
-        
+
         without_filters = self.url_format.without_filters(type).dup
-        without_filters = Hash[without_filters.map {|key, value| ["-#{key}".to_sym, value]}]          
-        
+        without_filters = Hash[without_filters.map {|key, value| ["-#{key}".to_sym, value]}]
+
         filters.merge!(without_filters)
         query_with_filters.merge!({count_name.to_sym => Supplejack::Util.deep_merge(filters, count_filters) })
       end
@@ -246,7 +246,7 @@ module Supplejack
       end
 
       @facet_values["All"] = response["search"]["result_count"] if options[:all]
-      
+
       facet = Supplejack::Facet.new(facet_name, @facet_values)
       @facet_values = facet.values(options[:sort])
 
@@ -322,7 +322,7 @@ module Supplejack
     def categories(options={})
       return @categories if @categories
       @categories = facet_values("category", options)
-    end    
+    end
 
     # Convienence method to find out if the search object has any specific filter
     # applied to it. It works for both single and multiple value filters.
@@ -356,6 +356,6 @@ module Supplejack
 
       Util.deep_merge(existing_filters, extra_filters)
     end
-    
+
   end
 end
