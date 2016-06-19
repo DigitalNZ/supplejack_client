@@ -4,9 +4,10 @@
 #
 # Supplejack was created by DigitalNZ at the National Library of NZ
 # and the Department of Internal Affairs. http://digitalnz.org/supplejack
+require 'rbconfig'
 
 module Supplejack
-  module Config
+  module RbConfig
 
     # Default values for the supplejack configuration.
     #
@@ -123,4 +124,5 @@ module Supplejack
       self
     end
   end
+  Config = RbConfig
 end
