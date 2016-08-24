@@ -11,8 +11,10 @@ source 'http://rubygems.org'
 gemspec
 
 group :development do
-  gem 'guard'
-  gem 'guard-rspec'
+  if RUBY_VERSION >= '2.2.5'
+    gem 'guard'  
+    gem 'guard-rspec'
+  end
 end
 
 group :test do
