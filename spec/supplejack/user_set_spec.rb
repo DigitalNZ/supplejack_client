@@ -247,7 +247,7 @@ module Supplejack
         end
       end
     end
-    
+
     describe '#api_records' do
       it 'generates a hash of records with position and record_id' do
         supplejack_set.stub(:records) { [{title: 'Hi', record_id: 1, position: 1} ] }
@@ -360,7 +360,7 @@ module Supplejack
 
     describe '#owned_by?' do
       let(:user) { double(:user, api_key: '123456') }
-      
+
       it 'returns true when the users api_key is the same as the set\'s' do
         supplejack_set.stub(:api_key) { "123456" }
         supplejack_set.owned_by?(user).should be_true
@@ -400,7 +400,7 @@ module Supplejack
       end
 
       it 'fetches the set from the api' do
-        Supplejack::UserSet.should_receive(:get).with('/sets/123abc')
+        Supplejack::UserSet.should_receive(:get).with('/sets/123abc', {})
         Supplejack::UserSet.find('123abc')
       end
 
