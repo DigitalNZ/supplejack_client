@@ -23,19 +23,19 @@ module Supplejack
   # - priority
   # - count
   # - tags
-  # 
+  #
   class UserSet
     extend Supplejack::Request
     include ActiveModel::Conversion
     extend ActiveModel::Naming
 
-    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list, 
+    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list,
                   :featured, :records, :created_at, :updated_at, :approved, :record]
     attr_accessor *ATTRIBUTES
     attr_accessor :api_key, :errors, :user
 
     PRIVACY_STATES = ['public', 'hidden', 'private']
-    
+
     def initialize(attributes={})
       @attributes = attributes.try(:symbolize_keys) || {}
       @user = Supplejack::User.new(@attributes[:user])
@@ -74,7 +74,7 @@ module Supplejack
     #
     def api_records
       records = self.records.is_a?(Array) ? self.records : []
-      records.map do |record_hash| 
+      records.map do |record_hash|
         record_hash = record_hash.try(:symbolize_keys) || {}
         if record_hash[:record_id]
           {record_id: record_hash[:record_id], position: record_hash[:position] }
@@ -100,7 +100,7 @@ module Supplejack
     end
 
     # Returns the api_key from the UserSet or from the User which this set belongs to.
-    # 
+    #
     def api_key
       @api_key || @user.try(:api_key)
     end
@@ -148,11 +148,11 @@ module Supplejack
     # Executes a POST request when the UserSet hasn't been persisted to the API, otherwise it executes
     # a PUT request.
     #
-    # When the API returns a error response, the errors are available through the UserSet#errors 
+    # When the API returns a error response, the errors are available through the UserSet#errors
     # virtual attribute.
     #
     # @return [ true, false ] True if the API response was successful, false if not.
-    # 
+    #
     def save
       begin
         if self.new_record?
@@ -179,7 +179,7 @@ module Supplejack
     end
 
     # Assigns the provided attributes to the UserSet object
-    # 
+    #
     def attributes=(attributes)
       attributes = attributes.try(:symbolize_keys) || {}
       attributes.each do |attr, value|
@@ -190,7 +190,7 @@ module Supplejack
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
-    # 
+    #
     [:created_at, :updated_at].each do |attribute|
       define_method("#{attribute}=") do |time|
         self.instance_variable_set("@#{attribute}", Util.time(time))
@@ -225,9 +225,9 @@ module Supplejack
     end
 
     # Executes a DELETE request to the API with the UserSet ID and the user's api_key
-    # 
+    #
     # @return [ true, false ] True if the API response was successful, false if not.
-    # 
+    #
     def destroy
       if self.new_record?
         return false
@@ -250,7 +250,7 @@ module Supplejack
     # Fetches the UserSet information from the API again, in case it had changed.
     # This can be useful if they items for a UserSet changed and you want the relation
     # to have the most up to date items.
-    # 
+    #
     def reload
       begin
         self.instance_variable_set("@items", nil)
@@ -266,7 +266,7 @@ module Supplejack
     # @param [ Supplejack::User ] A Supplejack::User object
     #
     # @return [ true, false ] True if the user can view the current UserSet, false if not.
-    # 
+    #
     def viewable_by?(user)
       return true if self.public? || self.hidden?
       self.owned_by?(user)
@@ -288,10 +288,10 @@ module Supplejack
     # a UserSet object with the response from the API.
     #
     # @return [ UserSet ] A UserSet object
-    # 
-    def self.find(id, api_key=nil)
+    #
+    def self.find(id, api_key=nil, params={})
       begin
-        response = get("/sets/#{id}")
+        response = get("/sets/#{id}", params)
         attributes = response["set"] || {}
         user_set = new(attributes)
         user_set.api_key = api_key if api_key.present?
@@ -310,15 +310,15 @@ module Supplejack
     # @option options [ Integer ] :per_page The per_page number to select the number of UserSet objects per page.
     #
     # @return [ Array ] A array of Supplejack::UserSet objects
-    # 
+    #
     def self.public_sets(options={})
       options.reverse_merge!(page: 1, per_page: 100)
       response = get("/sets/public", options)
       sets_array = response["sets"] || []
       user_sets = sets_array.map {|attrs| new(attrs) }
-      Supplejack::PaginatedCollection.new(user_sets, 
-                                          options[:page].to_i, 
-                                          options[:per_page].to_i, 
+      Supplejack::PaginatedCollection.new(user_sets,
+                                          options[:page].to_i,
+                                          options[:per_page].to_i,
                                           response["total"].to_i)
     end
 
@@ -347,7 +347,7 @@ module Supplejack
     # This is useful when using a Supplejack::UserSet object in the Rails provided routes helpers. Example:
     #
     #   user_set_path(@user_set)
-    # 
+    #
     def self.model_name
       ActiveModel::Name.new(self, nil, "UserSet")
     end
