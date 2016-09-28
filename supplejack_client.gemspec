@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Supplejack::VERSION
   
-  if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.2.2")
+  if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new("2.2.2")
     gem.add_dependency 'rails', '>= 3.2.12', '< 5.0'
   else
     gem.add_dependency 'rails', '>= 3.2.12'
