@@ -20,9 +20,9 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- spec/*`.split("\n")
   gem.name          = 'supplejack_client'
   gem.require_paths = ['lib']
-  gem.version       = Supplejack::VERSION
+  gem.version       = Supplejack::VERSION.dup
   
-  if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.2.2")
+  if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new("2.2.2")
     gem.add_dependency 'rails', '>= 3.2.12', '< 5.0'
   else
     gem.add_dependency 'rails', '>= 3.2.12'
