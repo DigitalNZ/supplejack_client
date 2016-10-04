@@ -35,19 +35,15 @@ module Supplejack
         end
       end
 
-      # it 'symbolizes the attributes hash' do
-      #   Supplejack::UserSet.new({'name' => 'Dog'}).name.should eq 'Dog'
-      # end
+      it 'handles nil attributes' do
+        expect{Supplejack::Story.new(nil).attributes}.not_to raise_error
+      end
 
-      # it 'handles nil attributes' do
-      #   Supplejack::UserSet.new(nil).attributes
-      # end
-
-      # it 'initializes a user object' do
-      #   user_set = Supplejack::UserSet.new({user: {name: 'Juanito'}})
-      #   user_set.user.should be_a Supplejack::User
-      #   user_set.user.name.should eq 'Juanito'
-      # end
+      it 'initializes a user object' do
+        story = Supplejack::Story.new({user: {name: 'Juanito'}})
+        expect(story.user).to be_a Supplejack::User
+        expect(story.user.name).to eq 'Juanito'
+      end
     end
 
     # describe '#attributes' do

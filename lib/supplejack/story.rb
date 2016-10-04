@@ -17,6 +17,7 @@ module Supplejack
     ATTRIBUTES = [:id, :name, :created_at, :updated_at, :privacy, :featured, :approved, :description,
                   :tags, :number_of_items, :contents].freeze
     attr_accessor *ATTRIBUTES
+    attr_accessor :user
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
@@ -31,6 +32,15 @@ module Supplejack
       @attributes = attributes.try(:symbolize_keys) || {}
       @user = Supplejack::User.new(@attributes[:user])
       self.attributes = @attributes
+    end
+
+    def attributes
+      attributes = {}
+      ATTRIBUTES.each do |attribute|
+        value = self.send(attribute)
+        attributes[attribute] = value if value.present?
+      end
+      attributes
     end
 
     # Assigns the provided attributes to the Story object
