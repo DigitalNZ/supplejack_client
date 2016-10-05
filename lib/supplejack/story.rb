@@ -85,6 +85,15 @@ module Supplejack
       end
     end
 
+    # Updates the Story attributes and persists it to the API
+    #
+    # @return [ true, false ] True if the API response was successful, false if not.
+    #
+    def update_attributes(attributes={})
+      self.attributes = attributes
+      self.save
+    end
+
     # Returns the ApiKey of the User this Story belongs to
     #
     # @return [String] User ApiKey

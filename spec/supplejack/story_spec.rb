@@ -162,16 +162,22 @@ module Supplejack
           expect(story.id).to eq 'new-id'
         end
 
+        it 'updates the attributes with the response' do
+          story.save
+
+          expect(story.tags).to eq []
+        end
+
         it 'returns false for anything other that a 200 response' do
           RSpec::Mocks.proxy_for(Supplejack::Story).reset
-          Supplejack::Story.stub!(:post).and_raise(RestClient::Forbidden.new)
+          Supplejack::Story.stub(:post).and_raise(RestClient::Forbidden.new)
 
           expect(story.save).to eq false
         end
       end
 
       context 'user_set is not new' do
-        let(:attributes) {{name: 'Story Name'}}
+        let(:attributes) {{name: 'Story Name', description: 'desc'}}
         let(:user) {{api_key: 'foobar'}}
         let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
 
@@ -181,7 +187,7 @@ module Supplejack
               "story" => {
                 "id" => "new-id",
                 "name" => attributes[:name],
-                "description" => "",
+                "description" => "desc",
                 "tags" => [],
                 "contents" => []
               }
@@ -190,24 +196,29 @@ module Supplejack
         end
 
         it 'triggers a PATCH request to /stories/123.json with the user set api_key' do
-          expect(Supplejack::Story).to receive(:patch).with('/stories/123', {api_key: 'foobar'}, {story: attributes})
-
           story.save
+        end
+
+        it 'updates the attributes with the response' do
+          story.save
+
+          expect(story.description).to eq 'desc'
         end
       end
     end
 
-    # describe '#update_attributes' do
-    #   it 'sets the attributes on the user_set' do
-    #     supplejack_set.should_receive('attributes=').with(name: 'Mac')
-    #     supplejack_set.update_attributes({name: 'Mac'})
-    #   end
+    describe '#update_attributes' do
+      let(:story) {Supplejack::Story.new(name: 'test', description: 'test')}
+      after { story.update_attributes(name: 'Mac') }
 
-    #   it 'saves the user_set' do
-    #     supplejack_set.should_receive(:save)
-    #     supplejack_set.update_attributes({name: 'Mac'})
-    #   end
-    # end
+      it 'sets the attributes on the Story' do
+        expect(story).to receive('attributes=').with(name: 'Mac')
+      end
+
+      it 'saves the user_set' do
+        expect(story).to receive(:save)
+      end
+    end
 
     # describe '#attributes=' do
     #   it 'updates the attributes on the user_set' do
