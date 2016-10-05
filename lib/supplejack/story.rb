@@ -19,7 +19,7 @@ module Supplejack
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor *ATTRIBUTES
-    attr_accessor :user
+    attr_accessor :user, :errors
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
@@ -36,12 +36,44 @@ module Supplejack
       self.attributes = @attributes
     end
 
+    # Returns if the Story is persisted to the API or not.
+    #
+    # @return [ true, false ] True if the UserSet is persisted to the API, false if not.
+    #
+    def new_record?
+      self.id.blank?
+    end
+
     def attributes
       retrieve_attributes(ATTRIBUTES)
     end
 
     def api_attributes
       retrieve_attributes(MODIFIABLE_ATTRIBUTES)
+    end
+
+    # Executes a POST request when the UserSet hasn't been persisted to the API, otherwise it executes
+    # a PUT request.
+    #
+    # When the API returns a error response, the errors are available through the UserSet#errors
+    # virtual attribute.
+    #
+    # @return [ true, false ] True if the API response was successful, false if not.
+    #
+    def save
+      begin
+        if self.new_record?
+          response = self.class.post("/stories", {api_key: self.api_key}, {story: self.api_attributes})
+          self.attributes = response["story"]
+        else
+          self.class.patch("/stories/#{self.id}", {api_key: self.api_key}, {story: self.api_attributes})
+        end
+        Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
+        return true
+      rescue StandardError => e
+        self.errors = e.inspect
+        return false
+      end
     end
 
     # Assigns the provided attributes to the Story object
@@ -53,6 +85,30 @@ module Supplejack
       end
     end
 
+    # Returns the ApiKey of the User this Story belongs to
+    #
+    # @return [String] User ApiKey
+    def api_key
+      @user.api_key
+    end
+
+    # Returns a comma separated list of tags for this Story
+    #
+    def tag_list
+      self.tags.join(', ') if self.tags
+    end
+
+    def private?
+      self.privacy == "private"
+    end
+
+    def public?
+      self.privacy == "public"
+    end
+
+    def hidden?
+      self.privacy == "hidden"
+    end
 
     private
 

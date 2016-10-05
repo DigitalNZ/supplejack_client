@@ -80,115 +80,122 @@ module Supplejack
     #   end
     # end
 
-    # describe '#tag_list' do
-    #   it 'returns a comma sepparated list of tags' do
-    #     Supplejack::UserSet.new(tags: ['dog', 'cat']).tag_list.should eq 'dog, cat'
-    #   end
-    # end
+    describe '#tag_list' do
+      it 'returns a comma sepparated list of tags' do
+        expect(Supplejack::Story.new(tags: ['dog', 'cat']).tag_list).to eq 'dog, cat'
+      end
+    end
 
-    # describe '#priority' do
-    #   it 'defaults to 1 when is null' do
-    #     Supplejack::UserSet.new.priority.should eq 1
-    #   end
+    describe '#private?' do
+      it 'returns true when the privacy is private' do
+        expect(Supplejack::Story.new(privacy: 'private').private?).to eq true
+      end
 
-    #   it 'keeps the value set' do
-    #     Supplejack::UserSet.new(priority: 0).priority.should eq 0
-    #   end
-    # end
+      it 'returns false when the privacy is something else' do
+        expect(Supplejack::Story.new(privacy: 'public').private?).to eq false
+      end
+    end
 
-    # describe '#favourite?' do
-    #   it 'returns true when the name is Favourites' do
-    #     Supplejack::UserSet.new(name: 'Favourites').favourite?.should be_true
-    #   end
+    describe '#public?' do
+      it 'returns false when the privacy is private' do
+        expect(Supplejack::Story.new(privacy: 'private').public?).to eq false
+      end
 
-    #   it 'returns false when the name is something else' do
-    #     Supplejack::UserSet.new(name: 'Dogs').favourite?.should be_false
-    #   end
-    # end
+      it 'returns true when the privacy is public' do
+        expect(Supplejack::Story.new(privacy: 'public').public?).to eq true
+      end
+    end
 
-    # describe '#private?' do
-    #   it 'returns true when the privacy is private' do
-    #     Supplejack::UserSet.new(privacy: 'private').private?.should be_true
-    #   end
+    describe '#hidden?' do
+      it 'returns false when the privacy is not hidden' do
+        expect(Supplejack::Story.new(privacy: 'public').hidden?).to eq false
+      end
 
-    #   it 'returns false when the privacy is something else' do
-    #     Supplejack::UserSet.new(privacy: 'public').private?.should be_false
-    #   end
-    # end
+      it 'returns true when the privacy is hidden' do
+        expect(Supplejack::Story.new(privacy: 'hidden').hidden?).to eq true
+      end
+    end
 
-    # describe '#public?' do
-    #   it 'returns false when the privacy is private' do
-    #     Supplejack::UserSet.new(privacy: 'private').public?.should be_false
-    #   end
+    describe '#new_record?' do
+      it "returns true when the user_set doesn't have a id" do
+        expect(Supplejack::Story.new.new_record?).to eq true
+      end
 
-    #   it 'returns true when the privacy is public' do
-    #     Supplejack::UserSet.new(privacy: 'public').public?.should be_true
-    #   end
-    # end
+      it 'returns false when the user_set has a id' do
+        expect(Supplejack::Story.new(id: '1234abc').new_record?).to eq false
+      end
+    end
 
-    # describe '#hidden?' do
-    #   it 'returns false when the privacy is not hidden' do
-    #     Supplejack::UserSet.new(privacy: 'public').hidden?.should be_false
-    #   end
+    describe '#api_key' do
+      it 'returns the users api_key' do
+        expect(Supplejack::Story.new(user: {api_key: 'foobar'}).api_key).to eq 'foobar'
+      end
+    end
 
-    #   it 'returns true when the privacy is hidden' do
-    #     Supplejack::UserSet.new(privacy: 'hidden').hidden?.should be_true
-    #   end
-    # end
+    describe '#save' do
+      context 'Story is a new_record' do
+        let(:attributes) {{name: 'Story Name'}}
+        let(:user) {{api_key: 'foobar'}}
+        let(:story) {Supplejack::Story.new(attributes.merge(user: user))}
 
-    # describe '#has_record?' do
-    #   let(:supplejack_set) { Supplejack::UserSet.new(records: [{record_id: 1, position: 2, title: 'Dogs'}]) }
+        before do
+          expect(Supplejack::Story).to receive(:post).with("/stories", {api_key: "foobar"}, {story: attributes}) do
+            {
+              "story" => {
+                "id" => "new-id",
+                "name" => attributes[:name],
+                "description" => "",
+                "tags" => [],
+                "contents" => []
+              }
+            }
+          end
+        end
 
-    #   it 'returns true when the record is part of the set' do
-    #     supplejack_set.has_record?(1).should be_true
-    #   end
+        it 'triggers a POST request to /stories.json' do
+          expect(story.save).to eq true
+        end
 
-    #   it 'returns false when the record is not part of the set' do
-    #     supplejack_set.has_record?(3).should be_false
-    #   end
-    # end
+        it 'stores the id of the user_set' do
+          story.save
 
-    # describe '#save' do
-    #   before :each do
-    #     @attributes = {name: 'Dogs', description: 'hi', count: 3}
-    #     supplejack_set.stub(:api_attributes) { @attributes }
-    #     supplejack_set.stub(:api_key) { '123abc' }
-    #   end
+          expect(story.id).to eq 'new-id'
+        end
 
-    #   context 'user_set is a new_record' do
-    #     before :each do
-    #       supplejack_set.stub(:new_record?) { true }
-    #     end
+        it 'returns false for anything other that a 200 response' do
+          RSpec::Mocks.proxy_for(Supplejack::Story).reset
+          Supplejack::Story.stub!(:post).and_raise(RestClient::Forbidden.new)
 
-    #     it 'triggers a POST request to /sets.json' do
-    #       Supplejack::UserSet.should_receive(:post).with("/sets", {api_key: "123abc"}, {set: @attributes}) { {"set" => {"id" => "new-id"}} }
-    #       supplejack_set.save.should be_true
-    #     end
+          expect(story.save).to eq false
+        end
+      end
 
-    #     it 'stores the id of the user_set' do
-    #       Supplejack::UserSet.stub(:post) { {'set' => {'id' => 'new-id'}} }
-    #       supplejack_set.save
-    #       supplejack_set.id.should eq 'new-id'
-    #     end
+      context 'user_set is not new' do
+        let(:attributes) {{name: 'Story Name'}}
+        let(:user) {{api_key: 'foobar'}}
+        let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
 
-    #     it 'returns false for anything other that a 200 response' do
-    #       Supplejack::UserSet.stub(:post).and_raise(RestClient::Forbidden.new)
-    #       supplejack_set.save.should be_false
-    #     end
-    #   end
+        before do
+          expect(Supplejack::Story).to receive(:patch).with("/stories/123", {api_key: "foobar"}, {story: attributes}) do
+            {
+              "story" => {
+                "id" => "new-id",
+                "name" => attributes[:name],
+                "description" => "",
+                "tags" => [],
+                "contents" => []
+              }
+            }
+          end
+        end
 
-    #   context 'user_set is not new' do
-    #     before :each do
-    #       supplejack_set.stub(:new_record?) { false }
-    #       supplejack_set.id = '123'
-    #     end
+        it 'triggers a PATCH request to /stories/123.json with the user set api_key' do
+          expect(Supplejack::Story).to receive(:patch).with('/stories/123', {api_key: 'foobar'}, {story: attributes})
 
-    #     it 'triggers a PUT request to /sets/123.json with the user set api_key' do
-    #       Supplejack::UserSet.should_receive(:put).with('/sets/123', {api_key: '123abc'}, {set: @attributes})
-    #       supplejack_set.save
-    #     end
-    #   end
-    # end
+          story.save
+        end
+      end
+    end
 
     # describe '#update_attributes' do
     #   it 'sets the attributes on the user_set' do
@@ -263,15 +270,6 @@ module Supplejack
     #   end
     # end
 
-    # describe '#new_record?' do
-    #   it 'returns true when the user_set doesn\'t have a id' do
-    #     Supplejack::UserSet.new.new_record?.should be_true
-    #   end
-
-    #   it 'returns false when the user_set has a id' do
-    #     Supplejack::UserSet.new(id: '1234abc').new_record?.should be_false
-    #   end
-    # end
 
     # describe '#destroy' do
     #   before :each do
