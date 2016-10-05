@@ -46,39 +46,33 @@ module Supplejack
       end
     end
 
-    # describe '#attributes' do
-    #   it 'returns a hash of the set attributes' do
-    #     set = Supplejack::UserSet.new
-    #     set.name = 'Dogs'
-    #     set.description = 'Hi'
-    #     set.attributes.should include(name: 'Dogs', description: 'Hi')
-    #   end
+    describe '#attributes' do
+      it 'returns a hash of the set attributes' do
+        story = Supplejack::Story.new
 
-    #   it 'includes an array of :records' do
-    #     set = Supplejack::UserSet.new
-    #     set.records = [{record_id: 1, position: 1}]
-    #     set.attributes[:records].should eq [{record_id: 1, position: 1}]
-    #   end
-    # end
+        story.name = 'Dogs'
+        story.description = 'Hi'
 
-    # describe '#api_attributes' do
-    #   it 'only returns the fields that can be stored' do
-    #     supplejack_set.attributes = {count: 1, url: 'Hi'}
-    #     supplejack_set.should_not_receive(:count)
-    #     supplejack_set.should_not_receive(:url)
-    #     supplejack_set.api_attributes
-    #   end
+        expect(story.attributes).to include(name: 'Dogs', description: 'Hi')
+      end
 
-    #   it 'should send the featured value' do
-    #     supplejack_set.featured = true
-    #     supplejack_set.api_attributes.should include(featured: true)
-    #   end
+      # it 'includes an array of :records' do
+      #   set = Supplejack::UserSet.new
+      #   set.records = [{record_id: 1, position: 1}]
+      #   set.attributes[:records].should eq [{record_id: 1, position: 1}]
+      # end
+    end
 
-    #   it 'returns a array of records with only id and position' do
-    #     supplejack_set.stub(:api_records) { [{record_id: 1, position: 1}] }
-    #     supplejack_set.api_attributes[:records].should eq [{record_id: 1, position: 1}]
-    #   end
-    # end
+    describe '#api_attributes' do
+      it 'only returns the fields that can be modified' do
+        story = Supplejack::Story.new(name: 'foo', id: 'bar')
+
+        attributes = story.api_attributes
+
+        expect(attributes).to include(:name)
+        expect(attributes).not_to include(:id)
+      end
+    end
 
     # describe '#items' do
     #   it "initializes a item_relation object" do

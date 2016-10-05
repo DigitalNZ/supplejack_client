@@ -14,8 +14,10 @@ module Supplejack
     extend ActiveModel::Naming
     include ActiveModel::Conversion
 
-    ATTRIBUTES = [:id, :name, :created_at, :updated_at, :privacy, :featured, :approved, :description,
-                  :tags, :number_of_items, :contents].freeze
+    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :featured, :approved, :tags].freeze
+    UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items].freeze
+    ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
+
     attr_accessor *ATTRIBUTES
     attr_accessor :user
 
@@ -35,12 +37,11 @@ module Supplejack
     end
 
     def attributes
-      attributes = {}
-      ATTRIBUTES.each do |attribute|
-        value = self.send(attribute)
-        attributes[attribute] = value if value.present?
-      end
-      attributes
+      retrieve_attributes(ATTRIBUTES)
+    end
+
+    def api_attributes
+      retrieve_attributes(MODIFIABLE_ATTRIBUTES)
     end
 
     # Assigns the provided attributes to the Story object
@@ -50,6 +51,18 @@ module Supplejack
       attributes.each do |attr, value|
         self.send("#{attr}=", value) if ATTRIBUTES.include?(attr)
       end
+    end
+
+
+    private
+
+    def retrieve_attributes(attributes_list)
+      attributes = {}
+      attributes_list.each do |attribute|
+        value = self.send(attribute)
+        attributes[attribute] = value if value.present?
+      end
+      attributes
     end
 
   end
