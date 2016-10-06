@@ -96,6 +96,18 @@ module Supplejack
       end
     end
 
+    # Fetches the Story information from the API again, in case it had changed.
+    # This can be useful if they items for a Story changed and you want the relation
+    # to have the most up to date items.
+    #
+    def reload
+      begin
+        self.attributes = self.class.get("/stories/#{self.id}")["story"]
+      rescue RestClient::ResourceNotFound
+        raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
+      end
+    end
+
     # Assigns the provided attributes to the Story object
     #
     def attributes=(attributes)

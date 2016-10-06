@@ -303,24 +303,29 @@ module Supplejack
       end
     end
 
-    # describe '#reload' do
-    #   let(:supplejack_set) { Supplejack::UserSet.new(id: '123456') }
+    describe '#reload' do
+      let(:story) { Supplejack::Story.new(id: '123456') }
 
-    #   before :each do
-    #     Supplejack::UserSet.should_receive(:get).with('/sets/123456') { {'set' => {'id' => 'abc'}} }
-    #   end
+      it 'fetches the set from the api and repopulates the set' do
+        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { {'story' => {'id' => 'abc'}} }
 
-    #   it 'fetches the set from the api and repopulates the set' do
-    #     supplejack_set.reload
-    #     supplejack_set.id.should eq 'abc'
-    #   end
+        story.reload
 
-    #   it 'removes the existing @items relation' do
-    #     supplejack_set.items
-    #     supplejack_set.reload
-    #     supplejack_set.instance_variable_get('@items').should be_nil
-    #   end
-    # end
+        expect(story.id).to eq('abc')
+      end
+
+      it 'raises Supplejack::StoryNotFound if the Story is not found' do
+        expect(Supplejack::Story).to receive(:get).and_raise(RestClient::ResourceNotFound.new)
+
+        expect{story.reload}.to raise_error(Supplejack::StoryNotFound)
+      end
+
+      # it 'removes the existing @items relation' do
+      #   supplejack_set.items
+      #   supplejack_set.reload
+      #   supplejack_set.instance_variable_get('@items').should be_nil
+      # end
+    end
 
     # describe '#viewable_by?' do
     #   it 'returns true when the user_set is public' do

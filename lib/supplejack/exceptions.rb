@@ -17,6 +17,9 @@ module Supplejack
   class SetNotFound < StandardError
   end
 
+  class StoryNotFound < StandardError
+  end
+
   class MalformedRequest < StandardError
   end
 end
