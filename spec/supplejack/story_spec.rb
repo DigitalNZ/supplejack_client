@@ -279,29 +279,29 @@ module Supplejack
     # end
 
 
-    # describe '#destroy' do
-    #   before :each do
-    #     supplejack_set.stub(:api_key) { '123abc' }
-    #     supplejack_set.stub(:id) { '999' }
-    #   end
+    describe '#destroy' do
+      let(:story) {Supplejack::Story.new(id: '999', user: {api_key: '123abc'})}
 
-    #   it 'executes a delete request to the API with the user set api_key' do
-    #     Supplejack::UserSet.should_receive(:delete).with('/sets/999', {api_key: '123abc'})
-    #     supplejack_set.destroy.should be_true
-    #   end
+      it 'executes a delete request to the API with the user set api_key' do
+        expect(Supplejack::Story).to receive(:delete).with('/stories/999', {api_key: '123abc'})
 
-    #   it 'returns false when the response is not a 200' do
-    #     Supplejack::UserSet.stub(:delete).and_raise(RestClient::Forbidden.new)
-    #     supplejack_set.destroy.should be_false
-    #     supplejack_set.errors.should eq 'Forbidden: '
-    #   end
+        expect(story.destroy).to eq(true)
+      end
 
-    #   it 'returns false when it is a new user set' do
-    #     supplejack_set.stub(:new_record?) { true }
-    #     Supplejack::UserSet.should_not_receive(:delete)
-    #     supplejack_set.destroy.should be_false
-    #   end
-    # end
+      it 'returns false when the response is not a 200' do
+        expect(Supplejack::Story).to receive(:delete).and_raise(RestClient::Forbidden.new)
+
+        expect(story.destroy).to eq(false)
+        expect(story.errors).to eq('Forbidden: ')
+      end
+
+      it 'returns false when it is a new user set' do
+        expect(story).to receive(:new_record?) { true }
+        expect(Supplejack::Story).not_to receive(:delete)
+
+        expect(story.destroy).to eq(false)
+      end
+    end
 
     # describe '#reload' do
     #   let(:supplejack_set) { Supplejack::UserSet.new(id: '123456') }

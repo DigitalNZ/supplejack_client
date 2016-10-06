@@ -76,6 +76,26 @@ module Supplejack
       end
     end
 
+    # Executes a DELETE request to the API with the Story ID and the user's api_key
+    #
+    # @return [ true, false ] True if the API response was successful, false if not.
+    #
+    def destroy
+      if self.new_record?
+        return false
+      else
+        begin
+          self.class.delete("/stories/#{self.id}", {api_key: self.api_key})
+          Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
+
+          return true
+        rescue StandardError => e
+          self.errors = e.inspect
+          return false
+        end
+      end
+    end
+
     # Assigns the provided attributes to the Story object
     #
     def attributes=(attributes)
