@@ -28,12 +28,6 @@ module Supplejack
         end
       end
 
-      [:updated_at, :created_at].each do |field|
-        it "converts the #{field} into a time object" do
-          story = Supplejack::Story.new(field => '2012-08-17T10:01:00+12:00')
-          expect(story.send(field)).to be_a Time
-        end
-      end
 
       it 'handles nil attributes' do
         expect{Supplejack::Story.new(nil).attributes}.not_to raise_error
@@ -43,6 +37,30 @@ module Supplejack
         story = Supplejack::Story.new({user: {name: 'Juanito'}})
         expect(story.user).to be_a Supplejack::User
         expect(story.user.name).to eq 'Juanito'
+      end
+    end
+
+    [:updated_at, :created_at].each do |field|
+      describe "##{field}" do
+        let(:story) {Supplejack::Story.new(field => '2012-08-17T10:01:00+12:00')}
+
+        it "converts it into a time object" do
+          expect(story.send(field)).to be_a Time
+        end
+
+        it 'sets it to nil when the time is incorrect' do
+          story.send("#{field}=", '838927587hdfhsjdf')
+
+          expect(story.send(field)).to be_nil
+        end
+
+        it 'accepts a Time object too' do
+          time = Time.now
+
+          story.send("#{field}=", time)
+
+          expect(story.send(field)).to eq time
+        end
       end
     end
 
@@ -220,43 +238,22 @@ module Supplejack
       end
     end
 
-    # describe '#attributes=' do
-    #   it 'updates the attributes on the user_set' do
-    #     supplejack_set.attributes = {name: 'Mac'}
-    #     supplejack_set.name.should eq 'Mac'
-    #   end
+    describe '#attributes=' do
+      let(:story) {Supplejack::Story.new(name: 'Foo')}
 
-    #   it 'should only update passed attributes' do
-    #     supplejack_set.id = '12345'
-    #     supplejack_set.attributes = {name: 'Mac'}
-    #     supplejack_set.id.should eq '12345'
-    #   end
+      it 'updates the attributes on the story' do
+        story.attributes = {name: 'Mac'}
 
-    #   it "replaces the records in the ordered form" do
-    #     supplejack_set.attributes = {ordered_records: [9,1,5]}
-    #     supplejack_set.records.should eq([{record_id: 9, position: 1}, {record_id: 1, position: 2}, {record_id: 5, position: 3}])
-    #   end
-    # end
+        expect(story.name).to eq 'Mac'
+      end
 
-    # describe '#updated_at= and created_at=' do
-    #   [:created_at, :updated_at].each do |attr|
-    #     it 'converts a string into a time object' do
-    #       supplejack_set.send("#{attr}=", '2012-08-17T10:01:00+12:00')
-    #       supplejack_set.send(attr).should be_a Time
-    #     end
+      it 'should only update passed attributes' do
+        story.id = '12345'
+        story.attributes = {name: 'Mac'}
 
-    #     it 'sets nil when the time is incorrect' do
-    #       supplejack_set.send("#{attr}=", '838927587hdfhsjdf')
-    #       supplejack_set.send(attr).should be_nil
-    #     end
-
-    #     it 'should accept a Time object too' do
-    #       @time = Time.now
-    #       supplejack_set.send("#{attr}=", @time)
-    #       supplejack_set.send(attr).should eq @time
-    #     end
-    #   end
-    # end
+        expect(story.id).to eq '12345'
+      end
+    end
 
     # describe '#api_records' do
     #   it 'generates a hash of records with position and record_id' do
