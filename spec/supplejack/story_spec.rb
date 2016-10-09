@@ -398,33 +398,44 @@ module Supplejack
     #   end
     # end
 
-    # describe '#find' do
-    #   before :each do
-    #     @set = supplejack_set
-    #     Supplejack::UserSet.stub(:new) { @set }
-    #   end
+    describe '#find' do
+      let(:attributes) do
+        {
+          "story" => {
+            "name" => "foo",
+            "description" => "desc"
+          }
+        }
+      end
 
-    #   it 'fetches the set from the api' do
-    #     Supplejack::UserSet.should_receive(:get).with('/sets/123abc', {})
-    #     Supplejack::UserSet.find('123abc')
-    #   end
+      it 'fetches the Story from the API' do
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
-    #   it 'initializes a UserSet object' do
-    #     Supplejack::UserSet.should_receive(:new).with({id: '123abc', name: 'Dogs', count: 0}).and_return(@set)
-    #     set = Supplejack::UserSet.find('123abc')
-    #     set.class.should eq Supplejack::UserSet
-    #   end
+        Supplejack::Story.find('123abc')
+      end
 
-    #   it 'initializes the UserSet and sets the user api_key' do
-    #     set = Supplejack::UserSet.find('123abc', '98765')
-    #     set.api_key.should eq '98765'
-    #   end
+      it 'initializes a Story object' do
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
-    #   it 'raises a Supplejack::SetNotFound' do
-    #     Supplejack::UserSet.stub(:get).and_raise(RestClient::ResourceNotFound)
-    #     expect { Supplejack::UserSet.find('123') }.to raise_error(Supplejack::SetNotFound)
-    #   end
-    # end
+        story = Supplejack::Story.find('123abc')
+
+        expect(story.attributes).to eq(attributes["story"].symbolize_keys)
+      end
+
+      it 'initializes the Story and sets the user api_key' do
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
+
+        story = Supplejack::Story.find('123abc', '98765')
+
+        expect(story.api_key).to eq('98765')
+      end
+
+      it 'raises a Supplejack::StoryNotFound' do
+        Supplejack::Story.stub(:get).and_raise(RestClient::ResourceNotFound)
+
+        expect { Supplejack::Story.find('123') }.to raise_error(Supplejack::StoryNotFound)
+      end
+    end
 
     # describe '#public_sets' do
     #   before :each do

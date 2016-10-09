@@ -19,7 +19,7 @@ module Supplejack
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor *ATTRIBUTES
-    attr_accessor :user, :errors
+    attr_accessor :user, :errors, :api_key
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
@@ -108,6 +108,25 @@ module Supplejack
       end
     end
 
+    # Executes a GET request with the provided Story ID and initializes
+    # a Story object with the response from the API.
+    #
+    # @return [ Story ] A Story object
+    #
+    def self.find(id, api_key = nil, params = {})
+      begin
+        response = get("/stories/#{id}", params)
+        attributes = response["story"] || {}
+
+        story = new(attributes)
+        story.api_key = api_key if api_key.present?
+
+        story
+      rescue RestClient::ResourceNotFound
+        raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
+      end
+    end
+
     # Assigns the provided attributes to the Story object
     #
     def attributes=(attributes)
@@ -127,10 +146,11 @@ module Supplejack
     end
 
     # Returns the ApiKey of the User this Story belongs to
+    # If the api_key is set on the Story directly it uses that one instead
     #
     # @return [String] User ApiKey
     def api_key
-      @user.api_key
+      @api_key || @user.api_key
     end
 
     # Returns a comma separated list of tags for this Story
