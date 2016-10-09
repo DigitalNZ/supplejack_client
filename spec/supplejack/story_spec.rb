@@ -327,59 +327,61 @@ module Supplejack
       # end
     end
 
-    # describe '#viewable_by?' do
-    #   it 'returns true when the user_set is public' do
-    #     supplejack_set.stub(:public?) { true }
-    #     supplejack_set.viewable_by?(nil).should be_true
-    #   end
+    describe '#viewable_by?' do
+      let(:api_key) { '123' }
+      let(:user) { { api_key: api_key } }
 
-    #   it 'returns true when the user_set is hidden' do
-    #     supplejack_set.stub(:hidden?) { true }
-    #     supplejack_set.viewable_by?(nil).should be_true
-    #   end
+      it 'returns true when the Story is public' do
+        story = Supplejack::Story.new(privacy: 'public')
 
-    #   context 'private set' do
-    #     before :each do
-    #       supplejack_set.stub(:public?) { false }
-    #     end
+        expect(story.viewable_by?(nil)).to eq(true)
+      end
 
-    #     it 'returns false when the user is not present' do
-    #       supplejack_set.viewable_by?(nil).should be_false
-    #     end
+      it 'returns true when the user_set is hidden' do
+        story = Supplejack::Story.new(privacy: 'hidden')
 
-    #     it 'returns true when the user has the same api_key as the user_set' do
-    #       user = double(:user, api_key: '12345')
-    #       supplejack_set.api_key = '12345'
-    #       supplejack_set.viewable_by?(user).should be_true
-    #     end
+        expect(story.viewable_by?(nil)).to eq(true)
+      end
 
-    #     it 'returns false if both the api_key in the user and the set are nil' do
-    #       user = double(:user, api_key: nil)
-    #       supplejack_set.api_key = nil
-    #       supplejack_set.viewable_by?(user).should be_false
-    #     end
-    #   end
-    # end
+      context 'private set' do
+        let(:story) { Supplejack::Story.new(privacy: 'private', user: user) }
 
-    # describe '#owned_by?' do
-    #   let(:user) { double(:user, api_key: '123456') }
+        it 'returns false when the user is not present' do
+          expect(story.viewable_by?(nil)).to eq(false)
+        end
 
-    #   it 'returns true when the users api_key is the same as the set\'s' do
-    #     supplejack_set.stub(:api_key) { "123456" }
-    #     supplejack_set.owned_by?(user).should be_true
-    #   end
+        it 'returns true when the user has the same api_key as the user_set' do
+          expect(story.viewable_by?(Supplejack::User.new(user))).to eq(true)
+        end
 
-    #   it 'returns false when the set and user have different api_keys' do
-    #     supplejack_set.stub(:api_key) { '666' }
-    #     supplejack_set.owned_by?(user).should be_false
-    #   end
+        it 'returns false if both the api_key in the user and the set are nil' do
+          user = { api_key: nil }
+          story = Supplejack::Story.new(privacy: 'private', user: user)
 
-    #   it 'returns false when both keys are nil' do
-    #     user.stub(:api_key) { nil }
-    #     supplejack_set.stub(:api_key) { nil }
-    #     supplejack_set.owned_by?(user).should be_false
-    #   end
-    # end
+          expect(story.viewable_by?(Supplejack::User.new(user))).to eq(false)
+        end
+      end
+    end
+
+    describe '#owned_by?' do
+      let(:api_key) { '123456' }
+      let(:user) { Supplejack::User.new(api_key: api_key) }
+      let(:users_story) { Supplejack::Story.new(user: { api_key: api_key }) }
+      let(:other_story) { Supplejack::Story.new(user: { api_key: '123' }) }
+      let(:nil_api_key_story) { Supplejack::Story.new(user: { api_key: nil }) }
+
+      it "returns true when the users api_key is the same as the set's" do
+        expect(users_story.owned_by? user).to eq(true)
+      end
+
+      it 'returns false when the set and user have different api_keys' do
+        expect(other_story.owned_by? user).to eq(false)
+      end
+
+      it 'returns false when both keys are nil' do
+        expect(nil_api_key_story.owned_by? user).to eq(false)
+      end
+    end
 
     # describe '#set_record_id?' do
     #   before(:each) do

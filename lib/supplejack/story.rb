@@ -151,6 +151,32 @@ module Supplejack
       self.privacy == "hidden"
     end
 
+    # A Story is viewable by anyone if it's public or hidden
+    # When the Story is private it's only viewable by the owner.
+    #
+    # @param [ Supplejack::User ] User to check if they can see it
+    #
+    # @return [ true, false ] True if the user can view the current Story, false if not.
+    #
+    def viewable_by?(user)
+      return true if self.public? || self.hidden?
+
+      self.owned_by?(user)
+    end
+
+    # Compares the api_key of the user and the api_key assigned to the Story
+    # to find out if the user passed is the owner of the story.
+    #
+    # @param [ Supplejack::User ] User to check if they own it
+    #
+    # @return [ true, false ] True if the user owns the current Story, false if not.
+    #
+    def owned_by?(user)
+      return false if user.try(:api_key).blank? || self.api_key.blank?
+
+      user.try(:api_key) == self.api_key
+    end
+
     private
 
     def retrieve_attributes(attributes_list)
