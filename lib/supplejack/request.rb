@@ -68,6 +68,18 @@ module Supplejack
       end
     end
 
+    def patch(path, params={}, payload={}, options={})
+      payload ||= {}
+      log_request(:patch, path, params, payload) do
+        response = RestClient::Request.execute(:url => full_url(path, nil, params),
+                                               :method => :patch,
+                                               :payload => payload.to_json,
+                                               :timeout => timeout(options),
+                                               :headers => {:content_type => :json, :accept => :json})
+        JSON.parse(response) rescue {}.to_json
+      end
+    end
+
     private
 
     def full_url(path, format=nil, params={})

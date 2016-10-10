@@ -52,10 +52,10 @@ module Supplejack
       retrieve_attributes(MODIFIABLE_ATTRIBUTES)
     end
 
-    # Executes a POST request when the UserSet hasn't been persisted to the API, otherwise it executes
-    # a PUT request.
+    # Executes a POST request when the Story hasn't been persisted to the API, otherwise it executes
+    # a PATCH request.
     #
-    # When the API returns a error response, the errors are available through the UserSet#errors
+    # When the API returns a error response, the errors are available through the Story#errors
     # virtual attribute.
     #
     # @return [ true, false ] True if the API response was successful, false if not.
@@ -63,46 +63,52 @@ module Supplejack
     def save
       begin
         if self.new_record?
-          response = self.class.post("/stories", {api_key: self.api_key}, {story: self.api_attributes})
-          self.attributes = response["story"]
+          self.attributes = self.class.post("/stories", {api_key: self.api_key}, {story: self.api_attributes})
         else
-          self.class.patch("/stories/#{self.id}", {api_key: self.api_key}, {story: self.api_attributes})
+          self.attributes = self.class.patch("/stories/#{self.id}", {api_key: self.api_key}, {story: self.api_attributes})
         end
+
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
-        return true
+
+        true
       rescue StandardError => e
         self.errors = e.inspect
-        return false
+
+        false
       end
     end
 
     # Executes a DELETE request to the API with the Story ID and the user's api_key
     #
+    # When the API returns a error response, the errors are available through the Story#errors
+    # virtual attribute.
+    #
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def destroy
-      if self.new_record?
-        return false
-      else
-        begin
-          self.class.delete("/stories/#{self.id}", {api_key: self.api_key})
-          Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
+      return false if self.new_record?
 
-          return true
-        rescue StandardError => e
-          self.errors = e.inspect
-          return false
-        end
+      begin
+        self.class.delete("/stories/#{self.id}", {api_key: self.api_key})
+
+        Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
+
+        true
+      rescue StandardError => e
+        self.errors = e.inspect
+
+        false
       end
     end
 
     # Fetches the Story information from the API again, in case it had changed.
+    #
     # This can be useful if they items for a Story changed and you want the relation
     # to have the most up to date items.
     #
     def reload
       begin
-        self.attributes = self.class.get("/stories/#{self.id}")["story"]
+        self.attributes = self.class.get("/stories/#{self.id}", {api_key: self.api_key})
       rescue RestClient::ResourceNotFound
         raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
       end
@@ -115,7 +121,7 @@ module Supplejack
     #
     def self.find(id, api_key = nil, params = {})
       begin
-        response = get("/stories/#{id}", params.merge(api_key: api_key))
+        response = get("/stories/#{id}", params.reverse_merge(api_key: api_key))
         attributes = response || {}
 
         story = new(attributes)

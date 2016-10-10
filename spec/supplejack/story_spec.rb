@@ -159,13 +159,11 @@ module Supplejack
         before do
           expect(Supplejack::Story).to receive(:post).with("/stories", {api_key: "foobar"}, {story: attributes}) do
             {
-              "story" => {
-                "id" => "new-id",
-                "name" => attributes[:name],
-                "description" => "",
-                "tags" => [],
-                "contents" => []
-              }
+              "id" => "new-id",
+              "name" => attributes[:name],
+              "description" => "",
+              "tags" => [],
+              "contents" => []
             }
           end
         end
@@ -202,13 +200,11 @@ module Supplejack
         before do
           expect(Supplejack::Story).to receive(:patch).with("/stories/123", {api_key: "foobar"}, {story: attributes}) do
             {
-              "story" => {
-                "id" => "new-id",
-                "name" => attributes[:name],
-                "description" => "desc",
-                "tags" => [],
-                "contents" => []
-              }
+              "id" => "new-id",
+              "name" => attributes[:name],
+              "description" => "desc",
+              "tags" => [],
+              "contents" => []
             }
           end
         end
@@ -304,10 +300,10 @@ module Supplejack
     end
 
     describe '#reload' do
-      let(:story) { Supplejack::Story.new(id: '123456') }
+      let(:story) { Supplejack::Story.new(id: '123456', user: { api_key: 'foobar' }) }
 
       it 'fetches the set from the api and repopulates the set' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { {'story' => {'id' => 'abc'}} }
+        expect(Supplejack::Story).to receive(:get).with('/stories/123456', {api_key: 'foobar'}) { {'id' => 'abc'} }
 
         story.reload
 
