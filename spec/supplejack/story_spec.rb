@@ -401,29 +401,27 @@ module Supplejack
     describe '#find' do
       let(:attributes) do
         {
-          "story" => {
-            "name" => "foo",
-            "description" => "desc"
-          }
+          "name" => "foo",
+          "description" => "desc"
         }
       end
 
       it 'fetches the Story from the API' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: nil}).and_return(attributes)
 
         Supplejack::Story.find('123abc')
       end
 
       it 'initializes a Story object' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: nil}).and_return(attributes)
 
         story = Supplejack::Story.find('123abc')
 
-        expect(story.attributes).to eq(attributes["story"].symbolize_keys)
+        expect(story.attributes).to eq(attributes.symbolize_keys)
       end
 
       it 'initializes the Story and sets the user api_key' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: '98765'}).and_return(attributes)
 
         story = Supplejack::Story.find('123abc', '98765')
 

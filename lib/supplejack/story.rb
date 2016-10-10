@@ -115,8 +115,8 @@ module Supplejack
     #
     def self.find(id, api_key = nil, params = {})
       begin
-        response = get("/stories/#{id}", params)
-        attributes = response["story"] || {}
+        response = get("/stories/#{id}", params.merge(api_key: api_key))
+        attributes = response || {}
 
         story = new(attributes)
         story.api_key = api_key if api_key.present?
