@@ -65,7 +65,7 @@ module Supplejack
         if self.new_record?
           self.attributes = self.class.post("/stories", {api_key: self.api_key}, {story: self.api_attributes})
         else
-          self.attributes = self.class.patch("/stories/#{self.id}", {api_key: self.api_key}, {story: self.api_attributes})
+          self.attributes = self.class.patch("/stories/#{self.id}", payload: {story: self.api_attributes})
         end
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
@@ -89,7 +89,7 @@ module Supplejack
       return false if self.new_record?
 
       begin
-        self.class.delete("/stories/#{self.id}", {api_key: self.api_key})
+        self.class.delete("/stories/#{self.id}")
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
 
@@ -108,7 +108,7 @@ module Supplejack
     #
     def reload
       begin
-        self.attributes = self.class.get("/stories/#{self.id}", {api_key: self.api_key})
+        self.attributes = self.class.get("/stories/#{self.id}")
       rescue RestClient::ResourceNotFound
         raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
       end
@@ -119,13 +119,12 @@ module Supplejack
     #
     # @return [ Story ] A Story object
     #
-    def self.find(id, api_key = nil, params = {})
+    def self.find(id, params: {})
       begin
-        response = get("/stories/#{id}", params.reverse_merge(api_key: api_key))
+        response = get("/stories/#{id}", params)
         attributes = response || {}
 
         story = new(attributes)
-        story.api_key = api_key if api_key.present?
 
         story
       rescue RestClient::ResourceNotFound
@@ -148,6 +147,7 @@ module Supplejack
     #
     def update_attributes(attributes={})
       self.attributes = attributes
+
       self.save
     end
 

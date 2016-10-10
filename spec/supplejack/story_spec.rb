@@ -198,7 +198,7 @@ module Supplejack
         let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
 
         before do
-          expect(Supplejack::Story).to receive(:patch).with("/stories/123", {api_key: "foobar"}, {story: attributes}) do
+          expect(Supplejack::Story).to receive(:patch).with("/stories/123", payload: {story: attributes}) do
             {
               "id" => "new-id",
               "name" => attributes[:name],
@@ -223,14 +223,17 @@ module Supplejack
 
     describe '#update_attributes' do
       let(:story) {Supplejack::Story.new(name: 'test', description: 'test')}
-      after { story.update_attributes(name: 'Mac') }
 
       it 'sets the attributes on the Story' do
-        expect(story).to receive('attributes=').with(name: 'Mac')
+        story.update_attributes(name: 'Mac')
+
+        expect(story.name).to eq('Mac')
       end
 
       it 'saves the user_set' do
         expect(story).to receive(:save)
+
+        story.update_attributes(name: 'Mac')
       end
     end
 
@@ -276,10 +279,10 @@ module Supplejack
 
 
     describe '#destroy' do
-      let(:story) {Supplejack::Story.new(id: '999', user: {api_key: '123abc'})}
+      let(:story) {Supplejack::Story.new(id: '999')}
 
       it 'executes a delete request to the API with the user set api_key' do
-        expect(Supplejack::Story).to receive(:delete).with('/stories/999', {api_key: '123abc'})
+        expect(Supplejack::Story).to receive(:delete).with('/stories/999')
 
         expect(story.destroy).to eq(true)
       end
@@ -300,10 +303,10 @@ module Supplejack
     end
 
     describe '#reload' do
-      let(:story) { Supplejack::Story.new(id: '123456', user: { api_key: 'foobar' }) }
+      let(:story) { Supplejack::Story.new(id: '123456') }
 
       it 'fetches the set from the api and repopulates the set' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123456', {api_key: 'foobar'}) { {'id' => 'abc'} }
+        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { {'id' => 'abc'} }
 
         story.reload
 
@@ -403,31 +406,33 @@ module Supplejack
       end
 
       it 'fetches the Story from the API' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: nil}).and_return(attributes)
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
         Supplejack::Story.find('123abc')
       end
 
       it 'initializes a Story object' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: nil}).and_return(attributes)
+        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
         story = Supplejack::Story.find('123abc')
 
         expect(story.attributes).to eq(attributes.symbolize_keys)
       end
 
-      it 'initializes the Story and sets the user api_key' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: '98765'}).and_return(attributes)
+      # I've removed this functionality because I don't understand the use case
+      # If we _do_ end up needing it in the future we can re add it
+      # it 'initializes the Story and sets the user api_key' do
+      #   Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: '98765'}).and_return(attributes)
 
-        story = Supplejack::Story.find('123abc', '98765')
+      #   story = Supplejack::Story.find(id: '123abc', api_key: '98765')
 
-        expect(story.api_key).to eq('98765')
-      end
+      #   expect(story.api_key).to eq('98765')
+      # end
 
       it 'raises a Supplejack::StoryNotFound' do
         Supplejack::Story.stub(:get).and_raise(RestClient::ResourceNotFound)
 
-        expect { Supplejack::Story.find('123') }.to raise_error(Supplejack::StoryNotFound)
+        expect { Supplejack::Story.find(id: '123') }.to raise_error(Supplejack::StoryNotFound)
       end
     end
 
