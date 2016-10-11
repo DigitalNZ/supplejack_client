@@ -16,6 +16,10 @@ module Supplejack
     def initialize(user)
       @user = user
       @stories = []
+      # This is used to determine if we have requested the Stories from the API
+      # Previously @stories defaulted to nil so the ||= operator was used to determine
+      # whether to fetch. This was changed to allow built/created stories to be
+      # automatically included in the relation
       @initial_fetch = false
     end
 
