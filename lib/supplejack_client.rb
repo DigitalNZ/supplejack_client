@@ -32,6 +32,7 @@ module Supplejack
   require 'supplejack/user_set'
   require 'supplejack/story'
   require 'supplejack/story_item'
+  require 'supplejack/story_item_relation'
   require 'supplejack/item_relation'
   require 'supplejack/item'
   require 'supplejack/user'
