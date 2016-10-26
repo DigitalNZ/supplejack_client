@@ -46,7 +46,7 @@ module Supplejack
       context 'existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
-          expect(item).to receive(:patch).with('/stories/1234/items/1', {api_key: 'abc'}, payload: {item: {type: 'embed', sub_type: 'dnz'}})
+          expect(item).to receive(:patch).with('/stories/1234/items/1', params: {api_key: 'abc'}, payload: {item: {type: 'embed', sub_type: 'dnz'}})
 
           expect(item.save).to eq(true)
         end
