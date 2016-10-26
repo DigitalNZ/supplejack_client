@@ -15,8 +15,6 @@ end
 
 module Supplejack
   describe Story do
-    let(:supplejack_set) { Supplejack::UserSet.new(records: [{record_id: 1, position: 2, title: 'Dogs'}]) }
-
     before do
       Supplejack.stub(:enable_caching) { false }
     end
@@ -73,12 +71,6 @@ module Supplejack
 
         expect(story.attributes).to include(name: 'Dogs', description: 'Hi')
       end
-
-      # it 'includes an array of :records' do
-      #   set = Supplejack::UserSet.new
-      #   set.records = [{record_id: 1, position: 1}]
-      #   set.attributes[:records].should eq [{record_id: 1, position: 1}]
-      # end
     end
 
     describe '#api_attributes' do
@@ -91,12 +83,6 @@ module Supplejack
         expect(attributes).not_to include(:id)
       end
     end
-
-    # describe '#items' do
-    #   it "initializes a item_relation object" do
-    #     supplejack_set.items.should be_a Supplejack::ItemRelation
-    #   end
-    # end
 
     describe '#tag_list' do
       it 'returns a comma sepparated list of tags' do
@@ -254,30 +240,6 @@ module Supplejack
       end
     end
 
-    # describe '#api_records' do
-    #   it 'generates a hash of records with position and record_id' do
-    #     supplejack_set.stub(:records) { [{title: 'Hi', record_id: 1, position: 1} ] }
-    #     supplejack_set.api_records.should eq [{record_id: 1, position: 1}]
-    #   end
-
-    #   it 'removes records without a record_id' do
-    #     supplejack_set.stub(:records) { [{title: 'Hi', record_id: 1, position: 1}, {position: 6} ] }
-    #     supplejack_set.api_records.should eq [{record_id: 1, position: 1}]
-    #   end
-
-    #   it 'handles nil records' do
-    #     supplejack_set.stub(:records) { nil }
-    #     supplejack_set.api_records.should eq []
-    #   end
-    # end
-
-    # describe '#ordered_records_from_array' do
-    #   it 'returns a hash with positons and record_ids' do
-    #     supplejack_set.ordered_records_from_array([9,1,5]).should eq([{record_id: 9, position: 1}, {record_id: 1, position: 2}, {record_id: 5, position: 3}])
-    #   end
-    # end
-
-
     describe '#destroy' do
       let(:story) {Supplejack::Story.new(id: '999')}
 
@@ -319,11 +281,14 @@ module Supplejack
         expect{story.reload}.to raise_error(Supplejack::StoryNotFound)
       end
 
-      # it 'removes the existing @items relation' do
-      #   supplejack_set.items
-      #   supplejack_set.reload
-      #   supplejack_set.instance_variable_get('@items').should be_nil
-      # end
+      it 'removes the existing @items relation' do
+        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { {'id' => 'abc'} }
+
+        story.items
+        story.reload
+
+        expect(story.instance_variable_get('@items')).to be_nil
+      end
     end
 
     describe '#viewable_by?' do
@@ -382,21 +347,6 @@ module Supplejack
       end
     end
 
-    # describe '#set_record_id?' do
-    #   before(:each) do
-    #     @set = supplejack_set
-    #   end
-
-    #   it 'should return the record_id' do
-    #     @set.stub(:record).and_return({'record_id' => 123})
-    #     @set.set_record_id.should eq 123
-    #   end
-
-    #   it 'should return nil if the set doesn\'t have a record' do
-    #     @set.set_record_id.should be_nil
-    #   end
-    # end
-
     describe '#find' do
       let(:attributes) do
         {
@@ -421,13 +371,13 @@ module Supplejack
 
       # I've removed this functionality because I don't understand the use case
       # If we _do_ end up needing it in the future we can re add it
-      # it 'initializes the Story and sets the user api_key' do
-      #   Supplejack::Story.should_receive(:get).with('/stories/123abc', {api_key: '98765'}).and_return(attributes)
+      it 'initializes the Story and sets the user api_key' do
+        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
-      #   story = Supplejack::Story.find(id: '123abc', api_key: '98765')
+        story = Supplejack::Story.find('123abc', api_key: '98765')
 
-      #   expect(story.api_key).to eq('98765')
-      # end
+        expect(story.api_key).to eq('98765')
+      end
 
       it 'raises a Supplejack::StoryNotFound' do
         Supplejack::Story.stub(:get).and_raise(RestClient::ResourceNotFound)
@@ -435,48 +385,5 @@ module Supplejack
         expect { Supplejack::Story.find(id: '123') }.to raise_error(Supplejack::StoryNotFound)
       end
     end
-
-    # describe '#public_sets' do
-    #   before :each do
-    #     Supplejack::UserSet.stub(:get) { {'sets' => [{'id' => '123', 'name' => 'Dog'}]} }
-    #   end
-
-    #   it 'fetches the public sets from the api' do
-    #     Supplejack::UserSet.should_receive(:get).with('/sets/public', {page: 1, per_page: 100})
-    #     Supplejack::UserSet.public_sets
-    #   end
-
-    #   it 'returns an array of user set objects' do
-    #     @set = supplejack_set
-    #     Supplejack::UserSet.should_receive(:new).once.with({'id' => '123', 'name' => 'Dog'}) { @set }
-    #     sets = Supplejack::UserSet.public_sets
-    #     sets.should be_a Array
-    #     sets.size.should eq 1
-    #   end
-
-    #   it 'sends pagination information' do
-    #     Supplejack::UserSet.should_receive(:get).with('/sets/public', {page: 2, per_page: 100})
-    #     Supplejack::UserSet.public_sets(page: 2)
-    #   end
-    # end
-
-    # describe '#featured_sets' do
-    #   before :each do
-    #     Supplejack::UserSet.stub(:get) { {'sets' => [{'id' => '123', 'name' => 'Dog'}]} }
-    #   end
-
-    #   it 'fetches the public sets from the api' do
-    #     Supplejack::UserSet.should_receive(:get).with('/sets/featured')
-    #     Supplejack::UserSet.featured_sets
-    #   end
-
-    #   it 'returns an array of user set objects' do
-    #     @set = supplejack_set
-    #     Supplejack::UserSet.should_receive(:new).once.with({'id' => '123', 'name' => 'Dog'}) { @set }
-    #     sets = Supplejack::UserSet.featured_sets
-    #     sets.should be_a Array
-    #     sets.size.should eq 1
-    #   end
-    # end
   end
 end

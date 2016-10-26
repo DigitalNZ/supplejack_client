@@ -113,6 +113,7 @@ module Supplejack
     def reload
       begin
         self.attributes = self.class.get("/stories/#{self.id}")
+        @items = nil
       rescue RestClient::ResourceNotFound
         raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
       end
@@ -123,12 +124,13 @@ module Supplejack
     #
     # @return [ Story ] A Story object
     #
-    def self.find(id, params: {})
+    def self.find(id, api_key: nil, params: {})
       begin
         response = get("/stories/#{id}", params)
         attributes = response || {}
 
         story = new(attributes)
+        story.api_key = api_key if api_key.present?
 
         story
       rescue RestClient::ResourceNotFound
