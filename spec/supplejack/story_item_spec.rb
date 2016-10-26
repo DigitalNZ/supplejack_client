@@ -94,5 +94,21 @@ module Supplejack
         end
       end
     end
+
+    describe '#update_attributes' do
+      let(:story_item) {Supplejack::StoryItem.new(type: 'foo', sub_type: 'bar')}
+
+      it 'sets the attributes on the StoryItem' do
+        story_item.update_attributes(type: 'Mac')
+
+        expect(story_item.type).to eq('Mac')
+      end
+
+      it 'saves the StoryItem' do
+        expect(story_item).to receive(:save)
+
+        story_item.update_attributes(type: 'Mac')
+      end
+    end
   end
 end

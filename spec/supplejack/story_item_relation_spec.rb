@@ -11,7 +11,17 @@ require 'spec_helper'
 
 module Supplejack
   describe ItemRelation do
-    let(:supplejack_story) { Supplejack::Story.new(id: '1234567890', user: {api_key: 'foobar'}, name: 'test', contents: [{id: 1, type: 'embed', sub_type: 'dnz'}]) }
+    let(:supplejack_story) do
+      Supplejack::Story.new(
+        id: '1234567890',
+        user: {api_key: 'foobar'},
+        name: 'test',
+        contents: [
+          {id: 1, type: 'embed', sub_type: 'dnz', position: 1},
+          {id: 2, type: 'embed', sub_type: 'dnz', position: 2}
+        ]
+      )
+    end
     let(:relation) { Supplejack::StoryItemRelation.new(supplejack_story) }
 
     describe '#initialize' do
@@ -97,6 +107,31 @@ module Supplejack
       end
     end
 
+    describe '#move_item' do
+      let(:item) { relation.all.first }
+
+      before do
+        expect(relation).to receive(:post).with(
+          "/stories/#{supplejack_story.id}/items/#{item.id}/moves",
+          {api_key: 'foobar'},
+          {position: 2}
+        ).and_return([
+          {id: 2, type: 'embed', sub_type: 'dnz', position: 1},
+          {id: 1, type: 'embed', sub_type: 'dnz', position: 2}
+        ])
+      end
+
+      it 'calls the api move item endpoint with the new position' do
+        relation.move_item(item.id, 2)
+      end
+
+      it 'updates the items with the response' do
+        relation.move_item(item.id, 2)
+
+        expect(relation.all.first.id).to eq(2)
+      end
+    end
+
     context 'items array behaviour' do
       it 'executes array methods on the @items array' do
         relation = Supplejack::StoryItemRelation.new(supplejack_story)
@@ -111,9 +146,8 @@ module Supplejack
           expect(item).to be_a Supplejack::StoryItem
         end
 
-        expect(relation.size).to eq(1)
+        expect(relation.size).to eq(2)
       end
     end
   end
 end
-

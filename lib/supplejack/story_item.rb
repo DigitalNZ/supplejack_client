@@ -32,7 +32,7 @@ module Supplejack
     attr_reader :api_key
 
     def initialize(attributes={})
-      @attributes = attributes.try(:symbolize_keys) || {}
+      @attributes = attributes.try(:deep_symbolize_keys) || {}
       @api_key = @attributes[:api_key]
 
       self.attributes = @attributes
@@ -41,7 +41,7 @@ module Supplejack
     # Assigns the provided attributes to the StoryItem object
     #
     def attributes=(attributes)
-      attributes = attributes.try(:symbolize_keys) || {}
+      attributes = attributes.try(:deep_symbolize_keys) || {}
 
       attributes.each do |attr, value|
         self.send("#{attr}=", value) if ATTRIBUTES.include?(attr)
@@ -79,7 +79,7 @@ module Supplejack
         else
           self.attributes = patch(
             "/stories/#{story_id}/items/#{id}",
-            {api_key: api_key},
+            params: {api_key: api_key},
             payload: {item: self.api_attributes}
           )
         end
@@ -117,6 +117,16 @@ module Supplejack
       end
     end
 
+    # Updates the StoryItems attributes and persists it to the API
+    #
+    # @return [ true, false ] True if the API response was successful, false if not.
+    #
+    def update_attributes(attributes={})
+      self.attributes = attributes
+
+      self.save
+    end
+
     private
 
     def retrieve_attributes(attributes_list)
@@ -125,7 +135,7 @@ module Supplejack
       attributes_list.each do |attribute|
         value = self.send(attribute)
 
-        attributes[attribute] = value if value.present?
+        attributes[attribute] = value unless value.nil?
       end
 
       attributes

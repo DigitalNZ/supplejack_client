@@ -9,14 +9,14 @@
 
 module Supplejack
   class StoryItemRelation
-    attr_reader :story
+    include Request
+
+    attr_reader :story, :errors
 
     def initialize(story)
       @story = story
-      items_array = story.attributes.try(:fetch, :contents, nil) || []
-      @items = items_array.map do |hash|
-        Supplejack::StoryItem.new(hash.merge(story_id: story.id, api_key: story.api_key))
-      end
+      items = story.attributes.try(:fetch, :contents, nil) || []
+      build_items(items)
     end
 
     def all
@@ -33,9 +33,22 @@ module Supplejack
 
     def create(attributes = {})
       story_item = build(attributes)
-      story_item.save
 
-      story_item
+      story_item.save
+    end
+
+    def move_item(item_id, position)
+      begin
+        response = post("/stories/#{story.id}/items/#{item_id}/moves", {api_key: story.api_key}, {position: position})
+
+        build_items(response)
+
+        true
+      rescue StandardError => e
+        @errors = e.inspect
+
+        false
+      end
     end
 
     def find(id)
@@ -51,6 +64,14 @@ module Supplejack
     #
     def method_missing(method, *args, &block)
       all.send(method, *args, &block)
+    end
+
+    private
+
+    def build_items(items)
+      @items = items.map do |hash|
+        Supplejack::StoryItem.new(hash.merge(story_id: story.id, api_key: story.api_key))
+      end.sort_by(&:position)
     end
   end
 end

@@ -26,7 +26,7 @@ module Supplejack
     # Returns an array of Story objects and memoizes the array
     #
     def fetch(force: false)
-      fetch_stories = -> { fetch_api_stories.map{|s| Supplejack::Story.new(s.merge(user: user))} }
+      fetch_stories = -> { fetch_api_stories.map{|s| Supplejack::Story.new(s.merge(user: user.attributes))} }
 
       @stories = if force
                    fetch_stories.call

@@ -192,7 +192,7 @@ module Supplejack
         end
       end
 
-      context 'user_set is not new' do
+      context 'story is not new' do
         let(:attributes) {{name: 'Story Name', description: 'desc'}}
         let(:user) {{api_key: 'foobar'}}
         let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
@@ -230,7 +230,7 @@ module Supplejack
         expect(story.name).to eq('Mac')
       end
 
-      it 'saves the user_set' do
+      it 'saves the Story' do
         expect(story).to receive(:save)
 
         story.update_attributes(name: 'Mac')
