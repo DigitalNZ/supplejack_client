@@ -29,7 +29,7 @@ module Supplejack
         raise e
       ensure
         duration = (Time.now - started)*1000 # Convert to miliseconds
-        solr_request_params = result["search"]['solr_request_params'] if result && result['search']
+        solr_request_params = result["search"]['solr_request_params'] if result && result.is_a?(Hash) && result['search']
         @subscriber = Supplejack::LogSubscriber.new
         @subscriber.log_request(duration, payload, solr_request_params)
       end
@@ -61,6 +61,18 @@ module Supplejack
       log_request(:put, path, params, payload) do
         response = RestClient::Request.execute(:url => full_url(path, nil, params),
                                                :method => :put,
+                                               :payload => payload.to_json,
+                                               :timeout => timeout(options),
+                                               :headers => {:content_type => :json, :accept => :json})
+        JSON.parse(response) rescue {}.to_json
+      end
+    end
+
+    def patch(path, params: {}, payload: {}, options: {})
+      payload ||= {}
+      log_request(:patch, path, params, payload) do
+        response = RestClient::Request.execute(:url => full_url(path, nil, params),
+                                               :method => :patch,
                                                :payload => payload.to_json,
                                                :timeout => timeout(options),
                                                :headers => {:content_type => :json, :accept => :json})

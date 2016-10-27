@@ -7,6 +7,11 @@
 # National Library of NZ and the Department of Internal Affairs.
 # http://digitalnz.org/supplejack
 
+begin
+  require 'pry'
+rescue LoadError
+end
+
 require 'supplejack/config'
 require 'supplejack/version'
 
@@ -25,8 +30,12 @@ module Supplejack
   require 'supplejack/util'
   require 'supplejack/facet'
   require 'supplejack/user_set'
+  require 'supplejack/story'
+  require 'supplejack/story_item'
+  require 'supplejack/story_item_relation'
   require 'supplejack/item_relation'
   require 'supplejack/item'
   require 'supplejack/user'
   require 'supplejack/user_set_relation'
+  require 'supplejack/user_story_relation'
 end

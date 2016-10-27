@@ -33,4 +33,5 @@ Gem::Specification.new do |gem|
   
   gem.add_development_dependency 'rspec', '~> 2.8'
   gem.add_development_dependency 'codeclimate-test-reporter'
+  gem.add_development_dependency 'pry'
 end

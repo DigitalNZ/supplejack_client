@@ -60,6 +60,7 @@ module Supplejack
     #
     def create(attributes={})
       item = self.build(attributes)
+
       item.save
     end
 
@@ -69,7 +70,7 @@ module Supplejack
     # @example
     #   user_set.items.each ....     => Iterate through the Item objects array
     #   user_set.items.size          => Get the size of the Item objects array
-    # 
+    #
     def method_missing(method, *args, &block)
       @items.send(method, *args, &block)
     end
