@@ -26,25 +26,25 @@ module Supplejack
 
     describe '#initialize' do
       it 'assigns the story object as @story' do
-        expect(Supplejack::StoryItemRelation.new(supplejack_story).story).to eq(supplejack_story)
+        expect(relation.story).to eq(supplejack_story)
       end
 
       it 'initializes an array of Supplejack::Items' do
-        expect(Supplejack::StoryItemRelation.new(supplejack_story).all).to be_an Array
+        expect(relation.all).to be_an Array
       end
 
       it 'returns an empty array of items when the user_set attributes records are nil' do
         expect(supplejack_story).to receive(:attributes).and_return(nil)
 
-        expect(Supplejack::StoryItemRelation.new(supplejack_story).all).to be_empty
+        expect(relation.all).to be_empty
       end
 
       it 'adds the story_id to the Supplejack::StoryItem object' do
-        expect(Supplejack::StoryItemRelation.new(supplejack_story).all.first.story_id).to eq('1234567890')
+        expect(relation.all.first.story_id).to eq('1234567890')
       end
 
       it 'adds the api_key in the Story to the Supplejack::StoryItem' do
-        expect(Supplejack::StoryItemRelation.new(supplejack_story).all.first.api_key).to eq('foobar')
+        expect(relation.all.first.api_key).to eq('foobar')
       end
     end
 
@@ -134,14 +134,10 @@ module Supplejack
 
     context 'items array behaviour' do
       it 'executes array methods on the @items array' do
-        relation = Supplejack::StoryItemRelation.new(supplejack_story)
-
         expect(relation.any?{|x| x.id == 1}).to eq(true)
       end
 
       it 'should be able to iterate through the items relation' do
-        relation = Supplejack::StoryItemRelation.new(supplejack_story)
-
         relation.each do |item|
           expect(item).to be_a Supplejack::StoryItem
         end
