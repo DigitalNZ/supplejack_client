@@ -127,6 +127,10 @@ module Supplejack
       self.save
     end
 
+    def to_json
+      attributes.to_json
+    end
+
     private
 
     def retrieve_attributes(attributes_list)

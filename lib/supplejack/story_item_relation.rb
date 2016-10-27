@@ -55,6 +55,10 @@ module Supplejack
       @items.detect{|i| i.id.to_i == id.to_i}
     end
 
+    def to_json
+      all.to_json
+    end
+
     # Any method missing on this class is delegated to the StoryItems objects array
     # so that the developer can easily execute any Array method on the StoryItemRelation
     #

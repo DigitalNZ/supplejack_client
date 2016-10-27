@@ -209,6 +209,10 @@ module Supplejack
       user.try(:api_key) == self.api_key
     end
 
+    def to_json
+      attributes.to_json
+    end
+
     private
 
     def retrieve_attributes(attributes_list)

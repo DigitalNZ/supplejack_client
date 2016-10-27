@@ -104,6 +104,10 @@ module Supplejack
       end
     end
 
+    def to_json
+      all.to_json
+    end
+
     # Any method missing on this class is delegated to the Stories objects array
     # so that the developer can easily execute any Array method on the UserSttoryRelation
     #
