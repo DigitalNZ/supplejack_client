@@ -49,10 +49,7 @@ module Supplejack
     # @return [ Supplejack::Story ] A Story object
     #
     def find(story_id)
-      story = Supplejack::Story.find(story_id)
-      story.api_key = user.api_key
-
-      story
+      all.detect{|i| i.id.to_s == story_id.to_s}
     end
 
     # Initializes a new Story object and links it to the current User
