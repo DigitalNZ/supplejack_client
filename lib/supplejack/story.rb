@@ -217,10 +217,13 @@ module Supplejack
 
     def retrieve_attributes(attributes_list)
       attributes = {}
+
       attributes_list.each do |attribute|
         value = self.send(attribute)
-        attributes[attribute] = value if value.present?
+
+        attributes[attribute] = value
       end
+
       attributes
     end
 
