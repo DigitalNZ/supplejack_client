@@ -9,7 +9,7 @@ For more information on how to configure and use this application refer to the [
 Add it to your Gemfile:
 
 ```ruby
-gem 'supplejack_client', github: 'git@github.com:DigitalNZ/supplejack_client.git'
+gem 'supplejack_client', git: 'git@github.com:DigitalNZ/supplejack_client.git'
 ```
 
 Run bundle install:
