@@ -102,7 +102,7 @@ module Supplejack
     end
 
     def to_json
-      all.to_json
+      all.map(&:as_json).to_json
     end
 
     # Any method missing on this class is delegated to the Stories objects array
