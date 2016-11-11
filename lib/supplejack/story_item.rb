@@ -35,6 +35,7 @@ module Supplejack
       @attributes = attributes.try(:deep_symbolize_keys) || {}
       @api_key = @attributes[:api_key]
 
+      self.meta ||= {}
       self.attributes = @attributes
     end
 
