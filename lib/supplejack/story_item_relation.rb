@@ -37,9 +37,9 @@ module Supplejack
       story_item.save
     end
 
-    def move_item(item_id, item_to_move_to_id, head = false)
+    def move_item(item_id, position)
       begin
-        response = post("/stories/#{story.id}/items/#{item_id}/moves", {api_key: story.api_key}, {item_to_move_to_id: item_to_move_to_id, head: head})
+        response = post("/stories/#{story.id}/items/#{item_id}/moves", {api_key: story.api_key}, {item_id: item_id, position: position})
 
         build_items(response)
 
