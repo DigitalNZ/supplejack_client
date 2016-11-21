@@ -209,12 +209,18 @@ module Supplejack
       user.try(:api_key) == self.api_key
     end
 
-    def as_json
-      attributes
+    def as_json(include_contents: true)
+      json = attributes
+
+      if include_contents
+        json
+      else
+        json.except(:contents)
+      end
     end
 
-    def to_json
-      as_json.to_json
+    def to_json(include_contents: true)
+      as_json(include_contents: include_contents).to_json
     end
 
     private
