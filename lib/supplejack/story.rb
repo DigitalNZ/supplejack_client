@@ -15,7 +15,7 @@ module Supplejack
     include ActiveModel::Conversion
 
     MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags].freeze
-    UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents].freeze
+    UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents, :headline_thumbnails].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor *ATTRIBUTES
