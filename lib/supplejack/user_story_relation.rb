@@ -49,7 +49,8 @@ module Supplejack
     # @return [ Supplejack::Story ] A Story object
     #
     def find(story_id)
-      all.detect{|i| i.id.to_s == story_id.to_s}
+      path = "/stories/#{story_id}"
+      build get(path, api_key: API_KEY)
     end
 
     # Initializes a new Story object and links it to the current User
