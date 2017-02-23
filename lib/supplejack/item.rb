@@ -64,7 +64,7 @@ module Supplejack
         Rails.cache.delete("/users/#{self.api_key}/sets") if Supplejack.enable_caching
         return true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
         return false
       end
     end
@@ -79,7 +79,7 @@ module Supplejack
         Rails.cache.delete("/users/#{self.api_key}/sets") if Supplejack.enable_caching
         return true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
         return false
       end
     end

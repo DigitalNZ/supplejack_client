@@ -76,7 +76,7 @@ module Supplejack
 
         true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
 
         false
       end
@@ -99,7 +99,7 @@ module Supplejack
 
         true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
 
         false
       end

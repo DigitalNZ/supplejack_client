@@ -67,7 +67,7 @@ module Supplejack
 
         it 'stores the error when a error is raised' do
           item.save
-          item.errors.should eq 'Forbidden: '
+          item.errors.should eq 'Forbidden'
         end
       end
     end
@@ -91,7 +91,7 @@ module Supplejack
 
         it 'stores the error when a error is raised' do
           item.destroy
-          item.errors.should eq 'Forbidden: '
+          item.errors.should eq 'Forbidden'
         end
       end
     end

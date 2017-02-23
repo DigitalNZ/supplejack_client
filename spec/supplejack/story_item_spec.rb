@@ -37,7 +37,7 @@ module Supplejack
 
       context 'new item' do
         it 'triggers a POST request to create a story_item with the story api_key' do
-          expect(item).to receive(:post).with('/stories/1234/items', {api_key: 'abc'}, {item: {type: 'embed', sub_type: 'dnz'}})
+          expect(item).to receive(:post).with('/stories/1234/items', {api_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'dnz'}})
 
           expect(item.save).to eq(true)
         end
@@ -46,7 +46,7 @@ module Supplejack
       context 'existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
-          expect(item).to receive(:patch).with('/stories/1234/items/1', params: {api_key: 'abc'}, payload: {item: {type: 'embed', sub_type: 'dnz'}})
+          expect(item).to receive(:patch).with('/stories/1234/items/1', params: {api_key: 'abc'}, payload: {item: {meta: {}, type: 'embed', sub_type: 'dnz'}})
 
           expect(item.save).to eq(true)
         end
@@ -64,7 +64,7 @@ module Supplejack
         it 'stores the error when a error is raised' do
           item.save
 
-          expect(item.errors).to eq('Forbidden: ')
+          expect(item.errors).to eq 'Forbidden'
         end
       end
     end
@@ -90,7 +90,7 @@ module Supplejack
         it 'stores the error when a error is raised' do
           item.destroy
 
-          expect(item.errors).to eq('Forbidden: ')
+          expect(item.errors).to eq 'Forbidden'
         end
       end
     end

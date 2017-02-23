@@ -138,7 +138,7 @@ module Supplejack
 
     describe '#save' do
       context 'Story is a new_record' do
-        let(:attributes) {{name: 'Story Name'}}
+        let(:attributes) {{name: 'Story Name', description: nil, privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil}}
         let(:user) {{api_key: 'foobar'}}
         let(:story) {Supplejack::Story.new(attributes.merge(user: user))}
 
@@ -179,7 +179,7 @@ module Supplejack
       end
 
       context 'story is not new' do
-        let(:attributes) {{name: 'Story Name', description: 'desc'}}
+        let(:attributes) {{name: 'Story Name', description: 'desc', privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil}}
         let(:user) {{api_key: 'foobar'}}
         let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
 
@@ -253,7 +253,7 @@ module Supplejack
         expect(Supplejack::Story).to receive(:delete).and_raise(RestClient::Forbidden.new)
 
         expect(story.destroy).to eq(false)
-        expect(story.errors).to eq('Forbidden: ')
+        expect(story.errors).to eq 'Forbidden'
       end
 
       it 'returns false when it is a new user set' do
@@ -350,9 +350,19 @@ module Supplejack
     describe '#find' do
       let(:attributes) do
         {
-          "name" => "foo",
-          "description" => "desc"
-        }
+          name: 'foo',
+          description: 'desc',
+          privacy:  nil, 
+          copyright: nil, 
+          featured: nil, 
+          approved: nil, 
+          tags: nil,
+          contents:  nil,
+          created_at: nil,
+          updated_at: nil, 
+          number_of_items: nil,
+          id: nil
+       }
       end
 
       it 'fetches the Story from the API' do
