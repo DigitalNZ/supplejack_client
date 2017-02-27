@@ -16,8 +16,8 @@ Bundler.require(:default)
 require 'supplejack_client'
 require 'active_support/all'
 
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
+require 'simplecov'
+SimpleCov.start
 
 #SimpleCov.start
 
