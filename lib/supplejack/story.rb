@@ -210,13 +210,7 @@ module Supplejack
     end
 
     def as_json(include_contents: true)
-      json = attributes
-
-      if include_contents
-        json
-      else
-        json.except(:contents)
-      end
+      include_contents ? attributes: attributes.except(:contents)
     end
 
     def to_json(include_contents: true)
