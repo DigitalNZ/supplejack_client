@@ -22,6 +22,6 @@ tmp
 .rvmrc
 
 #RBENV CONFIG
-.rbenv-version
+# .rbenv-version
 supplejack_client.sublime-project
 supplejack_client.sublime-workspace

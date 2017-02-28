@@ -295,7 +295,7 @@ module Supplejack
       it 'returns false when the response is not a 200' do
         Supplejack::UserSet.stub(:delete).and_raise(RestClient::Forbidden.new)
         supplejack_set.destroy.should be_false
-        supplejack_set.errors.should eq 'Forbidden: '
+        supplejack_set.errors.should eq 'Forbidden'
       end
 
       it 'returns false when it is a new user set' do

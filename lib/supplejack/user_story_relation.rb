@@ -49,10 +49,8 @@ module Supplejack
     # @return [ Supplejack::Story ] A Story object
     #
     def find(story_id)
-      story = Supplejack::Story.find(story_id)
-      story.api_key = user.api_key
-
-      story
+      path = "/stories/#{story_id}"
+      build get(path, api_key: API_KEY)
     end
 
     # Initializes a new Story object and links it to the current User
@@ -104,8 +102,8 @@ module Supplejack
       end
     end
 
-    def to_json
-      all.to_json
+    def to_json(include_contents: true)
+      all.map{|story| story.as_json(include_contents: include_contents)}.to_json
     end
 
     # Any method missing on this class is delegated to the Stories objects array

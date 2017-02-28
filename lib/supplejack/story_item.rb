@@ -35,6 +35,7 @@ module Supplejack
       @attributes = attributes.try(:deep_symbolize_keys) || {}
       @api_key = @attributes[:api_key]
 
+      self.meta ||= {}
       self.attributes = @attributes
     end
 
@@ -88,7 +89,7 @@ module Supplejack
 
         true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
 
         false
       end
@@ -111,7 +112,7 @@ module Supplejack
 
         true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
 
         false
       end

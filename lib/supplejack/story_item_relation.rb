@@ -39,7 +39,7 @@ module Supplejack
 
     def move_item(item_id, position)
       begin
-        response = post("/stories/#{story.id}/items/#{item_id}/moves", {api_key: story.api_key}, {position: position})
+        response = post("/stories/#{story.id}/items/#{item_id}/moves", {api_key: story.api_key}, {item_id: item_id, position: position})
 
         build_items(response)
 
@@ -52,7 +52,7 @@ module Supplejack
     end
 
     def find(id)
-      @items.detect{|i| i.id.to_i == id.to_i}
+      @items.detect{|i| i.id == id.to_i}
     end
 
     def to_json

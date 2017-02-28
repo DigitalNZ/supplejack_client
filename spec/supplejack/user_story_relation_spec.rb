@@ -87,24 +87,6 @@ module Supplejack
       end
     end
 
-    describe '#find' do
-      let(:story) { relation.find('555') }
-
-      before do
-        expect(Supplejack::Story).to receive(:find).with('555').and_return(
-          Supplejack::Story.new()
-        )
-      end
-
-      it 'finds the Story' do
-        expect(story).to be_a Supplejack::Story
-      end
-
-      it 'sets the users api key on the Story' do
-        expect(story.api_key).to eq(user.api_key)
-      end
-    end
-
     describe '#build' do
       it "initializes a new Story with the user's api_key" do
         story = relation.build

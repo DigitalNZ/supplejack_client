@@ -14,8 +14,8 @@ module Supplejack
     extend ActiveModel::Naming
     include ActiveModel::Conversion
 
-    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :featured, :approved, :tags].freeze
-    UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents].freeze
+    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags, :record_ids].freeze
+    UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents, :cover_thumbnail].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor *ATTRIBUTES
@@ -76,7 +76,7 @@ module Supplejack
 
         true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
 
         false
       end
@@ -99,7 +99,7 @@ module Supplejack
 
         true
       rescue StandardError => e
-        self.errors = e.inspect
+        self.errors = e.message
 
         false
       end
@@ -209,19 +209,23 @@ module Supplejack
       user.try(:api_key) == self.api_key
     end
 
-    def to_json
-      attributes.to_json
+    def as_json(include_contents: true)
+      include_contents ? attributes : attributes.except(:contents)
+    end
+
+    def to_json(include_contents: true)
+      as_json(include_contents: include_contents).to_json
     end
 
     private
 
     def retrieve_attributes(attributes_list)
-      attributes = {}
-      attributes_list.each do |attribute|
-        value = self.send(attribute)
-        attributes[attribute] = value if value.present?
+      {}.tap do |attributes|
+        attributes_list.each do |attribute|
+          value = self.send(attribute)
+          attributes[attribute] = value
+        end
       end
-      attributes
     end
 
   end
