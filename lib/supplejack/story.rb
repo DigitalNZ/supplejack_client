@@ -210,7 +210,7 @@ module Supplejack
     end
 
     def as_json(include_contents: true)
-      include_contents ? attributes: attributes.except(:contents)
+      include_contents ? attributes : attributes.except(:contents)
     end
 
     def to_json(include_contents: true)
@@ -220,15 +220,12 @@ module Supplejack
     private
 
     def retrieve_attributes(attributes_list)
-      attributes = {}
-
-      attributes_list.each do |attribute|
-        value = self.send(attribute)
-
-        attributes[attribute] = value
+      {}.tap do |attributes|
+        attributes_list.each do |attribute|
+          value = self.send(attribute)
+          attributes[attribute] = value
+        end
       end
-
-      attributes
     end
 
   end
