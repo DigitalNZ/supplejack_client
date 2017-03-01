@@ -52,7 +52,7 @@ module Supplejack
     end
 
     def find(id)
-      @items.detect{|i| i.id == id.to_i}
+      @items.detect{ |i| i.id.to_s == id.to_s }
     end
 
     def to_json
