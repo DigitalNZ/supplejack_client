@@ -121,10 +121,12 @@ module Supplejack
 
     # Executes a GET request with the provided Story ID and initializes
     # a Story object with the response from the API.
+    # If api_key provided, it will be used as the api_key in the request.
     #
     # @return [ Story ] A Story object
     #
     def self.find(id, api_key: nil, params: {})
+      params[:api_key] = api_key if api_key
       begin
         response = get("/stories/#{id}", params)
         attributes = response || {}
@@ -135,6 +137,8 @@ module Supplejack
         story
       rescue RestClient::ResourceNotFound
         raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
+      rescue RestClient::Unauthorized
+        raise Supplejack::StoryUnauthorised, "Story with ID #{id} is private and requires creators api_key"
       end
     end
 

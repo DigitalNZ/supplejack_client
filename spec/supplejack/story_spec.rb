@@ -384,7 +384,7 @@ module Supplejack
       # I've removed this functionality because I don't understand the use case
       # If we _do_ end up needing it in the future we can re add it
       it 'initializes the Story and sets the user api_key' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', {}).and_return(attributes)
+        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', { api_key: '98765' }).and_return(attributes)
 
         story = Supplejack::Story.find('123abc', api_key: '98765')
 

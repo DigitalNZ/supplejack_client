@@ -20,6 +20,9 @@ module Supplejack
   class StoryNotFound < StandardError
   end
 
+  class StoryUnauthorised < StandardError
+  end
+
   class MalformedRequest < StandardError
   end
 end
