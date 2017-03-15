@@ -67,9 +67,9 @@ module Supplejack
     def save
       begin
         if self.new_record?
-          self.attributes = self.class.post("/stories", {api_key: self.api_key}, {story: self.api_attributes})
+          self.attributes = self.class.post("/stories", { api_key: self.api_key }, { story: self.api_attributes })
         else
-          self.attributes = self.class.patch("/stories/#{self.id}", payload: {story: self.api_attributes})
+          self.attributes = self.class.patch("/stories/#{self.id}", params: { api_key: self.api_key }, payload: {story: self.api_attributes})
         end
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
@@ -93,7 +93,7 @@ module Supplejack
       return false if self.new_record?
 
       begin
-        self.class.delete("/stories/#{self.id}")
+        self.class.delete("/stories/#{self.id}", { api_key: self.api_key })
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
 
