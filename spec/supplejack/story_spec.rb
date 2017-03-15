@@ -184,7 +184,7 @@ module Supplejack
         let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
 
         before do
-          expect(Supplejack::Story).to receive(:patch).with("/stories/123", payload: {story: attributes}) do
+          expect(Supplejack::Story).to receive(:patch).with("/stories/123", params: user, payload: {story: attributes}) do
             {
               "id" => "new-id",
               "name" => attributes[:name],
@@ -241,10 +241,10 @@ module Supplejack
     end
 
     describe '#destroy' do
-      let(:story) {Supplejack::Story.new(id: '999')}
+      let(:story) { Supplejack::Story.new(id: '999', user: { api_key: 'keysome' }) }
 
       it 'executes a delete request to the API with the user set api_key' do
-        expect(Supplejack::Story).to receive(:delete).with('/stories/999')
+        expect(Supplejack::Story).to receive(:delete).with('/stories/999', { api_key: 'keysome' })
 
         expect(story.destroy).to eq(true)
       end

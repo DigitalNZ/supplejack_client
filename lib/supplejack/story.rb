@@ -91,7 +91,7 @@ module Supplejack
     #
     def destroy
       return false if self.new_record?
-
+      
       begin
         self.class.delete("/stories/#{self.id}", { api_key: self.api_key })
 
