@@ -139,11 +139,11 @@ module Supplejack
     describe '#save' do
       context 'Story is a new_record' do
         let(:attributes) {{name: 'Story Name', description: nil, privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil, record_ids: nil}}
-        let(:user) {{api_key: 'foobar'}}
-        let(:story) {Supplejack::Story.new(attributes.merge(user: user))}
+        let(:user) {{ api_key: 'foobar' }}
+        let(:story) { Supplejack::Story.new(attributes.merge(user: user)) }
 
         before do
-          expect(Supplejack::Story).to receive(:post).with("/stories", {api_key: "foobar"}, {story: attributes}) do
+          expect(Supplejack::Story).to receive(:post).with("/stories", params: { user_key: "foobar" }, payload: { story: attributes }) do
             {
               "id" => "new-id",
               "name" => attributes[:name],
@@ -180,11 +180,11 @@ module Supplejack
 
       context 'story is not new' do
         let(:attributes) {{name: 'Story Name', description: 'desc', privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil, record_ids:nil}}
-        let(:user) {{api_key: 'foobar'}}
-        let(:story) {Supplejack::Story.new(attributes.merge(user: user, id: '123'))}
+        let(:user) { { api_key: 'foobar' } }
+        let(:story) { Supplejack::Story.new(attributes.merge(user: user, id: '123')) }
 
         before do
-          expect(Supplejack::Story).to receive(:patch).with("/stories/123", params: user, payload: {story: attributes}) do
+          expect(Supplejack::Story).to receive(:patch).with("/stories/123", params: { user_key: user[:api_key] }, payload: {story: attributes}) do
             {
               "id" => "new-id",
               "name" => attributes[:name],
@@ -195,7 +195,7 @@ module Supplejack
           end
         end
 
-        it 'triggers a PATCH request to /stories/123.json with the user set api_key' do
+        it 'triggers a PATCH request to /stories/123.json with the user set user_key' do
           story.save
         end
 
@@ -244,7 +244,7 @@ module Supplejack
       let(:story) { Supplejack::Story.new(id: '999', user: { api_key: 'keysome' }) }
 
       it 'executes a delete request to the API with the user set api_key' do
-        expect(Supplejack::Story).to receive(:delete).with('/stories/999', { api_key: 'keysome' })
+        expect(Supplejack::Story).to receive(:delete).with('/stories/999', { user_key: 'keysome' })
 
         expect(story.destroy).to eq(true)
       end
@@ -384,9 +384,9 @@ module Supplejack
       # I've removed this functionality because I don't understand the use case
       # If we _do_ end up needing it in the future we can re add it
       it 'initializes the Story and sets the user api_key' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', { api_key: '98765' }).and_return(attributes)
+        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', { user_key: '98765' }).and_return(attributes)
 
-        story = Supplejack::Story.find('123abc', api_key: '98765')
+        story = Supplejack::Story.find('123abc', user_key: '98765')
 
         expect(story.api_key).to eq('98765')
       end
