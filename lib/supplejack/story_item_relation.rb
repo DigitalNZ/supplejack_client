@@ -39,7 +39,7 @@ module Supplejack
 
     def move_item(item_id, position)
       begin
-        response = post("/stories/#{story.id}/items/#{item_id}/moves", {api_key: story.api_key}, {item_id: item_id, position: position})
+        response = post("/stories/#{story.id}/items/#{item_id}/moves", { api_key: story.api_key, user_key: story.api_key}, {item_id: item_id, position: position})
 
         build_items(response)
 

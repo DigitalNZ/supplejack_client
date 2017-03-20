@@ -113,7 +113,7 @@ module Supplejack
       before do
         expect(relation).to receive(:post).with(
           "/stories/#{supplejack_story.id}/items/#{item.id}/moves",
-          {api_key: 'foobar'},
+          { api_key: 'foobar', user_key: 'foobar' },
           {item_id: 1, position: 2}
         ).and_return([
           {id: 2, type: 'embed', sub_type: 'dnz', position: 1},
