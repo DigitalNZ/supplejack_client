@@ -8,18 +8,15 @@
 # http://digitalnz.org/supplejack
 
 module Supplejack
-  class RecordNotFound < StandardError
-  end
+  class RecordNotFound < StandardError; end
 
-  class ConceptNotFound < StandardError
-  end
+  class ConceptNotFound < StandardError; end
 
-  class SetNotFound < StandardError
-  end
+  class SetNotFound < StandardError; end
 
-  class StoryNotFound < StandardError
-  end
+  class StoryNotFound < StandardError; end
 
-  class MalformedRequest < StandardError
-  end
+  class StoryUnauthorised < StandardError; end
+
+  class MalformedRequest < StandardError; end
 end

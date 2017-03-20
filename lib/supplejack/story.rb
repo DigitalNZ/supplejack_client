@@ -67,9 +67,9 @@ module Supplejack
     def save
       begin
         if self.new_record?
-          self.attributes = self.class.post("/stories", {api_key: self.api_key}, {story: self.api_attributes})
+          self.attributes = self.class.post("/stories", params: { user_key: self.api_key }, payload: { story: self.api_attributes })
         else
-          self.attributes = self.class.patch("/stories/#{self.id}", payload: {story: self.api_attributes})
+          self.attributes = self.class.patch("/stories/#{self.id}", params: { user_key: self.api_key }, payload: {story: self.api_attributes})
         end
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
@@ -93,7 +93,7 @@ module Supplejack
       return false if self.new_record?
 
       begin
-        self.class.delete("/stories/#{self.id}")
+        self.class.delete("/stories/#{self.id}", { user_key: self.api_key })
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
 
@@ -121,20 +121,24 @@ module Supplejack
 
     # Executes a GET request with the provided Story ID and initializes
     # a Story object with the response from the API.
+    # If api_key provided, it will be used as the api_key in the request.
     #
     # @return [ Story ] A Story object
     #
-    def self.find(id, api_key: nil, params: {})
+    def self.find(id, user_key: nil, params: {})
+      params[:user_key] = user_key if user_key
       begin
         response = get("/stories/#{id}", params)
         attributes = response || {}
 
         story = new(attributes)
-        story.api_key = api_key if api_key.present?
+        story.api_key = user_key if user_key.present?
 
         story
       rescue RestClient::ResourceNotFound
         raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
+      rescue RestClient::Unauthorized
+        raise Supplejack::StoryUnauthorised, "Story with ID #{id} is private and requires creators api_key"
       end
     end
 
