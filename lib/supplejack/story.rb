@@ -66,11 +66,8 @@ module Supplejack
     #
     def save
       begin
-        if self.new_record?
-          self.attributes = self.class.post("/stories", params: { user_key: self.api_key }, payload: { story: self.api_attributes })
-        else
-          self.attributes = self.class.patch("/stories/#{self.id}", params: { user_key: self.api_key }, payload: {story: self.api_attributes})
-        end
+        self.attributes = self.new_record? ? self.class.post("/stories", { user_key: self.api_key }, { story: self.api_attributes }) :
+                                             self.class.patch("/stories/#{self.id}", { user_key: self.api_key }, {story: self.api_attributes})
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
 
