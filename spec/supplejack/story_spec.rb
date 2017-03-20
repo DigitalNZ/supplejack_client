@@ -143,7 +143,7 @@ module Supplejack
         let(:story) { Supplejack::Story.new(attributes.merge(user: user)) }
 
         before do
-          expect(Supplejack::Story).to receive(:post).with("/stories", params: { user_key: "foobar" }, payload: { story: attributes }) do
+          expect(Supplejack::Story).to receive(:post).with("/stories", { user_key: "foobar" }, { story: attributes }) do
             {
               "id" => "new-id",
               "name" => attributes[:name],
@@ -184,7 +184,7 @@ module Supplejack
         let(:story) { Supplejack::Story.new(attributes.merge(user: user, id: '123')) }
 
         before do
-          expect(Supplejack::Story).to receive(:patch).with("/stories/123", params: { user_key: user[:api_key] }, payload: {story: attributes}) do
+          expect(Supplejack::Story).to receive(:patch).with("/stories/123", { user_key: user[:api_key] }, {story: attributes}) do
             {
               "id" => "new-id",
               "name" => attributes[:name],
