@@ -68,7 +68,7 @@ module Supplejack
       end
     end
 
-    def patch(path, params: {}, payload: {}, options: {})
+    def patch(path, params={}, payload={}, options={})
       payload ||= {}
       log_request(:patch, path, params, payload) do
         response = RestClient::Request.execute(:url => full_url(path, nil, params),

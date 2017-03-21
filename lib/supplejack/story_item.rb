@@ -80,8 +80,8 @@ module Supplejack
         else
           self.attributes = patch(
             "/stories/#{story_id}/items/#{id}",
-            params: {api_key: api_key},
-            payload: {item: self.api_attributes}
+            {api_key: api_key},
+            {item: self.api_attributes}
           )
         end
 
