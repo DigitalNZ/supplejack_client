@@ -74,14 +74,14 @@ module Supplejack
         if self.new_record?
           self.attributes = post(
             "/stories/#{story_id}/items",
-            {api_key: api_key},
-            {item: self.api_attributes}
+            { user_key: api_key },
+            { item: self.api_attributes }
           )
         else
           self.attributes = patch(
             "/stories/#{story_id}/items/#{id}",
-            {api_key: api_key},
-            {item: self.api_attributes}
+            { user_key: api_key },
+            { item: self.api_attributes }
           )
         end
 
@@ -106,7 +106,7 @@ module Supplejack
       return false if self.new_record?
 
       begin
-        delete("/stories/#{story_id}/items/#{id}", {api_key: api_key})
+        delete("/stories/#{story_id}/items/#{id}", { user_key: api_key })
 
         Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
 
