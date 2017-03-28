@@ -37,7 +37,7 @@ module Supplejack
 
       context 'new item' do
         it 'triggers a POST request to create a story_item with the story api_key' do
-          expect(item).to receive(:post).with('/stories/1234/items', {api_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'dnz'}})
+          expect(item).to receive(:post).with('/stories/1234/items', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'dnz'}})
 
           expect(item.save).to eq(true)
         end
@@ -46,7 +46,7 @@ module Supplejack
       context 'existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
-          expect(item).to receive(:patch).with('/stories/1234/items/1', {api_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'dnz'}})
+          expect(item).to receive(:patch).with('/stories/1234/items/1', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'dnz'}})
 
           expect(item.save).to eq(true)
         end
@@ -73,7 +73,7 @@ module Supplejack
       let(:item) { Supplejack::StoryItem.new(story_id: '1234', api_key: 'abc', id: 5) }
 
       it 'triggers a DELETE request with the story api_key' do
-        expect(item).to receive(:delete).with('/stories/1234/items/5', {api_key: 'abc'})
+        expect(item).to receive(:delete).with('/stories/1234/items/5', {user_key: 'abc'})
 
         item.destroy
       end
