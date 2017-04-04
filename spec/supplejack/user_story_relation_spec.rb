@@ -45,6 +45,14 @@ module Supplejack
       end
     end
 
+    describe '#find' do
+      it 'calls get method with story path and user_key' do
+        expect(relation).to receive(:get).with('/stories/th1s1sast0ry1d', { user_key: '123abc' })
+
+        relation.find('th1s1sast0ry1d')
+      end
+    end
+
     describe '#fetch' do
       context 'use_own_api_key? is false' do
         it 'fetches the users stories with the App api_key' do
