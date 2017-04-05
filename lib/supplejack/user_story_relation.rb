@@ -50,7 +50,7 @@ module Supplejack
     #
     def find(story_id)
       path = "/stories/#{story_id}"
-      build get(path, api_key: API_KEY)
+      build get(path, user_key: user.api_key)
     end
 
     # Initializes a new Story object and links it to the current User
