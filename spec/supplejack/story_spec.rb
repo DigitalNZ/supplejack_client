@@ -363,7 +363,8 @@ module Supplejack
           number_of_items: nil,
           id: nil,
           record_ids: nil, 
-          cover_thumbnail: nil
+          cover_thumbnail: nil,
+          creator: 'Wilfred'
        }
       end
 
