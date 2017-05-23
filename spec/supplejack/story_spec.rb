@@ -138,7 +138,7 @@ module Supplejack
 
     describe '#save' do
       context 'Story is a new_record' do
-        let(:attributes) {{name: 'Story Name', description: nil, privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil, subjects: nil, record_ids: nil}}
+        let(:attributes) {{name: 'Story Name', description: nil, privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil, subjects: nil, record_ids: nil, count: nil}}
         let(:user) {{ api_key: 'foobar' }}
         let(:story) { Supplejack::Story.new(attributes.merge(user: user)) }
 
@@ -180,7 +180,7 @@ module Supplejack
       end
 
       context 'story is not new' do
-        let(:attributes) {{name: 'Story Name', description: 'desc', privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil, subjects: nil, record_ids:nil}}
+        let(:attributes) {{name: 'Story Name', description: 'desc', privacy: nil, copyright:nil, featured:nil, approved:nil, tags:nil, subjects: nil, record_ids:nil, count: nil}}
         let(:user) { { api_key: 'foobar' } }
         let(:story) { Supplejack::Story.new(attributes.merge(user: user, id: '123')) }
 
@@ -354,20 +354,22 @@ module Supplejack
         {
           name: 'foo',
           description: 'desc',
-          privacy:  nil, 
-          copyright: nil, 
-          featured: nil, 
-          approved: nil, 
+          privacy:  nil,
+          copyright: nil,
+          featured: nil,
+          approved: nil,
           tags: nil,
           subjects: nil,
+          record_ids: nil,
           contents:  nil,
           created_at: nil,
-          updated_at: nil, 
+          updated_at: nil,
           number_of_items: nil,
           id: nil,
-          record_ids: nil, 
+          record_ids: nil,
           cover_thumbnail: nil,
-          creator: 'Wilfred'
+          creator: 'Wilfred',
+          count: nil
        }
       end
 
