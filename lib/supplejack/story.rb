@@ -14,7 +14,7 @@ module Supplejack
     extend ActiveModel::Naming
     include ActiveModel::Conversion
 
-    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags, :subjects, :record_ids].freeze
+    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags, :subjects, :record_ids, :count].freeze
     UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents, :cover_thumbnail, :creator].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
@@ -195,6 +195,27 @@ module Supplejack
       return true if self.public? || self.hidden?
 
       self.owned_by?(user)
+    end
+
+    # Executes a GET request to the API /stories/moderations endpoint to retrieve
+    # all public UserSet objects.
+    #
+    # @param [ Hash ] options Supported options: :page, :per_page
+    #
+    # @option options [ Integer ] :page The page number used to paginate through the UserSet objects
+    # @option options [ Integer ] :per_page The per_page number to select the number of UserSet objects per page.
+    #
+    # @return [ Array ] A array of Supplejack::UserSet objects
+    #
+    def self.moderation(options = {})
+      options.reverse_merge!(page: 1, per_page: 100)
+      response = get('/stories/moderation', options)
+      sets_array = response['sets'] || []
+      user_sets = sets_array.map {|attrs| new(attrs) }
+      Supplejack::PaginatedCollection.new(user_sets,
+                                          options[:page].to_i,
+                                          options[:per_page].to_i,
+                                          response['total'].to_i)
     end
 
     # Compares the api_key of the user and the api_key assigned to the Story
