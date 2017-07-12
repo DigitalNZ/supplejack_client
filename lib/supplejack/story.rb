@@ -139,6 +139,17 @@ module Supplejack
       end
     end
 
+    # Fetches featured stories
+    # Oliver Stigley July 2017
+    #
+    def self.featured
+      begin
+        get('/stories/featured')
+      rescue RestClient::ResourceNotFound
+        raise Supplejack::StoryNotFound, "Features stories not found"
+      end
+    end
+
     # Assigns the provided attributes to the Story object
     #
     def attributes=(attributes)
