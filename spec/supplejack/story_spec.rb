@@ -403,5 +403,12 @@ module Supplejack
         expect { Supplejack::Story.find(id: '123') }.to raise_error(Supplejack::StoryNotFound)
       end
     end
+
+    describe '#featured' do
+      it 'fetches stories from the api' do
+        Supplejack::Story.should_receive(:get).with('/stories/featured')
+        Supplejack::Story.featured
+      end
+    end
   end
 end

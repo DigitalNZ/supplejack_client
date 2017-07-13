@@ -139,6 +139,13 @@ module Supplejack
       end
     end
 
+    # Fetches featured stories
+    # Oliver Stigley July 2017
+    #
+    def self.featured
+      get('/stories/featured')
+    end
+
     # Assigns the provided attributes to the Story object
     #
     def attributes=(attributes)
