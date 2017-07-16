@@ -12,6 +12,7 @@ require 'supplejack/search'
 module Supplejack
   module Concept
     extend ActiveSupport::Concern
+    include Supplejack::Request
 
     attr_accessor :attributes
 
@@ -84,6 +85,11 @@ module Supplejack
           raise Supplejack::ConceptNotFound, "Concept with ID #{id} was not found"
         end
       end
+
+      def all
+        get('/concepts.json')
+      end
+
     end
   end
 end
