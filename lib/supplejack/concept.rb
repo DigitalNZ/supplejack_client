@@ -86,8 +86,8 @@ module Supplejack
         end
       end
 
-      def all
-        get('/concepts.json')
+      def all(options={})
+        get('/concepts', options)
       end
 
     end
