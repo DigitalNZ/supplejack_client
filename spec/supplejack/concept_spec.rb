@@ -128,5 +128,12 @@ module Supplejack
         end
       end
     end
+
+    describe '#all' do
+      it 'calls the get method' do
+        SupplejackConcept.should_receive(:get).with('/concepts', {}).and_return({})
+        SupplejackConcept.all
+      end
+    end
   end
 end
