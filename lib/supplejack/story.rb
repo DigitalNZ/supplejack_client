@@ -64,12 +64,10 @@ module Supplejack
     #
     # @return [ true, false ] True if the API response was successful, false if not.
     #
-    def save(admin: false)
-      path = admin ? "/admin/stories/#{self.id}" : "/stories/#{self.id}"
-      binding.pry
+    def save
       begin
         self.attributes = self.new_record? ? self.class.post("/stories", { user_key: self.api_key }, { story: self.api_attributes }) :
-                                             self.class.patch(path, { user_key: self.api_key }, {story: self.api_attributes})
+                                             self.class.patch("/stories/#{self.id}", { user_key: self.api_key }, {story: self.api_attributes})
 
         Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
 
@@ -165,14 +163,6 @@ module Supplejack
       self.attributes = attributes
 
       self.save
-    end
-
-    # Updates a story with api_key, not user key.  Used for admin attributes only
-    # Oliver
-    def admin_update_attributes(attributes={}, key)
-      self.attributes.merge! attributes.symbolize_keys
-      self.api_key = key
-      self.save(admin: true)
     end
 
     # Returns the ApiKey of the User this Story belongs to
