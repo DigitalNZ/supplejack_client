@@ -17,8 +17,8 @@ module Supplejack
         user: {api_key: 'foobar'},
         name: 'test',
         contents: [
-          {id: 1, type: 'embed', sub_type: 'dnz', position: 1},
-          {id: 2, type: 'embed', sub_type: 'dnz', position: 2}
+          {id: 1, type: 'embed', sub_type: 'user', position: 1},
+          {id: 2, type: 'embed', sub_type: 'user', position: 2}
         ]
       )
     end
@@ -77,10 +77,10 @@ module Supplejack
       end
 
       it 'accepts a hash of attributes' do
-        item = relation.build(type: 'embed', sub_type: 'dnz')
+        item = relation.build(type: 'embed', sub_type: 'user')
 
         expect(item.type).to eq('embed')
-        expect(item.sub_type).to eq('dnz')
+        expect(item.sub_type).to eq('user')
       end
 
       it 'adds the Story api_key' do
@@ -116,8 +116,8 @@ module Supplejack
           { api_key: 'foobar', user_key: 'foobar' },
           {item_id: 1, position: 2}
         ).and_return([
-          {id: 2, type: 'embed', sub_type: 'dnz', position: 1},
-          {id: 1, type: 'embed', sub_type: 'dnz', position: 2}
+          {id: 2, type: 'embed', sub_type: 'user', position: 1},
+          {id: 1, type: 'embed', sub_type: 'user', position: 2}
         ])
       end
 

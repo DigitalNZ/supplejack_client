@@ -36,7 +36,7 @@ p 'Done Update Story'
 # Create items
 p 'Create Items'
 
-assert(user.stories.first.items.create(type: 'embed', sub_type: 'dnz', content: {record_id: 123}, meta: {}), true, 'dnz embed item failed to create')
+assert(user.stories.first.items.create(type: 'embed', sub_type: 'user', content: {record_id: 123}, meta: {}), true, 'user embed item failed to create')
 assert(user.stories.first.items.create(type: 'text', sub_type: 'heading', content: {value: 'Heading'}, meta: {size: 1}), true, 'heading item failed to create')
 
 assert(user.stories.first.items.first.content[:record_id], 123, 'record_id does not match')
