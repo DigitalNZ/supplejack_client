@@ -17,7 +17,7 @@ module Supplejack
     before(:each) do
       Supplejack::User.stub(:get) { {'user' => {'id' => 'abc', 'authentication_token' => '12345'}} }
     end
-    
+
     describe '#initialize' do
       it 'initializes the user attributes' do
         Supplejack::User.new({'authentication_token' => '12345'}).api_key.should eq '12345'
@@ -41,7 +41,7 @@ module Supplejack
     end
 
     describe "#sets" do
-      it "initializes a Dnz::UserSetRelation object" do
+      it "initializes a Supplejack::UserSetRelation object" do
         @relation = relation
         Supplejack::UserSetRelation.should_receive(:new).with(user) { @relation }
         user.sets.should be_a Supplejack::UserSetRelation

@@ -119,7 +119,7 @@ module Supplejack
 
       # Displays the next and/or previous links based on the record and current search
       #
-      # @params [ Dnz::Record ] The record object which has information about the next/previous record and pages.
+      # @params [ Supplejack::Record ] The record object which has information about the next/previous record and pages.
       # @params [ Hash ] options Hash of options to customize the output,
       #   supported options: :prev_class, :next_class, :prev_label, :next_label
       #
@@ -175,7 +175,7 @@ module Supplejack
       # It is used in forms, so that when a user enteres another term in the search
       # box the state of the search is preserved
       #
-      # @param [ Dnz::Search ] search A instance of the Dnz::Search class
+      # @param [ Supplejack::Search ] search A instance of the Supplejack::Search class
       # @param [ Hash ] options Hash of options to remove any filter
       #
       # @option options [ Array ] except A array of fields which should not generate a hidden field
@@ -212,12 +212,12 @@ module Supplejack
         end
       end
 
-      # Returns a link with all existing search options except the specified in the params 
+      # Returns a link with all existing search options except the specified in the params
       #
       # @param [ Symbol ] name The name of the facet. Ex: :category, :subject
       # @param [ String ] value The value withing the facet. Ex: "Wellington", "Books", etc..
       # @param [ String ] path_name The name of the path used to generate the url path.
-      #   For example if you have a records_path route in your app, then specify "records" 
+      #   For example if you have a records_path route in your app, then specify "records"
       #   and it will call the records_path method
       # @param [ Hash ] options Set of options to customize the output
       # @param [ Hash ] html_options HTML options that are passed directly to the link_to method
@@ -229,13 +229,13 @@ module Supplejack
         link_text = options[:display_name].present? ? options[:display_name] : I18n.t("facets.values.#{value}", default: value)
         link_to block_given? ? capture(&block) : link_text, path.html_safe, html_options
       end
-      
+
       # Returns a link with the existing search options and adds the specified facet and value
       #
       # @param [ Symbol ] name The name of the facet. Ex: :category, :subject
       # @param [ String ] value The value withing the facet. Ex: "Wellington", "Books", etc..
       # @param [ String ] path_name The name of the path used to generate the url path.
-      #   For example if you have a records_path route in your app, then specify "records" 
+      #   For example if you have a records_path route in your app, then specify "records"
       #   and it will call the records_path method
       # @param [ Hash ] options Set of options to customize the output
       # @param [ Hash ] html_options HTML options that are passed directly to the link_to method
@@ -284,7 +284,7 @@ module Supplejack
 
       # Displays the next and/or previous links based on the record and current search
       #
-      # @params [ Dnz::Record ] The record object which has information about the next/previous record and pages.
+      # @params [ Supplejack::Record ] The record object which has information about the next/previous record and pages.
       # @params [ Hash ] options Hash of options to customize the output,
       #   supported options: :prev_class, :next_class, :prev_label, :next_label
       #
@@ -302,8 +302,8 @@ module Supplejack
 
         options = search.options
 
-        previous_label = html_options[:prev_label] ||= t('dnz_client.previous', default: "Previous")
-        next_label = html_options[:next_label] ||= t('dnz_client.next', default: "Next")
+        previous_label = html_options[:prev_label] ||= t('supplejack_client.previous', default: "Previous")
+        next_label = html_options[:next_label] ||= t('supplejack_client.next', default: "Next")
         previous_label = previous_label.html_safe
         next_label = next_label.html_safe
 
@@ -324,7 +324,7 @@ module Supplejack
         end
 
         content_tag(:span, links, class: html_options[:wrapper_class])
-      end      
+      end
 
       def generate_path(name, options={})
         segments = name.split(".")
@@ -333,7 +333,7 @@ module Supplejack
         elsif segments.size == 2
           send(segments[0]).send("#{segments[1]}_path", options)
         end
-      end 
+      end
 
     end
   end

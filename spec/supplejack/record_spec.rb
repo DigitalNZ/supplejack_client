@@ -40,12 +40,12 @@ module Supplejack
       record = SupplejackRecord.new(nil)
       record.attributes.should eq({})
     end
-    
+
     it 'handles a string as params' do
       record = SupplejackRecord.new('')
       record.attributes.should eq({})
     end
-    
+
     it 'handles a array as params' do
       record = SupplejackRecord.new([])
       record.attributes.should eq({})
@@ -91,9 +91,9 @@ module Supplejack
       end
 
       it 'returns an array of hashes with special fields their values and schemas for multiple special_fields configured' do
-        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}, dnz: {fields: [:description]}} }
+        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}, supplejack_user: {fields: [:description]}} }
         record = SupplejackRecord.new({:location => 'Wellington', :description => "Some description"})
-        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'}, {:name => 'description', :schema => 'dnz', :value => 'Some description'})
+        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'}, {:name => 'description', :schema => 'supplejack_user', :value => 'Some description'})
       end
 
       it 'should not return metadata for inexistent attribtues' do
@@ -176,7 +176,7 @@ module Supplejack
           expect { SupplejackRecord.find(1) }.to raise_error(Supplejack::RecordNotFound)
         end
 
-        it 'raises a Supplejack::MalformedRequest' do 
+        it 'raises a Supplejack::MalformedRequest' do
           expect { SupplejackRecord.find('replace_this') }.to raise_error(Supplejack::MalformedRequest)
         end
 
