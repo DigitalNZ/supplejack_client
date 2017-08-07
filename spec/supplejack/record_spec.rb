@@ -91,9 +91,9 @@ module Supplejack
       end
 
       it 'returns an array of hashes with special fields their values and schemas for multiple special_fields configured' do
-        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}, user: {fields: [:description]}} }
+        Supplejack.stub(:special_fields) { {admin: {fields: [:location]}, supplejack_user: {fields: [:description]}} }
         record = SupplejackRecord.new({:location => 'Wellington', :description => "Some description"})
-        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'}, {:name => 'description', :schema => 'user', :value => 'Some description'})
+        record.metadata.should include({:name => 'location', :schema => 'admin', :value => 'Wellington'}, {:name => 'description', :schema => 'supplejack_user', :value => 'Some description'})
       end
 
       it 'should not return metadata for inexistent attribtues' do

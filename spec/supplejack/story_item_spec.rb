@@ -14,11 +14,11 @@ module Supplejack
 
     describe '#initialize' do
       it 'accepts a hash of attributes' do
-        Supplejack::StoryItem.new(type: 'embed', sub_type: 'user')
+        Supplejack::StoryItem.new(type: 'embed', sub_type: 'supplejack_user')
       end
 
       it 'accepts a hash with string keys' do
-        expect(Supplejack::StoryItem.new({'type' => 'embed', 'sub_type' => 'user'}).type).to eq('embed')
+        expect(Supplejack::StoryItem.new({'type' => 'embed', 'sub_type' => 'supplejack_user'}).type).to eq('embed')
       end
 
       it 'handles nil attributes' do
@@ -33,11 +33,11 @@ module Supplejack
     end
 
     describe '#save' do
-      let(:item) { Supplejack::StoryItem.new(type: 'embed', sub_type: 'user', story_id: '1234', api_key: 'abc') }
+      let(:item) { Supplejack::StoryItem.new(type: 'embed', sub_type: 'supplejack_user', story_id: '1234', api_key: 'abc') }
 
       context 'new item' do
         it 'triggers a POST request to create a story_item with the story api_key' do
-          expect(item).to receive(:post).with('/stories/1234/items', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'user'}})
+          expect(item).to receive(:post).with('/stories/1234/items', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'supplejack_user'}})
 
           expect(item.save).to eq(true)
         end
@@ -46,7 +46,7 @@ module Supplejack
       context 'existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
-          expect(item).to receive(:patch).with('/stories/1234/items/1', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'user'}})
+          expect(item).to receive(:patch).with('/stories/1234/items/1', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'supplejack_user'}})
 
           expect(item.save).to eq(true)
         end
