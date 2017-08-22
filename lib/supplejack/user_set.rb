@@ -30,7 +30,7 @@ module Supplejack
     extend ActiveModel::Naming
 
     ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list,
-                  :subjects, :featured, :records, :created_at, :updated_at, :approved, :record]
+                  :subjects, :featured, :records, :created_at, :updated_at, :approved, :record, :featured_at]
     attr_accessor *ATTRIBUTES
     attr_accessor :api_key, :errors, :user
 
