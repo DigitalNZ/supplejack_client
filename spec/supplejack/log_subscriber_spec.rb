@@ -11,32 +11,12 @@ require 'spec_helper'
 
 module Supplejack
   describe LogSubscriber do
-    
+
     it 'returns nil when logging not enabled' do
       Supplejack.stub(:enable_logging) { false }
+
       Supplejack::LogSubscriber.new.log_request(1, {}).should be_nil
     end
-    
-    describe '#api_environment' do
-      it 'returns Prod' do
-        Supplejack.stub(:api_url) { 'http://api.digitalnz.org' }
-        Supplejack::LogSubscriber.new.api_environment.should eq 'Prod'
-      end
-      
-      it 'returns Staging' do
-        Supplejack.stub(:api_url) { 'http://hippo.uat.digitalnz.org:8001' }
-        Supplejack::LogSubscriber.new.api_environment.should eq 'Staging'
-      end
-      
-      it 'returns Staging' do
-        Supplejack.stub(:api_url) { 'http://api.uat.digitalnz.org' }
-        Supplejack::LogSubscriber.new.api_environment.should eq 'Staging'
-      end
-      
-      it 'returns Dev' do
-        Supplejack.stub(:api_url) { 'http://localhost:3000' }
-        Supplejack::LogSubscriber.new.api_environment.should eq 'Dev'
-      end
-    end
+
   end
 end
