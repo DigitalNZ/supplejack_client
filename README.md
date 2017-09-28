@@ -1,3 +1,5 @@
+![Supplejack Logo](https://raw.githubusercontent.com/DigitalNZ/supplejack_manager/master/app/assets/images/logo.png)
+
 # Supplejack Client [![Gem Version](https://badge.fury.io/rb/supplejack_client.svg)](https://badge.fury.io/rb/supplejack_client)
 
 The Supplejack Client is a library to abstract the interaction with the Supplejack API. It connects to the Supplejack API, and allows you to treat models as if they were in a local database.
