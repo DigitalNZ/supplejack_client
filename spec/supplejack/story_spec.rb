@@ -349,6 +349,21 @@ module Supplejack
       end
     end
 
+    describe '#all_public_stories' do
+      let(:api_key) { '123456' }
+      it "returns an array with all stories from /stories/moderations endpoint" do
+
+        expect(Supplejack::Story).to receive(:get).and_return({
+          'sets' => [
+            Supplejack::User.new(api_key: api_key).attributes,
+            Supplejack::User.new(api_key: api_key).attributes
+          ]
+        })
+
+        expect(Supplejack::Story.all_public_stories.count).to eq(2)
+      end
+    end
+
     describe '#find' do
       let(:attributes) do
         {
