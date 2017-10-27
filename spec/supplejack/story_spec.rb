@@ -385,7 +385,8 @@ module Supplejack
           record_ids: nil,
           cover_thumbnail: nil,
           creator: 'Wilfred',
-          count: nil
+          count: nil,
+          user_id: nil
        }
       end
 
