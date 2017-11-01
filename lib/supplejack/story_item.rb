@@ -23,7 +23,7 @@ module Supplejack
   class StoryItem
     include Supplejack::Request
 
-    MODIFIABLE_ATTRIBUTES = [:position, :meta, :content, :type, :sub_type].freeze
+    MODIFIABLE_ATTRIBUTES = [:position, :meta, :content, :type, :sub_type, :record_id].freeze
     UNMODIFIABLE_ATTRIBUTES = [:id, :story_id].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
