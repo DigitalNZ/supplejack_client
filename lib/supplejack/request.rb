@@ -14,6 +14,7 @@ module Supplejack
 		extend ActiveSupport::Concern
 
 		def get(path, params={}, options={})
+      tries ||=5
       params ||= {}
 
       url = full_url(path, options[:format], params)
@@ -24,6 +25,9 @@ module Supplejack
       begin
         result = RestClient::Request.execute(:url => url, :method => :get, :timeout => timeout(options))
         result = JSON.parse(result) if result
+      rescue RestClient::ServiceUnavailable => e
+        retry unless (tries -= 1).zero?
+        raise e
       rescue StandardError => e
         payload[:exception] = [e.class.name, e.message]
         raise e
