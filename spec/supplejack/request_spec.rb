@@ -70,6 +70,17 @@ module Supplejack
           @test.get('/', {}, {:timeout => 60})
         end
       end
+
+      context 'restlclient unavailable' do
+        it 'retries request 5 times' do
+          RestClient::Request.stub(:execute).and_raise(RestClient::ServiceUnavailable)
+          RestClient::Request.should_receive(:execute).exactly(5).times
+          expect {
+            @test.get('/records')
+            }.to raise_error(RestClient::ServiceUnavailable)
+        end
+      end
+
     end
 
     describe '#post' do
