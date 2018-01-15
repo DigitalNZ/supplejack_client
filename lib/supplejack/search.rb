@@ -247,7 +247,7 @@ module Supplejack
         @facet_values = {}
       end
 
-      @facet_values["All"] = response["search"]["result_count"] if options[:all]
+      @facet_values['All'] = @facet_values.values.sum if options[:all]
 
       facet = Supplejack::Facet.new(facet_name, @facet_values)
       @facet_values = facet.values(options[:sort])

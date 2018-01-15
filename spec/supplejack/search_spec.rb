@@ -573,7 +573,7 @@ module Supplejack
     describe '#fetch_facet_values' do
       before(:each) do
         @search = Search.new({:i => {:category => 'Books', :year => 2001}, :text => 'Dogs'})
-        @search.stub(:get) { {'search' => {'facets' => {'category' => {'Books' => 123}}, 'result_count' => 123}} }
+        @search.stub(:get) { {'search' => {'facets' => {'category' => {'Books' => 123, 'Images' => 100}}, 'result_count' => 123}} }
       end
 
       it 'returns the category facet hash' do
@@ -585,8 +585,8 @@ module Supplejack
         @search.fetch_facet_values('category').should eq({'All' => 0})
       end
 
-      it 'should add the All count to the hash' do
-        @search.fetch_facet_values('category')['All'].should eq 123
+      it 'should add the All count to the hash with the sum of all facets' do
+        @search.fetch_facet_values('category')['All'].should eq 223
       end
 
       it 'doesnt return the All count ' do
@@ -601,12 +601,12 @@ module Supplejack
 
       context 'sorting' do
         before(:each) do
-          @facet = Supplejack::Facet.new('category', {'All' => 123, 'Books' => 123})
+          @facet = Supplejack::Facet.new('category', {'All' => 223, 'Books' => 123, 'Images' => 100})
           Supplejack::Facet.stub(:new) { @facet }
         end
 
         it 'initializes a Supplejack::Facet' do
-          Supplejack::Facet.should_receive(:new).with('category', {'All' => 123, 'Books' => 123})
+          Supplejack::Facet.should_receive(:new).with('category', {'All' => 223, 'Books' => 123, 'Images' => 100})
           @search.fetch_facet_values('category')
         end
 
