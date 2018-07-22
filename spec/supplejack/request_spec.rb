@@ -19,7 +19,7 @@ module Supplejack
       end
 
       it 'serializes the parameters in the url' do
-        RestClient::Request.should_receive(:execute).with(hash_including(:url => "http://api.org/records.json?#{{:and => {:name => 'John'}}.to_query}&api_key=123"))
+        RestClient::Request.should_receive(:execute).with(url: "http://api.org/records.json?#{{ and: { name: 'John' } }.to_query}&api_key=123", method: :get, read_timeout: 20)
         @test.get('/records', {:and => {:name => 'John'}})
       end
 

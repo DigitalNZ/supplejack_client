@@ -15,7 +15,7 @@ module Supplejack
       payload = {:path => path, :params => params, :options => options}
 
       begin
-        result = RestClient::Request.execute(:url => url, :method => :get, :timeout => timeout(options))
+        result = RestClient::Request.execute(:url => url, :method => :get, :read_timeout => timeout(options))
         result = JSON.parse(result) if result
       rescue RestClient::ServiceUnavailable => e
         retry unless (tries -= 1).zero?
@@ -25,7 +25,7 @@ module Supplejack
         raise e
       ensure
         duration = (Time.now - started)*1000 # Convert to miliseconds
-        solr_request_params = result["search"]['solr_request_params'] if result && result.is_a?(Hash) && result['search']
+        solr_request_params = result['search']['solr_request_params'] if result && result.is_a?(Hash) && result['search']
         @subscriber = Supplejack::LogSubscriber.new
         @subscriber.log_request(duration, payload, solr_request_params)
       end

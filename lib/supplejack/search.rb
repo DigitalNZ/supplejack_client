@@ -299,14 +299,15 @@ module Supplejack
         else
           @response = get(request_path, @api_params)
         end
+      rescue RestClient::ServiceUnavailable, RestClient::Exceptions::ReadTimeout => e
+        raise e
       rescue StandardError => e
         @response = {'search' => {}}
       end
     end
 
     def cacheable?
-      return false if text.present? || page > 1
-      return true
+      !(text.present? || page > 1)
     end
 
     # Gets the category facet unrestricted by the current category filter

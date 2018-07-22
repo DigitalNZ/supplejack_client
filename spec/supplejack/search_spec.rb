@@ -447,6 +447,28 @@ module Supplejack
         @search.execute_request.should eq({'search' => {}})
       end
 
+
+      context 'error handling' do
+        it 'raises a timeout error' do
+          allow(@search).to receive(:get).and_raise(RestClient::Exceptions::ReadTimeout)
+
+          expect { @search.execute_request }.to raise_error(RestClient::Exceptions::ReadTimeout)
+        end
+
+        it 'raises a unavailable error' do
+          allow(@search).to receive(:get).and_raise(RestClient::ServiceUnavailable)
+
+          expect { @search.execute_request }.to raise_error(RestClient::ServiceUnavailable)
+        end        
+
+        it 'raises no error but returns an empty search' do
+          allow(@search).to receive(:get).and_raise(StandardError)
+
+          expect(@search.execute_request).to eq ({'search'=>{}})
+        end
+
+      end
+
       context 'caching enabled' do
         before :each do
           @cache = double(:cache).as_null_object
