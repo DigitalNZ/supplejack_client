@@ -6,7 +6,7 @@ module Supplejack
     extend ActiveModel::Naming
     include ActiveModel::Conversion
 
-    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags, :subjects, :record_ids, :count, :featured_at].freeze
+    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags, :subjects, :record_ids, :count, :featured_at, :category].freeze
     UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents, :cover_thumbnail, :creator, :user_id].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
