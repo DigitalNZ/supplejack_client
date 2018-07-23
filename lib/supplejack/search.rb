@@ -299,8 +299,10 @@ module Supplejack
         else
           @response = get(request_path, @api_params)
         end
-      rescue RestClient::ServiceUnavailable, RestClient::Exceptions::ReadTimeout => e
-        raise e
+      rescue RestClient::ServiceUnavailable => e
+        raise Supplejack::ApiNotAvailable, 'API is not responding'
+      rescue RestClient::RequestTimeout, RestClient::Exceptions::ReadTimeout => e
+        raise Supplejack::RequestTimeout, 'API call has timedout'
       rescue StandardError => e
         @response = {'search' => {}}
       end

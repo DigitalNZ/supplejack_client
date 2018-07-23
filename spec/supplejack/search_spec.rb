@@ -452,13 +452,13 @@ module Supplejack
         it 'raises a timeout error' do
           allow(@search).to receive(:get).and_raise(RestClient::Exceptions::ReadTimeout)
 
-          expect { @search.execute_request }.to raise_error(RestClient::Exceptions::ReadTimeout)
+          expect { @search.execute_request }.to raise_error(Supplejack::RequestTimeout)
         end
 
         it 'raises a unavailable error' do
           allow(@search).to receive(:get).and_raise(RestClient::ServiceUnavailable)
 
-          expect { @search.execute_request }.to raise_error(RestClient::ServiceUnavailable)
+          expect { @search.execute_request }.to raise_error(Supplejack::ApiNotAvailable)
         end        
 
         it 'raises no error but returns an empty search' do
