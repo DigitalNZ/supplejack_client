@@ -87,8 +87,11 @@ module Supplejack
       Supplejack.api_url + path + ".#{format.to_s}" + '?' + params.to_query
     end
 
+    # Found ou that RestClient timeouts are not reliable. Setting a 30 sec 
+    # timeout is taking about 60 seconds re raise timeout error. So now the
+    # default value is 15 
     def timeout(options={})
-      timeout = Supplejack.timeout.to_i == 0 ? 30 : Supplejack.timeout.to_i
+      timeout = Supplejack.timeout.to_i == 0 ? 15 : Supplejack.timeout.to_i
       options[:timeout] || timeout
     end
 

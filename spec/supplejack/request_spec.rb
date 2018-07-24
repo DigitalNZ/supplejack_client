@@ -155,16 +155,17 @@ module Supplejack
 
     describe '#timeout' do
       it 'defaults to the timeout in the configuration' do
-        @test.send(:timeout).should eq 20
+        expect(@test.send(:timeout)).to eq 20
       end
 
       it 'defaults to 30 when not set in the configuration' do
         Supplejack.stub(:timeout) { nil }
-        @test.send(:timeout).should eq 30
+
+        expect(@test.send(:timeout)).to eq 15
       end
 
       it 'overrides the timeout' do
-        @test.send(:timeout, {:timeout => 60}).should eq 60
+        expect(@test.send(:timeout, {timeout: 60})).to eq 60
       end
     end
 
@@ -194,6 +195,5 @@ module Supplejack
         @test.send(:full_url, '/records', nil, nil).should eq 'http://api.org/records.json?api_key=123'
       end
     end
-
   end
 end
