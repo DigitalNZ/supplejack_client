@@ -11,4 +11,8 @@ module Supplejack
   class StoryUnauthorised < StandardError; end
 
   class MalformedRequest < StandardError; end
+
+  class RequestTimeout < StandardError; end
+
+  class ApiNotAvailable < StandardError; end  
 end
