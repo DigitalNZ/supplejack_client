@@ -91,8 +91,7 @@ module Supplejack
     # timeout is taking about 60 seconds re raise timeout error. So now the
     # default value is 15 
     def timeout(options={})
-      timeout = Supplejack.timeout.to_i == 0 ? 15 : Supplejack.timeout.to_i
-      options[:timeout] || timeout
+      options[:timeout] || Supplejack.timeout || 15
     end
 
     def log_request(method, path, params={}, payload={})
