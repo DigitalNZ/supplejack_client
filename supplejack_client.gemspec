@@ -23,6 +23,8 @@ Gem::Specification.new do |gem|
     gem.add_dependency 'rails', '>= 3.2.12'
   end
 
+
+  gem.add_dependency 'rubocop', require: false
   gem.add_dependency 'rest-client', '~> 2.0'
   gem.add_dependency 'rails_autolink', '~> 1.0'
 
