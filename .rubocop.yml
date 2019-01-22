@@ -39,8 +39,6 @@ Style/IfUnlessModifier:
   Enabled: false
 Style/GuardClause:
   Enabled: false
-Style/IfInsideElse:
-  Enabled: false
 Style/FormatStringToken:
   Enabled: false
 Style/SafeNavigation:

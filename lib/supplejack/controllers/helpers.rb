@@ -54,8 +54,8 @@ module Supplejack
 
           if v.is_a?(Array)
             value += v.compact
-          else
-            value << v if v.present?
+          elsif v.present?
+            value << v
           end
         end
 
