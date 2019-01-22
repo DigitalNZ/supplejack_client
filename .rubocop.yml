@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - 'tmp/**/*'
+    - 'vendor/**/*'    
   DisplayStyleGuide: true
   DisplayCopNames: true
 Rails:
@@ -45,7 +46,7 @@ Style/FormatStringToken:
 Style/RedundantSelf:
   Enabled: false
 Style/SafeNavigation:
-  Enabled: false  
+  Enabled: false
 Naming/PredicateName:
   Enabled: false
 Lint/AmbiguousOperator:
