@@ -1,8 +1,8 @@
+# frozen_string_literal: true
+
 module Supplejack
   module Util
-    
     class << self
-      
       #
       # Return a array no matter what.
       #
@@ -27,13 +27,14 @@ module Supplejack
           elsif time.is_a?(Time) || time.is_a?(DateTime)
             time = time
           end
-        rescue
+        rescue StandardError
           time = nil
         end
 
         time
       end
-      # 
+
+      #
       # Perform a deep merge of hashes, returning the result as a new hash.
       # See #deep_merge_into for rules used to merge the hashes
       #
@@ -50,7 +51,7 @@ module Supplejack
         deep_merge_into({}, left, right)
       end
 
-      # 
+      #
       # Perform a deep merge of the right hash into the left hash
       #
       # ==== Parameters
@@ -68,7 +69,7 @@ module Supplejack
 
       private
 
-      # 
+      #
       # Deep merge two hashes into a third hash, using rules that produce nice
       # merged parameter hashes. The rules are as follows, for a given key:
       #
@@ -104,10 +105,9 @@ module Supplejack
             end
         end
         left_keys = Set.new(left.keys)
-        destination.merge!(right.reject { |k, v| left_keys.include?(k) })
+        destination.merge!(right.reject { |k, _v| left_keys.include?(k) })
         destination
       end
     end
-    
   end
 end

@@ -1,10 +1,10 @@
+# frozen_string_literal: true
 
 module Supplejack
-
   # The +ItemRelation+ class provides ActiveRecord like functionality to the
   # relationship between a UserSet object and it's Item objects.
-  # 
-  # @exmaple 
+  #
+  # @exmaple
   #   user_set = user.sets.first
   #
   #   user_set.items.build({record_id: 1})              => Returns a new Item object linked to the UserSet
@@ -18,7 +18,7 @@ module Supplejack
     def initialize(user_set)
       @user_set = user_set
       items_array = user_set.attributes[:records] || []
-      @items = items_array.map do |hash| 
+      @items = items_array.map do |hash|
         Supplejack::Item.new(hash.merge(user_set_id: user_set.id, api_key: user_set.api_key))
       end
     end
@@ -32,17 +32,17 @@ module Supplejack
     # Finds the item based on the record_id and returns it.
     #
     def find(record_id)
-      @items.detect {|i| i.record_id == record_id.to_i}
+      @items.detect { |i| i.record_id == record_id.to_i }
     end
 
     # Initializes a new Item with the provided attributes
     #
     # @return [ Supplejack::Item ] A new Supplejack::Item object
-    # 
-    def build(attributes={})
+    #
+    def build(attributes = {})
       attributes ||= {}
-      attributes[:user_set_id] = self.user_set.id
-      attributes[:api_key] = self.user_set.api_key
+      attributes[:user_set_id] = user_set.id
+      attributes[:api_key] = user_set.api_key
       Supplejack::Item.new(attributes)
     end
 
@@ -50,8 +50,8 @@ module Supplejack
     #
     # @return [ true, false ] True if the API response was successful, false if not.
     #
-    def create(attributes={})
-      item = self.build(attributes)
+    def create(attributes = {})
+      item = build(attributes)
 
       item.save
     end

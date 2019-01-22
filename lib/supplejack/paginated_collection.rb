@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 module Supplejack
   class PaginatedCollection
     instance_methods.each { |m| undef_method m unless m =~ /^__|instance_eval|object_id/ }
 
     attr_reader :current_page, :per_page
     attr_accessor :total_count
-    alias :total_entries :total_count
-    alias :total_entries= :total_count=
-    alias :limit_value :per_page
+    alias total_entries total_count
+    alias total_entries= total_count=
+    alias limit_value per_page
 
     def initialize(collection, page, per_page, total)
       @collection   = collection
@@ -18,7 +20,7 @@ module Supplejack
     def total_pages
       (total_count.to_f / per_page).ceil
     end
-    alias :num_pages :total_pages
+    alias num_pages total_pages
 
     def first_page?
       current_page == 1
@@ -49,6 +51,5 @@ module Supplejack
     def method_missing(method, *args, &block)
       @collection.send(method, *args, &block)
     end
-
   end
 end

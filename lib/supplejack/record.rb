@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require 'supplejack/search'
 
@@ -16,18 +17,26 @@ module Supplejack
       # most of them have on only one value. What this does is just convert the array
       # to a string for the methods defined in the configuration.
       Supplejack.single_value_methods.each do |method|
-        define_method("#{method}") do
+        define_method(method.to_s) do
           values = @attributes[method]
           values.is_a?(Array) ? values.first : values
         end
       end
     end
 
-    def initialize(attributes={})
+    def initialize(attributes = {})
       if attributes.is_a?(String)
-        attributes = JSON.parse(attributes) rescue {}
+        attributes = begin
+                       JSON.parse(attributes)
+                     rescue StandardError
+                       {}
+                     end
       end
-      @attributes = attributes.symbolize_keys rescue {}
+      @attributes = begin
+                      attributes.symbolize_keys
+                    rescue StandardError
+                      {}
+                    end
     end
 
     def id
@@ -36,11 +45,11 @@ module Supplejack
     end
 
     def to_param
-      self.id
+      id
     end
 
     def title
-      @attributes[:title].present? ? @attributes[:title] : "Untitled"
+      @attributes[:title].presence || 'Untitled'
     end
 
     # Returns a array of hashes containing all the record attributes and
@@ -55,22 +64,22 @@ module Supplejack
 
       Supplejack.send('special_fields').each do |schema, fields|
         fields[:fields].each do |field|
-          if @attributes.has_key?(field)
-            values = @attributes[field]
-            values ||= [] unless !!values == values # Testing if boolean
-            values = [values] unless values.is_a?(Array)
+          next unless @attributes.key?(field)
 
-            case fields[:format]
-            when "uppercase" then field = field.to_s.upcase
-            when "lowercase" then field = field.to_s.downcase
-            when "camelcase" then field = field.to_s.camelcase
-            end
+          values = @attributes[field]
+          values ||= [] unless !!values == values # Testing if boolean
+          values = [values] unless values.is_a?(Array)
 
-            field = field.to_s.sub(/#{schema}_/, '')
-            values.each do |value|
-              metadata << {:name => field, :schema => schema.to_s, :value => value }
-            end
-          end          
+          case fields[:format]
+          when 'uppercase' then field = field.to_s.upcase
+          when 'lowercase' then field = field.to_s.downcase
+          when 'camelcase' then field = field.to_s.camelcase
+          end
+
+          field = field.to_s.sub(/#{schema}_/, '')
+          values.each do |value|
+            metadata << { name: field, schema: schema.to_s, value: value }
+          end
         end
       end
 
@@ -78,13 +87,14 @@ module Supplejack
     end
 
     def format
-      unless @attributes.has_key?(:format)
-        raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module" 
+      unless @attributes.key?(:format)
+        raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module"
       end
+
       @attributes[:format]
     end
 
-    [:next_page, :previous_page, :next_record, :previous_record].each do |pagination_field|
+    %i[next_page previous_page next_record previous_record].each do |pagination_field|
       define_method(pagination_field) do
         @attributes[pagination_field]
       end
@@ -94,32 +104,32 @@ module Supplejack
       true
     end
 
-    def method_missing(symbol, *args, &block)
-      unless @attributes.has_key?(symbol)
-        raise NoMethodError, "undefined method '#{symbol.to_s}' for Supplejack::Record:Module" 
+    def method_missing(symbol, *_args)
+      unless @attributes.key?(symbol)
+        raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Record:Module"
       end
+
       @attributes[symbol]
     end
 
     module ClassMethods
-
       # Finds a record or array of records from the Supplejack API
       #
       # @params [ Integer, Array ] id A integer or array of integers representing the ID of records
       # @params [ Hash ] options Search options used to perform a search in order to get the next/previous
       #   records within the search results.
       #
-      # @return [ Supplejack::Record ] A record or array of records initialized with the class of where the 
+      # @return [ Supplejack::Record ] A record or array of records initialized with the class of where the
       # Supplejack::Record module was included
       #
-      def find(id_or_array, options={})
+      def find(id_or_array, options = {})
         if id_or_array.is_a?(Array)
-          options = {:record_ids => id_or_array, :fields => Supplejack.fields.join(',') }
-          response = get("/records/multiple", options)
-          response["records"].map {|attributes| new(attributes) }
+          options = { record_ids: id_or_array, fields: Supplejack.fields.join(',') }
+          response = get('/records/multiple', options)
+          response['records'].map { |attributes| new(attributes) }
         else
           begin
-            # handle malformed id's before requesting anything. 
+            # handle malformed id's before requesting anything.
             id = id_or_array.to_i
             raise(Supplejack::MalformedRequest, "'#{id_or_array}' is not a valid record id") if id <= 0
 
@@ -135,18 +145,17 @@ module Supplejack
             search_options = search.api_params
             search_options = search.merge_extra_filters(search_options)
 
-            options = {:search => search_options}
+            options = { search: search_options }
             options[:fields] = options[:search].delete(:fields)
             options.delete(:search) unless any_options
 
             response = get("/records/#{id}", options)
             new(response['record'])
-          rescue RestClient::ResourceNotFound => e
+          rescue RestClient::ResourceNotFound
             raise Supplejack::RecordNotFound, "Record with ID #{id_or_array} was not found"
           end
         end
       end
     end
-
   end
 end

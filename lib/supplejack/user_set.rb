@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 
 module Supplejack
-
   # The +UserSet+ class represents a UserSet on the Supplejack API
   #
   # A UserSet instance can have many Item objects, the relationship
@@ -21,14 +21,14 @@ module Supplejack
     include ActiveModel::Conversion
     extend ActiveModel::Naming
 
-    ATTRIBUTES = [:id, :name, :description, :privacy, :url, :priority, :count, :tags, :tag_list,
-                  :subjects, :featured, :records, :created_at, :updated_at, :approved, :record, :featured_at]
+    ATTRIBUTES = %i[id name description privacy url priority count tags tag_list
+                    subjects featured records created_at updated_at approved record featured_at].freeze
     attr_accessor *ATTRIBUTES
     attr_accessor :api_key, :errors, :user
 
-    PRIVACY_STATES = ['public', 'hidden', 'private']
+    PRIVACY_STATES = %w[public hidden private].freeze
 
-    def initialize(attributes={})
+    def initialize(attributes = {})
       @attributes = attributes.try(:symbolize_keys) || {}
       @user = Supplejack::User.new(@attributes[:user])
       self.attributes = @attributes
@@ -37,7 +37,7 @@ module Supplejack
     def attributes
       attributes = {}
       ATTRIBUTES.each do |attribute|
-        value = self.send(attribute)
+        value = send(attribute)
         attributes[attribute] = value if value.present?
       end
       attributes
@@ -50,10 +50,10 @@ module Supplejack
     #
     def api_attributes
       api_attributes = {}
-      [:name, :description, :privacy, :priority, :tag_list, :featured, :approved].each do |attr|
-        api_attributes[attr] = self.send(attr)
+      %i[name description privacy priority tag_list featured approved].each do |attr|
+        api_attributes[attr] = send(attr)
       end
-      api_attributes[:records] = self.api_records
+      api_attributes[:records] = api_records
       api_attributes
     end
 
@@ -69,9 +69,7 @@ module Supplejack
       records.map do |record_hash|
         record_hash = record_hash.try(:symbolize_keys) || {}
         if record_hash[:record_id]
-          {record_id: record_hash[:record_id], position: record_hash[:position] }
-        else
-          nil
+          { record_id: record_hash[:record_id], position: record_hash[:position] }
         end
       end.compact
     end
@@ -101,23 +99,24 @@ module Supplejack
     #
     def tag_list
       return @tag_list if @tag_list
-      self.tags.join(', ') if self.tags
+
+      tags&.join(', ')
     end
 
     def favourite?
-      self.name == "Favourites"
+      name == 'Favourites'
     end
 
     def private?
-      self.privacy == "private"
+      privacy == 'private'
     end
 
     def public?
-      self.privacy == "public"
+      privacy == 'public'
     end
 
     def hidden?
-      self.privacy == "hidden"
+      privacy == 'hidden'
     end
 
     # Convinience method to find out if a particular record_id is part of the UserSet
@@ -127,14 +126,14 @@ module Supplejack
     # @return [ true, false ] True if the provided record_id is part of the UserSet, false otherwise.
     #
     def has_record?(record_id)
-      !!self.items.detect {|i| i.record_id == record_id.to_i }
+      !!items.detect { |i| i.record_id == record_id.to_i }
     end
 
     # Returns the record id of the associated record in a safe manner
     #
     # @return [Intger, nil ] the record id if it exists, false otherwise
     def set_record_id
-      self.record['record_id'] if self.record
+      record['record_id'] if record
     end
 
     # Executes a POST request when the UserSet hasn't been persisted to the API, otherwise it executes
@@ -146,28 +145,26 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def save
-      begin
-        if self.new_record?
-          response = self.class.post("/sets", {api_key: self.api_key}, {set: self.api_attributes})
-          self.id = response["set"]["id"]
-        else
-          self.class.put("/sets/#{self.id}", {api_key: self.api_key}, {set: self.api_attributes})
-        end
-        Rails.cache.delete("/users/#{self.api_key}/sets") if Supplejack.enable_caching
-        return true
-      rescue StandardError => e
-        self.errors = e.message
-        return false
+      if new_record?
+        response = self.class.post('/sets', { api_key: api_key }, set: api_attributes)
+        self.id = response['set']['id']
+      else
+        self.class.put("/sets/#{id}", { api_key: api_key }, set: api_attributes)
       end
+      Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
+      true
+    rescue StandardError => e
+      self.errors = e.message
+      false
     end
 
     # Updates the UserSet attributes and persists it to the API
     #
     # @return [ true, false ] True if the API response was successful, false if not.
     #
-    def update_attributes(attributes={})
+    def update_attributes(attributes = {})
       self.attributes = attributes
-      self.save
+      save
     end
 
     # Assigns the provided attributes to the UserSet object
@@ -175,7 +172,7 @@ module Supplejack
     def attributes=(attributes)
       attributes = attributes.try(:symbolize_keys) || {}
       attributes.each do |attr, value|
-        self.send("#{attr}=", value) if ATTRIBUTES.include?(attr)
+        send("#{attr}=", value) if ATTRIBUTES.include?(attr)
       end
       self.records = ordered_records_from_array(attributes[:ordered_records]) if attributes[:ordered_records]
     end
@@ -183,9 +180,9 @@ module Supplejack
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
     #
-    [:created_at, :updated_at].each do |attribute|
+    %i[created_at updated_at].each do |attribute|
       define_method("#{attribute}=") do |time|
-        self.instance_variable_set("@#{attribute}", Util.time(time))
+        instance_variable_set("@#{attribute}", Util.time(time))
       end
     end
 
@@ -203,7 +200,7 @@ module Supplejack
     def ordered_records_from_array(record_ids)
       records = []
       record_ids.each_with_index do |id, index|
-        records << {record_id: id, position: index+1}
+        records << { record_id: id, position: index + 1 }
       end
       records
     end
@@ -213,7 +210,7 @@ module Supplejack
     # @return [ true, false ] True if the UserSet is persisted to the API, false if not.
     #
     def new_record?
-      self.id.blank?
+      id.blank?
     end
 
     # Executes a DELETE request to the API with the UserSet ID and the user's api_key
@@ -221,12 +218,12 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def destroy
-      if self.new_record?
-        return false
+      if new_record?
+        false
       else
         begin
-          self.class.delete("/sets/#{self.id}", {api_key: self.api_key})
-          Rails.cache.delete("/users/#{self.api_key}/sets") if Supplejack.enable_caching
+          self.class.delete("/sets/#{id}", api_key: api_key)
+          Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
           return true
         rescue StandardError => e
           self.errors = e.message
@@ -244,12 +241,10 @@ module Supplejack
     # to have the most up to date items.
     #
     def reload
-      begin
-        self.instance_variable_set("@items", nil)
-        self.attributes = self.class.get("/sets/#{self.id}")["set"]
-      rescue RestClient::ResourceNotFound => e
-        raise Supplejack::SetNotFound, "UserSet with ID #{id} was not found"
-      end
+      instance_variable_set('@items', nil)
+      self.attributes = self.class.get("/sets/#{id}")['set']
+    rescue RestClient::ResourceNotFound
+      raise Supplejack::SetNotFound, "UserSet with ID #{id} was not found"
     end
 
     # A UserSet is viewable by anyone if it's public or hidden
@@ -260,8 +255,9 @@ module Supplejack
     # @return [ true, false ] True if the user can view the current UserSet, false if not.
     #
     def viewable_by?(user)
-      return true if self.public? || self.hidden?
-      self.owned_by?(user)
+      return true if public? || hidden?
+
+      owned_by?(user)
     end
 
     # Compares the api_key of the user and the api_key assigned to the UserSet
@@ -272,8 +268,9 @@ module Supplejack
     # @return [ true, false ] True if the user owns the current UserSet, false if not.
     #
     def owned_by?(user)
-      return false if user.try(:api_key).blank? || self.api_key.blank?
-      user.try(:api_key) == self.api_key
+      return false if user.try(:api_key).blank? || api_key.blank?
+
+      user.try(:api_key) == api_key
     end
 
     # Executes a GET request with the provided UserSet ID and initializes
@@ -281,16 +278,14 @@ module Supplejack
     #
     # @return [ UserSet ] A UserSet object
     #
-    def self.find(id, api_key=nil, params={})
-      begin
-        response = get("/sets/#{id}", params)
-        attributes = response["set"] || {}
-        user_set = new(attributes)
-        user_set.api_key = api_key if api_key.present?
-        user_set
-      rescue RestClient::ResourceNotFound => e
-        raise Supplejack::SetNotFound, "UserSet with ID #{id} was not found"
-      end
+    def self.find(id, api_key = nil, params = {})
+      response = get("/sets/#{id}", params)
+      attributes = response['set'] || {}
+      user_set = new(attributes)
+      user_set.api_key = api_key if api_key.present?
+      user_set
+    rescue RestClient::ResourceNotFound
+      raise Supplejack::SetNotFound, "UserSet with ID #{id} was not found"
     end
 
     # Executes a GET request to the API /sets/public endpoint to retrieve
@@ -303,15 +298,15 @@ module Supplejack
     #
     # @return [ Array ] A array of Supplejack::UserSet objects
     #
-    def self.public_sets(options={})
+    def self.public_sets(options = {})
       options.reverse_merge!(page: 1, per_page: 100)
-      response = get("/sets/public", options)
-      sets_array = response["sets"] || []
-      user_sets = sets_array.map {|attrs| new(attrs) }
+      response = get('/sets/public', options)
+      sets_array = response['sets'] || []
+      user_sets = sets_array.map { |attrs| new(attrs) }
       Supplejack::PaginatedCollection.new(user_sets,
                                           options[:page].to_i,
                                           options[:per_page].to_i,
-                                          response["total"].to_i)
+                                          response['total'].to_i)
     end
 
     # Execute a GET request to the API /sets/featured endpoint to retrieve
@@ -320,16 +315,16 @@ module Supplejack
     # @return [ Array ] A array of Supplejack::UserSet objects
     #
     def self.featured_sets
-      path = "/sets/featured"
-      if Supplejack.enable_caching
-        response = Rails.cache.fetch(path, expires_in: 1.day) do
-          get(path)
-        end
-      else
-        response = get(path)
-      end
-      sets_array = response["sets"] || []
-      user_sets = sets_array.map {|attrs| new(attrs) }
+      path = '/sets/featured'
+      response = if Supplejack.enable_caching
+                   Rails.cache.fetch(path, expires_in: 1.day) do
+                     get(path)
+                   end
+                 else
+                   get(path)
+                 end
+      sets_array = response['sets'] || []
+      sets_array.map { |attrs| new(attrs) }
     end
 
     # This method is normally provided by ActiveModel::Naming module, but here we have to override it
@@ -341,7 +336,7 @@ module Supplejack
     #   user_set_path(@user_set)
     #
     def self.model_name
-      ActiveModel::Name.new(self, nil, "UserSet")
+      ActiveModel::Name.new(self, nil, 'UserSet')
     end
   end
 end

@@ -1,21 +1,59 @@
-inherit_from: .rubocop_todo.yml
 AllCops:
   Exclude:
-    - 'vendor/**/*'
-    - 'db/**/*'
-    - 'config/**/*'
-    - 'script/**/*'
-    - 'spec/**/*'
-    # Excluded because it's in such a bad state
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/config.rb'
+    - 'tmp/**/*'
   DisplayStyleGuide: true
-  # prevent bug caused by https://github.com/bbatsov/rubocop/issues/2213 on travis
-  # TODO remove
-  UseCache: false
+  DisplayCopNames: true
+Rails:
+  Enabled: true
+# https://github.com/bbatsov/rubocop/issues/1633
 Metrics/LineLength:
-  Max: 120
-Metrics/MethodLength:
-  Max: 25
-Style/MultilineOperationIndentation:
   Enabled: false
+Style/Documentation:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/ParameterLists:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/BlockLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+Style/DoubleNegation:
+  Enabled: false
+Style/MethodMissingSuper:
+  Enabled: false
+Style/MissingRespondToMissing:
+  Enabled: false
+Style/NumericPredicate:
+  Enabled: false
+Style/IfUnlessModifier:
+  Enabled: false
+Style/GuardClause:
+  Enabled: false
+Style/IfInsideElse:
+  Enabled: false
+Style/FormatStringToken:
+  Enabled: false
+Naming/PredicateName:
+  Enabled: false
+Lint/AmbiguousOperator:
+  Enabled: false
+Lint/DuplicateMethods:
+  Enabled: false  
+Lint/UriEscapeUnescape:
+  Enabled: false
+Rails/OutputSafety:
+  Enabled: false
+Rails/TimeZone:
+  Enabled: false
+Rails/Output:
+  Exclude:
+    - 'lib/**/*'

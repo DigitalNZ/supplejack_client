@@ -1,21 +1,22 @@
+# frozen_string_literal: true
 
 require 'rest-client'
 
 module Supplejack
-	module Request
-		extend ActiveSupport::Concern
+  module Request
+    extend ActiveSupport::Concern
 
-		def get(path, params={}, options={})
-      tries ||=5
+    def get(path, params = {}, options = {})
+      tries ||= 5
       params ||= {}
 
       url = full_url(path, options[:format], params)
 
       started = Time.now
-      payload = {:path => path, :params => params, :options => options}
+      payload = { path: path, params: params, options: options }
 
       begin
-        result = RestClient::Request.execute(:url => url, :method => :get, :read_timeout => timeout(options))
+        result = RestClient::Request.execute(url: url, method: :get, read_timeout: timeout(options))
         result = JSON.parse(result) if result
       rescue RestClient::ServiceUnavailable => e
         retry unless (tries -= 1).zero?
@@ -24,8 +25,10 @@ module Supplejack
         payload[:exception] = [e.class.name, e.message]
         raise e
       ensure
-        duration = (Time.now - started)*1000 # Convert to miliseconds
-        solr_request_params = result['search']['solr_request_params'] if result && result.is_a?(Hash) && result['search']
+        duration = (Time.now - started) * 1000 # Convert to milliseconds
+        # rubocop:disable Lint/SafeNavigationConsistency
+        solr_request_params = result['search']['solr_request_params'] if result&.is_a?(Hash) && result['search']
+        # rubocop:enable Lint/SafeNavigationConsistency
         @subscriber = Supplejack::LogSubscriber.new
         @subscriber.log_request(duration, payload, solr_request_params)
       end
@@ -33,70 +36,82 @@ module Supplejack
       result
     end
 
-    def post(path, params={}, payload={}, options={})
+    def post(path, params = {}, payload = {}, options = {})
       payload ||= {}
       log_request(:post, path, params, payload) do
-        response = RestClient::Request.execute(:url => full_url(path, nil, params),
-                                               :method => :post, :payload => payload.to_json,
-                                               :timeout => timeout(options),
-                                               :headers => {:content_type => :json, :accept => :json})
-        JSON.parse(response) rescue {}.to_json
+        response = RestClient::Request.execute(url: full_url(path, nil, params),
+                                               method: :post, payload: payload.to_json,
+                                               timeout: timeout(options),
+                                               headers: { content_type: :json, accept: :json })
+        begin
+           JSON.parse(response)
+        rescue StandardError
+          {}.to_json
+         end
       end
     end
 
-    def delete(path, params={}, options={})
+    def delete(path, params = {}, options = {})
       log_request(:delete, path, params, {}) do
-        RestClient::Request.execute(:url => full_url(path, nil, params),
-                                    :method => :delete,
-                                    :timeout => timeout(options))
+        RestClient::Request.execute(url: full_url(path, nil, params),
+                                    method: :delete,
+                                    timeout: timeout(options))
       end
     end
 
-    def put(path, params={}, payload={}, options={})
+    def put(path, params = {}, payload = {}, options = {})
       payload ||= {}
       log_request(:put, path, params, payload) do
-        response = RestClient::Request.execute(:url => full_url(path, nil, params),
-                                               :method => :put,
-                                               :payload => payload.to_json,
-                                               :timeout => timeout(options),
-                                               :headers => {:content_type => :json, :accept => :json})
-        JSON.parse(response) rescue {}.to_json
+        response = RestClient::Request.execute(url: full_url(path, nil, params),
+                                               method: :put,
+                                               payload: payload.to_json,
+                                               timeout: timeout(options),
+                                               headers: { content_type: :json, accept: :json })
+        begin
+           JSON.parse(response)
+        rescue StandardError
+          {}.to_json
+         end
       end
     end
 
-    def patch(path, params={}, payload={}, options={})
+    def patch(path, params = {}, payload = {}, options = {})
       payload ||= {}
       log_request(:patch, path, params, payload) do
-        response = RestClient::Request.execute(:url => full_url(path, nil, params),
-                                               :method => :patch,
-                                               :payload => payload.to_json,
-                                               :timeout => timeout(options),
-                                               :headers => {:content_type => :json, :accept => :json})
-        JSON.parse(response) rescue {}.to_json
+        response = RestClient::Request.execute(url: full_url(path, nil, params),
+                                               method: :patch,
+                                               payload: payload.to_json,
+                                               timeout: timeout(options),
+                                               headers: { content_type: :json, accept: :json })
+        begin
+           JSON.parse(response)
+        rescue StandardError
+          {}.to_json
+         end
       end
     end
 
     private
 
-    def full_url(path, format=nil, params={})
+    def full_url(path, format = nil, params = {})
       params ||= {}
-      format = format ? format : 'json'
+      format ||= 'json'
       params[:api_key] ||= Supplejack.api_key
       params[:debug] = true if Supplejack.enable_debugging
 
-      Supplejack.api_url + path + ".#{format.to_s}" + '?' + params.to_query
+      Supplejack.api_url + path + ".#{format}" + '?' + params.to_query
     end
 
-    # Found ou that RestClient timeouts are not reliable. Setting a 30 sec 
+    # Found ou that RestClient timeouts are not reliable. Setting a 30 sec
     # timeout is taking about 60 seconds re raise timeout error. So now the
-    # default value is 15 
-    def timeout(options={})
+    # default value is 15
+    def timeout(options = {})
       timeout = Supplejack.timeout.to_i == 0 ? 15 : Supplejack.timeout.to_i
       options[:timeout] || timeout
     end
 
-    def log_request(method, path, params={}, payload={})
-      information = {path: path}
+    def log_request(method, path, params = {}, payload = {})
+      information = { path: path }
       information[:params] = params
       information[:payload] = payload
       information[:method] = method
@@ -108,11 +123,10 @@ module Supplejack
         information[:exception] = [e.class.name, e.message]
         raise e
       ensure
-        duration = (Time.now - started)*1000 # Convert to miliseconds
+        duration = (Time.now - started) * 1000 # Convert to miliseconds
         @subscriber = Supplejack::LogSubscriber.new
         @subscriber.log_request(duration, information, {})
       end
     end
-
-	end
+  end
 end

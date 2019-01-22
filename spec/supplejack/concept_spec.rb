@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 class SupplejackConcept
@@ -5,26 +7,24 @@ class SupplejackConcept
 end
 
 class Search < Supplejack::Search
-  def initialize(params={})
+  def initialize(params = {})
     super
-    self.or = {:type => ['Person']}
+    self.or = { type: ['Person'] }
   end
 end
 
 class SpecialSearch < Supplejack::Search
-  def initialize(params={})
+  def initialize(params = {})
     super(params)
-    if self.api_params && self.api_params[:and]
-      self.api_params[:and].delete(:format)
-    end
+    api_params[:and].delete(:format) if api_params && api_params[:and]
   end
 end
 
 module Supplejack
   describe Concept do
     it 'initializes its attributes from a JSON string' do
-      concept = SupplejackConcept.new(%{{"name": "Name", "prefLabel": "Label"}})
-      concept.attributes.should eq({name: 'Name', prefLabel: 'Label'})
+      concept = SupplejackConcept.new(%({"name": "Name", "prefLabel": "Label"}))
+      concept.attributes.should eq(name: 'Name', prefLabel: 'Label')
     end
 
     it 'handles nil params' do
@@ -48,18 +48,18 @@ module Supplejack
     end
 
     it 'should return the value when is present in the attributes' do
-      concept = SupplejackConcept.new(:weird_method => 'Something')
+      concept = SupplejackConcept.new(weird_method: 'Something')
       concept.weird_method.should eq 'Something'
     end
 
     describe 'id' do
       it 'returns the concept_id' do
-        concept = SupplejackConcept.new({'concept_id' => '95'})
+        concept = SupplejackConcept.new('concept_id' => '95')
         concept.id.should eq 95
       end
 
       it 'returns the id' do
-        concept = SupplejackConcept.new({'id' => '96'})
+        concept = SupplejackConcept.new('id' => '96')
         concept.id.should eq 96
       end
     end
@@ -74,14 +74,14 @@ module Supplejack
       end
     end
 
-    [:next_concept, :previous_concept, :next_page, :previous_page].each do |attr|
-      describe "#{attr}" do
+    %i[next_concept previous_concept next_page previous_page].each do |attr|
+      describe attr.to_s do
         it "returns the #{attr}" do
-          concept = SupplejackConcept.new({attr => 1})
+          concept = SupplejackConcept.new(attr => 1)
           concept.send(attr).should eq 1
         end
 
-        it "returns the nil" do
+        it 'returns the nil' do
           concept = SupplejackConcept.new({})
           concept.send(attr).should be_nil
         end
@@ -100,12 +100,12 @@ module Supplejack
         end
 
         it 'requests the concept from the API' do
-          SupplejackConcept.should_receive(:get).with('/concepts/1', {}).and_return({'concept' => {}})
+          SupplejackConcept.should_receive(:get).with('/concepts/1', {}).and_return('concept' => {})
           SupplejackConcept.find(1)
         end
 
         it 'initializes a new SupplejackConcept object' do
-          SupplejackConcept.stub(:get).and_return({'concept_id' => '1', 'name' => 'Wellington'})
+          SupplejackConcept.stub(:get).and_return('concept_id' => '1', 'name' => 'Wellington')
           concept = SupplejackConcept.find(1)
           concept.class.should eq SupplejackConcept
           concept.id.should eq 1
@@ -113,8 +113,8 @@ module Supplejack
         end
 
         it 'send the fields defined in the configuration' do
-          Supplejack.stub(:fields) { [:verbose,:default] }
-          SupplejackConcept.should_receive(:get).with('/concepts/1', {}).and_return({'concept' => {}})
+          Supplejack.stub(:fields) { %i[verbose default] }
+          SupplejackConcept.should_receive(:get).with('/concepts/1', {}).and_return('concept' => {})
           SupplejackConcept.find(1)
         end
       end
