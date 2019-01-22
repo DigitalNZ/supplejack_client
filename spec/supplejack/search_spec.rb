@@ -396,7 +396,7 @@ module Supplejack
         it 'merges existing negative filters' do
           @search = Search.new(i: { '-category' => 'Groups' })
           query_parameters = { photos: { 'has_large_thumbnail_url' => 'Y' } }
-          expected_filters = { photos: { 'has_large_thumbnail_url' => 'Y', '-category' => 'Groups' } }
+          expected_filters = { photos: { has_large_thumbnail_url: 'Y', '-category'.to_sym => 'Groups' } }
           @search.counts_params(query_parameters).should include(facet_query: expected_filters)
         end
       end
