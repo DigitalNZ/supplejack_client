@@ -43,8 +43,6 @@ Style/IfInsideElse:
   Enabled: false
 Style/FormatStringToken:
   Enabled: false
-Style/RedundantSelf:
-  Enabled: false
 Style/SafeNavigation:
   Enabled: false
 Naming/PredicateName:
@@ -56,7 +54,7 @@ Lint/DuplicateMethods:
 Lint/UriEscapeUnescape:
   Enabled: false
 Rails/ActiveRecordAliases:
-  Enabled: false  
+  Enabled: false
 Rails/OutputSafety:
   Enabled: false
 Rails/TimeZone:
