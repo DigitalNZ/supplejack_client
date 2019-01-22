@@ -99,41 +99,41 @@ module Supplejack
 
     describe '#favourite?' do
       it 'returns true when the name is Favourites' do
-        Supplejack::UserSet.new(name: 'Favourites').favourite?.should be_true
+        Supplejack::UserSet.new(name: 'Favourites').favourite?.should be_truthy
       end
 
       it 'returns false when the name is something else' do
-        Supplejack::UserSet.new(name: 'Dogs').favourite?.should be_false
+        Supplejack::UserSet.new(name: 'Dogs').favourite?.should be_falsey
       end
     end
 
     describe '#private?' do
       it 'returns true when the privacy is private' do
-        Supplejack::UserSet.new(privacy: 'private').private?.should be_true
+        Supplejack::UserSet.new(privacy: 'private').private?.should be_truthy
       end
 
       it 'returns false when the privacy is something else' do
-        Supplejack::UserSet.new(privacy: 'public').private?.should be_false
+        Supplejack::UserSet.new(privacy: 'public').private?.should be_falsey
       end
     end
 
     describe '#public?' do
       it 'returns false when the privacy is private' do
-        Supplejack::UserSet.new(privacy: 'private').public?.should be_false
+        Supplejack::UserSet.new(privacy: 'private').public?.should be_falsey
       end
 
       it 'returns true when the privacy is public' do
-        Supplejack::UserSet.new(privacy: 'public').public?.should be_true
+        Supplejack::UserSet.new(privacy: 'public').public?.should be_truthy
       end
     end
 
     describe '#hidden?' do
       it 'returns false when the privacy is not hidden' do
-        Supplejack::UserSet.new(privacy: 'public').hidden?.should be_false
+        Supplejack::UserSet.new(privacy: 'public').hidden?.should be_falsey
       end
 
       it 'returns true when the privacy is hidden' do
-        Supplejack::UserSet.new(privacy: 'hidden').hidden?.should be_true
+        Supplejack::UserSet.new(privacy: 'hidden').hidden?.should be_truthy
       end
     end
 
@@ -141,11 +141,11 @@ module Supplejack
       let(:supplejack_set) { Supplejack::UserSet.new(records: [{ record_id: 1, position: 2, title: 'Dogs' }]) }
 
       it 'returns true when the record is part of the set' do
-        supplejack_set.has_record?(1).should be_true
+        supplejack_set.has_record?(1).should be_truthy
       end
 
       it 'returns false when the record is not part of the set' do
-        supplejack_set.has_record?(3).should be_false
+        supplejack_set.has_record?(3).should be_falsey
       end
     end
 
@@ -163,7 +163,7 @@ module Supplejack
 
         it 'triggers a POST request to /sets.json' do
           Supplejack::UserSet.should_receive(:post).with('/sets', { api_key: '123abc' }, set: @attributes) { { 'set' => { 'id' => 'new-id' } } }
-          supplejack_set.save.should be_true
+          supplejack_set.save.should be_truthy
         end
 
         it 'stores the id of the user_set' do
@@ -174,7 +174,7 @@ module Supplejack
 
         it 'returns false for anything other that a 200 response' do
           Supplejack::UserSet.stub(:post).and_raise(RestClient::Forbidden.new)
-          supplejack_set.save.should be_false
+          supplejack_set.save.should be_falsey
         end
       end
 
@@ -194,12 +194,12 @@ module Supplejack
     describe '#update_attributes' do
       it 'sets the attributes on the user_set' do
         supplejack_set.should_receive('attributes=').with(name: 'Mac')
-        supplejack_set.update(name: 'Mac')
+        supplejack_set.update_attributes(name: 'Mac')
       end
 
       it 'saves the user_set' do
         supplejack_set.should_receive(:save)
-        supplejack_set.update(name: 'Mac')
+        supplejack_set.update_attributes(name: 'Mac')
       end
     end
 
@@ -266,11 +266,11 @@ module Supplejack
 
     describe '#new_record?' do
       it 'returns true when the user_set doesn\'t have a id' do
-        Supplejack::UserSet.new.new_record?.should be_true
+        Supplejack::UserSet.new.new_record?.should be_truthy
       end
 
       it 'returns false when the user_set has a id' do
-        Supplejack::UserSet.new(id: '1234abc').new_record?.should be_false
+        Supplejack::UserSet.new(id: '1234abc').new_record?.should be_falsey
       end
     end
 
@@ -282,19 +282,19 @@ module Supplejack
 
       it 'executes a delete request to the API with the user set api_key' do
         Supplejack::UserSet.should_receive(:delete).with('/sets/999', api_key: '123abc')
-        supplejack_set.destroy.should be_true
+        supplejack_set.destroy.should be_truthy
       end
 
       it 'returns false when the response is not a 200' do
         Supplejack::UserSet.stub(:delete).and_raise(RestClient::Forbidden.new)
-        supplejack_set.destroy.should be_false
+        supplejack_set.destroy.should be_falsey
         supplejack_set.errors.should eq 'Forbidden'
       end
 
       it 'returns false when it is a new user set' do
         supplejack_set.stub(:new_record?) { true }
         Supplejack::UserSet.should_not_receive(:delete)
-        supplejack_set.destroy.should be_false
+        supplejack_set.destroy.should be_falsey
       end
     end
 
@@ -320,12 +320,12 @@ module Supplejack
     describe '#viewable_by?' do
       it 'returns true when the user_set is public' do
         supplejack_set.stub(:public?) { true }
-        supplejack_set.viewable_by?(nil).should be_true
+        supplejack_set.viewable_by?(nil).should be_truthy
       end
 
       it 'returns true when the user_set is hidden' do
         supplejack_set.stub(:hidden?) { true }
-        supplejack_set.viewable_by?(nil).should be_true
+        supplejack_set.viewable_by?(nil).should be_truthy
       end
 
       context 'private set' do
@@ -334,19 +334,19 @@ module Supplejack
         end
 
         it 'returns false when the user is not present' do
-          supplejack_set.viewable_by?(nil).should be_false
+          supplejack_set.viewable_by?(nil).should be_falsey
         end
 
         it 'returns true when the user has the same api_key as the user_set' do
           user = double(:user, api_key: '12345')
           supplejack_set.api_key = '12345'
-          supplejack_set.viewable_by?(user).should be_true
+          supplejack_set.viewable_by?(user).should be_truthy
         end
 
         it 'returns false if both the api_key in the user and the set are nil' do
           user = double(:user, api_key: nil)
           supplejack_set.api_key = nil
-          supplejack_set.viewable_by?(user).should be_false
+          supplejack_set.viewable_by?(user).should be_falsey
         end
       end
     end
@@ -356,18 +356,18 @@ module Supplejack
 
       it 'returns true when the users api_key is the same as the set\'s' do
         supplejack_set.stub(:api_key) { '123456' }
-        supplejack_set.owned_by?(user).should be_true
+        supplejack_set.owned_by?(user).should be_truthy
       end
 
       it 'returns false when the set and user have different api_keys' do
         supplejack_set.stub(:api_key) { '666' }
-        supplejack_set.owned_by?(user).should be_false
+        supplejack_set.owned_by?(user).should be_falsey
       end
 
       it 'returns false when both keys are nil' do
         user.stub(:api_key) { nil }
         supplejack_set.stub(:api_key) { nil }
-        supplejack_set.owned_by?(user).should be_false
+        supplejack_set.owned_by?(user).should be_falsey
       end
     end
 

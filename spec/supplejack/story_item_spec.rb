@@ -91,7 +91,7 @@ module Supplejack
       let(:story_item) { Supplejack::StoryItem.new(type: 'foo', sub_type: 'bar') }
 
       it 'sets the attributes on the StoryItem' do
-        story_item.update(type: 'Mac')
+        story_item.update_attributes(type: 'Mac')
 
         expect(story_item.type).to eq('Mac')
       end
@@ -99,7 +99,7 @@ module Supplejack
       it 'saves the StoryItem' do
         expect(story_item).to receive(:save)
 
-        story_item.update(type: 'Mac')
+        story_item.update_attributes(type: 'Mac')
       end
     end
   end

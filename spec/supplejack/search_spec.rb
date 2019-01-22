@@ -494,15 +494,15 @@ module Supplejack
 
     describe '#cacheable?' do
       it 'returns true when it doesn\'t have a text parameter' do
-        Supplejack::Search.new.cacheable?.should be_true
+        Supplejack::Search.new.cacheable?.should be_truthy
       end
 
       it 'returns false when it has a text parameter' do
-        Supplejack::Search.new(text: 'Dogs').cacheable?.should be_false
+        Supplejack::Search.new(text: 'Dogs').cacheable?.should be_falsey
       end
 
       it 'returns false then it\'s not the first page of results' do
-        Supplejack::Search.new(page: '2').cacheable?.should be_false
+        Supplejack::Search.new(page: '2').cacheable?.should be_falsey
       end
     end
 
@@ -513,11 +513,11 @@ module Supplejack
       end
 
       it 'returns true if value is in filter' do
-        @search.has_location?('Wellington').should be_true
+        @search.has_location?('Wellington').should be_truthy
       end
 
       it 'returns false is value is not in filter' do
-        @search.has_location?('Videos').should be_false
+        @search.has_location?('Videos').should be_falsey
       end
 
       context 'search filter is single valued' do
@@ -527,16 +527,16 @@ module Supplejack
         end
 
         it 'returns true if value matches filter' do
-          @search.has_location?('Wellington').should be_true
+          @search.has_location?('Wellington').should be_truthy
         end
 
         it 'returns false if value does not match the filter' do
-          @search.has_location?('Cats').should be_false
+          @search.has_location?('Cats').should be_falsey
         end
 
         it 'returns false when location has nil value' do
           @search.location = nil
-          @search.has_category?('Cats').should be_false
+          @search.has_category?('Cats').should be_falsey
         end
 
         it 'shouldn\'t search for a non existent search attribute' do

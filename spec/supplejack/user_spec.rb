@@ -25,11 +25,11 @@ module Supplejack
       end
 
       it 'initializes the use_own_api attribute' do
-        Supplejack::User.new('use_own_api_key' => true).use_own_api_key.should be_true
+        Supplejack::User.new('use_own_api_key' => true).use_own_api_key.should be_truthy
       end
 
       it 'initializes the regenerate_api_key attribute' do
-        Supplejack::User.new('regenerate_api_key' => true).regenerate_api_key.should be_true
+        Supplejack::User.new('regenerate_api_key' => true).regenerate_api_key.should be_truthy
       end
     end
 
@@ -45,7 +45,7 @@ module Supplejack
       it 'should execute a put request with the user attribtues' do
         user.stub(:api_attributes) { { username: 'John', email: 'john@boost.co.nz' } }
         Supplejack::User.should_receive(:put).with('/users/12345', {}, username: 'John', email: 'john@boost.co.nz')
-        user.save.should be_true
+        user.save.should be_truthy
       end
 
       context 'regenerate api key' do
@@ -67,7 +67,7 @@ module Supplejack
 
       it 'returns false when a error ocurred' do
         Supplejack::User.stub(:put).and_raise(RestClient::Forbidden)
-        user.save.should be_false
+        user.save.should be_falsey
       end
     end
 
@@ -75,12 +75,12 @@ module Supplejack
       it 'should execute a delete request with the admin key' do
         Supplejack.stub(:api_key) { 'admin_key' }
         Supplejack::User.should_receive(:delete).with('/users/abc')
-        user.destroy.should be_true
+        user.destroy.should be_truthy
       end
 
       it 'returns false if there is a exception' do
         Supplejack::User.stub(:delete).and_raise(RestClient::Forbidden)
-        user.destroy.should be_false
+        user.destroy.should be_falsey
       end
     end
 
@@ -111,21 +111,21 @@ module Supplejack
 
     describe '#use_own_api_key?' do
       it 'returns false by default' do
-        Supplejack::User.new.use_own_api_key?.should be_false
+        Supplejack::User.new.use_own_api_key?.should be_falsey
       end
 
       it 'returns true' do
-        Supplejack::User.new('use_own_api_key' => true).use_own_api_key?.should be_true
+        Supplejack::User.new('use_own_api_key' => true).use_own_api_key?.should be_truthy
       end
     end
 
     describe '#regenerate_api_key?' do
       it 'returns false by default' do
-        Supplejack::User.new.regenerate_api_key?.should be_false
+        Supplejack::User.new.regenerate_api_key?.should be_falsey
       end
 
       it 'returns true' do
-        Supplejack::User.new('regenerate_api_key' => true).regenerate_api_key?.should be_true
+        Supplejack::User.new('regenerate_api_key' => true).regenerate_api_key?.should be_truthy
       end
     end
 

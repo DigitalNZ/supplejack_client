@@ -42,10 +42,10 @@ module Supplejack
                                                timeout: timeout(options),
                                                headers: { content_type: :json, accept: :json })
         begin
-           JSON.parse(response)
+          JSON.parse(response)
         rescue StandardError
           {}.to_json
-         end
+        end
       end
     end
 
@@ -66,10 +66,10 @@ module Supplejack
                                                timeout: timeout(options),
                                                headers: { content_type: :json, accept: :json })
         begin
-           JSON.parse(response)
+          JSON.parse(response)
         rescue StandardError
           {}.to_json
-         end
+        end
       end
     end
 
@@ -82,10 +82,10 @@ module Supplejack
                                                timeout: timeout(options),
                                                headers: { content_type: :json, accept: :json })
         begin
-           JSON.parse(response)
+          JSON.parse(response)
         rescue StandardError
           {}.to_json
-         end
+        end
       end
     end
 

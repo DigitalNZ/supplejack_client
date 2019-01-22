@@ -207,7 +207,7 @@ module Supplejack
       let(:story) { Supplejack::Story.new(name: 'test', description: 'test') }
 
       it 'sets the attributes on the Story' do
-        story.update(name: 'Mac')
+        story.update_attributes(name: 'Mac')
 
         expect(story.name).to eq('Mac')
       end
@@ -215,7 +215,7 @@ module Supplejack
       it 'saves the Story' do
         expect(story).to receive(:save)
 
-        story.update(name: 'Mac')
+        story.update_attributes(name: 'Mac')
       end
     end
 

@@ -39,13 +39,13 @@ module Supplejack
 
       it 'triggers a post request to create a set_item with the set api_key' do
         item.should_receive(:post).with('/sets/1234/records', { api_key: 'abc' }, record: { record_id: 1 })
-        item.save.should be_true
+        item.save.should be_truthy
       end
 
       it 'sends the position when set' do
         item.should_receive(:post).with('/sets/1234/records', { api_key: 'abc' }, record: { record_id: 1, position: 3 })
         item.position = 3
-        item.save.should be_true
+        item.save.should be_truthy
       end
 
       context 'HTTP error is raised' do
@@ -54,7 +54,7 @@ module Supplejack
         end
 
         it 'returns false when a HTTP error is raised' do
-          item.save.should be_false
+          item.save.should be_falsey
         end
 
         it 'stores the error when a error is raised' do
@@ -78,7 +78,7 @@ module Supplejack
         end
 
         it 'returns false when a HTTP error is raised' do
-          item.destroy.should be_false
+          item.destroy.should be_falsey
         end
 
         it 'stores the error when a error is raised' do

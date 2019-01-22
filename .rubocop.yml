@@ -1,7 +1,7 @@
 AllCops:
   Exclude:
     - 'tmp/**/*'
-    - 'vendor/**/*'    
+    - 'vendor/**/*'
   DisplayStyleGuide: true
   DisplayCopNames: true
 Rails:
@@ -55,6 +55,8 @@ Lint/DuplicateMethods:
   Enabled: false
 Lint/UriEscapeUnescape:
   Enabled: false
+Rails/ActiveRecordAliases:
+  Enabled: false  
 Rails/OutputSafety:
   Enabled: false
 Rails/TimeZone:

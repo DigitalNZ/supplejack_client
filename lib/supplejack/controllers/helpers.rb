@@ -194,10 +194,10 @@ module Supplejack
             next unless Supplejack.sticky_facets || %i[il hl].include?(symbol) || options[:all_filters]
 
             filters = begin
-                          search.url_format.send(instance_name)
+                        search.url_format.send(instance_name)
                       rescue StandardError
                         {}
-                        end
+                      end
             filters.each do |name, value|
               field_name = value.is_a?(Array) ? "#{symbol}[#{name}][]" : "#{symbol}[#{name}]"
               values = *value
