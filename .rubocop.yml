@@ -42,12 +42,16 @@ Style/IfInsideElse:
   Enabled: false
 Style/FormatStringToken:
   Enabled: false
+Style/RedundantSelf:
+  Enabled: false
+Style/SafeNavigation:
+  Enabled: false  
 Naming/PredicateName:
   Enabled: false
 Lint/AmbiguousOperator:
   Enabled: false
 Lint/DuplicateMethods:
-  Enabled: false  
+  Enabled: false
 Lint/UriEscapeUnescape:
   Enabled: false
 Rails/OutputSafety:
