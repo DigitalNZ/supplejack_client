@@ -1,3 +1,5 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
   Exclude:
     - 'tmp/**/*'
@@ -7,56 +9,6 @@ AllCops:
 Rails:
   Enabled: true
 # https://github.com/bbatsov/rubocop/issues/1633
-Metrics/LineLength:
-  Enabled: false
-Style/Documentation:
-  Enabled: false
-Metrics/PerceivedComplexity:
-  Enabled: false
-Metrics/CyclomaticComplexity:
-  Enabled: false
-Metrics/ParameterLists:
-  Enabled: false
-Metrics/MethodLength:
-  Enabled: false
-Metrics/AbcSize:
-  Enabled: false
-Metrics/ClassLength:
-  Enabled: false
-Metrics/BlockLength:
-  Enabled: false
-Metrics/ModuleLength:
-  Enabled: false
-Style/DoubleNegation:
-  Enabled: false
-Style/MethodMissingSuper:
-  Enabled: false
-Style/MissingRespondToMissing:
-  Enabled: false
-Style/NumericPredicate:
-  Enabled: false
-Style/IfUnlessModifier:
-  Enabled: false
-Style/GuardClause:
-  Enabled: false
-Style/FormatStringToken:
-  Enabled: false
-Style/SafeNavigation:
-  Enabled: false
-Naming/PredicateName:
-  Enabled: false
-Lint/AmbiguousOperator:
-  Enabled: false
-Lint/DuplicateMethods:
-  Enabled: false
-Lint/UriEscapeUnescape:
-  Enabled: false
-Rails/ActiveRecordAliases:
-  Enabled: false
-Rails/OutputSafety:
-  Enabled: false
-Rails/TimeZone:
-  Enabled: false
 Rails/Output:
   Exclude:
     - 'lib/**/*'
