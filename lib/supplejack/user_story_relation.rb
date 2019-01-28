@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Supplejack
   class UserStoryRelation
@@ -18,20 +19,20 @@ module Supplejack
     # Returns an array of Story objects and memoizes the array
     #
     def fetch(force: false)
-      fetch_stories = -> { fetch_api_stories.map{|s| Supplejack::Story.new(s.merge(user: user.attributes))} }
+      fetch_stories = -> { fetch_api_stories.map { |s| Supplejack::Story.new(s.merge(user: user.attributes)) } }
 
       @stories = if force
                    fetch_stories.call
-                  elsif !@initial_fetch
-                    @initial_fetch = true
-                    fetch_stories.call
-                  else
-                    @stories
-                  end
+                 elsif !@initial_fetch
+                   @initial_fetch = true
+                   fetch_stories.call
+                 else
+                   @stories
+                 end
 
       @stories
     end
-    alias_method :all, :fetch
+    alias all fetch
 
     # Finds a Story object with the provided ID that belongs to the current
     # User
@@ -51,7 +52,7 @@ module Supplejack
     #
     # @return [ Supplejack::Story] A new Story object
     #
-    def build(attributes={})
+    def build(attributes = {})
       story = Supplejack::Story.new(attributes)
       story.api_key = user.api_key
 
@@ -71,7 +72,7 @@ module Supplejack
     #
     # @return [ Supplejack::Story ] A persisted Story object
     #
-    def create(attributes={})
+    def create(attributes = {})
       story = build(attributes)
       story.save
 
@@ -95,7 +96,7 @@ module Supplejack
     end
 
     def to_json(include_contents: true)
-      all.map{|story| story.as_json(include_contents: include_contents)}.to_json
+      all.map { |story| story.as_json(include_contents: include_contents) }.to_json
     end
 
     # Any method missing on this class is delegated to the Stories objects array
@@ -115,7 +116,7 @@ module Supplejack
       params = {}
 
       if user.use_own_api_key?
-        path = "/stories"
+        path = '/stories'
         params[:api_key] = user.api_key
       else
         path = "/users/#{user.api_key}/stories"

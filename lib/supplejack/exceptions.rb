@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Supplejack
   class RecordNotFound < StandardError; end
@@ -14,5 +15,5 @@ module Supplejack
 
   class RequestTimeout < StandardError; end
 
-  class ApiNotAvailable < StandardError; end  
+  class ApiNotAvailable < StandardError; end
 end

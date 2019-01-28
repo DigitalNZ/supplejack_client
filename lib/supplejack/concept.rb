@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'supplejack/search'
 
 module Supplejack
@@ -13,11 +15,19 @@ module Supplejack
       include ActiveModel::Conversion
     end
 
-    def initialize(attributes={})
+    def initialize(attributes = {})
       if attributes.is_a?(String)
-        attributes = JSON.parse(attributes) rescue {}
+        attributes = begin
+                       JSON.parse(attributes)
+                     rescue StandardError
+                       {}
+                     end
       end
-      @attributes = attributes.symbolize_keys rescue {}
+      @attributes = begin
+                      attributes.symbolize_keys
+                    rescue StandardError
+                      {}
+                    end
     end
 
     def id
@@ -26,14 +36,14 @@ module Supplejack
     end
 
     def to_param
-      self.id
+      id
     end
 
     def name
-      @attributes[:name].present? ? @attributes[:name] : "Unknown"
+      @attributes[:name].presence || 'Unknown'
     end
 
-    [:next_page, :previous_page, :next_concept, :previous_concept].each do |pagination_field|
+    %i[next_page previous_page next_concept previous_concept].each do |pagination_field|
       define_method(pagination_field) do
         @attributes[pagination_field]
       end
@@ -43,15 +53,15 @@ module Supplejack
       true
     end
 
-    def method_missing(symbol, *args, &block)
-      unless @attributes.has_key?(symbol)
-        raise NoMethodError, "undefined method '#{symbol.to_s}' for Supplejack::Concept:Module"
+    def method_missing(symbol, *_args)
+      unless @attributes.key?(symbol)
+        raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Concept:Module"
       end
+
       @attributes[symbol]
     end
 
     module ClassMethods
-
       # Finds a record or array of records from the Supplejack API
       #
       # @params [ Integer ] id an integer representing the id of a concept
@@ -61,26 +71,23 @@ module Supplejack
       # @return [ Supplejack::Concept ] A concept initialized with the class of where the
       # Supplejack::Concept module was included
       #
-      def find(id, options={})
-        begin
-          # handle malformed id's before requesting anything.
-          id = id.to_i
-          raise(Supplejack::MalformedRequest, "'#{id}' is not a valid concept id") if id <= 0
+      def find(id, options = {})
+        # handle malformed id's before requesting anything.
+        id = id.to_i
+        raise(Supplejack::MalformedRequest, "'#{id}' is not a valid concept id") if id <= 0
 
-          # This will not work until the Concepts API supports groups properly
-          #options = options.merge({fields: 'default'})
+        # This will not work until the Concepts API supports groups properly
+        # options = options.merge({fields: 'default'})
 
-          response = get("/concepts/#{id}", options)
-          new(response)
-        rescue RestClient::ResourceNotFound => e
-          raise Supplejack::ConceptNotFound, "Concept with ID #{id} was not found"
-        end
+        response = get("/concepts/#{id}", options)
+        new(response)
+      rescue RestClient::ResourceNotFound
+        raise Supplejack::ConceptNotFound, "Concept with ID #{id} was not found"
       end
 
-      def all(options={})
+      def all(options = {})
         get('/concepts', options)
       end
-
     end
   end
 end

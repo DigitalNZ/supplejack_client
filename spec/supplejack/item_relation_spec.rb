@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module Supplejack
   describe ItemRelation do
-    let(:supplejack_set) { Supplejack::UserSet.new(id: '1234567890', records: [{record_id: 1, position: 1}]) }
+    let(:supplejack_set) { Supplejack::UserSet.new(id: '1234567890', records: [{ record_id: 1, position: 1 }]) }
     let(:relation) { Supplejack::ItemRelation.new(supplejack_set) }
-  
+
     describe '#initialize' do
       it 'assigns the user_set object as @user_set' do
         Supplejack::ItemRelation.new(supplejack_set).user_set.should eq supplejack_set
@@ -101,4 +103,3 @@ module Supplejack
     end
   end
 end
-

@@ -1,13 +1,13 @@
+# frozen_string_literal: true
 
 module Supplejack
-
   class Story
     extend Supplejack::Request
     extend ActiveModel::Naming
     include ActiveModel::Conversion
 
-    MODIFIABLE_ATTRIBUTES = [:name, :description, :privacy, :copyright, :featured, :approved, :tags, :subjects, :record_ids, :count, :featured_at, :category].freeze
-    UNMODIFIABLE_ATTRIBUTES = [:id, :created_at, :updated_at, :number_of_items, :contents, :cover_thumbnail, :creator, :user_id].freeze
+    MODIFIABLE_ATTRIBUTES = %i[name description privacy copyright featured approved tags subjects record_ids count featured_at category].freeze
+    UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor *ATTRIBUTES
@@ -16,13 +16,13 @@ module Supplejack
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
     #
-    [:created_at, :updated_at].each do |attribute|
+    %i[created_at updated_at].each do |attribute|
       define_method("#{attribute}=") do |time|
-        self.instance_variable_set("@#{attribute}", Util.time(time))
+        instance_variable_set("@#{attribute}", Util.time(time))
       end
     end
 
-    def initialize(attributes={})
+    def initialize(attributes = {})
       @attributes = attributes.try(:symbolize_keys) || {}
       @user = Supplejack::User.new(@attributes[:user])
       self.attributes = @attributes
@@ -37,7 +37,7 @@ module Supplejack
     # @return [ true, false ] True if the UserSet is persisted to the API, false if not.
     #
     def new_record?
-      self.id.blank?
+      id.blank?
     end
 
     def attributes
@@ -57,18 +57,21 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def save
-      begin
-        self.attributes = self.new_record? ? self.class.post("/stories", { user_key: self.api_key }, { story: self.api_attributes }) :
-                                             self.class.patch("/stories/#{self.id}", { user_key: self.api_key }, {story: self.api_attributes})
-
-        Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
-
-        true
-      rescue StandardError => e
-        self.errors = e.message
-
-        false
+      # rubocop:disable Style/ConditionalAssignment
+      if new_record?
+        self.attributes = self.class.post('/stories', { user_key: api_key }, story: api_attributes)
+      else
+        self.attributes = self.class.patch("/stories/#{id}", { user_key: api_key }, story: api_attributes)
       end
+      # rubocop:enable Style/ConditionalAssignment
+
+      Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
+
+      true
+    rescue StandardError => e
+      self.errors = e.message
+
+      false
     end
 
     # Executes a DELETE request to the API with the Story ID and the user's api_key
@@ -79,12 +82,12 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def destroy
-      return false if self.new_record?
+      return false if new_record?
 
       begin
-        self.class.delete("/stories/#{self.id}", { user_key: self.api_key })
+        self.class.delete("/stories/#{id}", user_key: api_key)
 
-        Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
+        Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
 
         true
       rescue StandardError => e
@@ -100,12 +103,10 @@ module Supplejack
     # to have the most up to date items.
     #
     def reload
-      begin
-        self.attributes = self.class.get("/stories/#{self.id}")
-        @items = nil
-      rescue RestClient::ResourceNotFound
-        raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
-      end
+      self.attributes = self.class.get("/stories/#{id}")
+      @items = nil
+    rescue RestClient::ResourceNotFound
+      raise Supplejack::StoryNotFound, "Story with ID #{id} was not found"
     end
 
     # Executes a GET request with the provided Story ID and initializes
@@ -143,7 +144,7 @@ module Supplejack
     def attributes=(attributes)
       attributes = attributes.try(:symbolize_keys) || {}
       attributes.each do |attr, value|
-        self.send("#{attr}=", value) if ATTRIBUTES.include?(attr)
+        send("#{attr}=", value) if ATTRIBUTES.include?(attr)
       end
     end
 
@@ -151,10 +152,10 @@ module Supplejack
     #
     # @return [ true, false ] True if the API response was successful, false if not.
     #
-    def update_attributes(attributes={})
+    def update_attributes(attributes = {})
       self.attributes = attributes
 
-      self.save
+      save
     end
 
     # Returns the ApiKey of the User this Story belongs to
@@ -168,19 +169,19 @@ module Supplejack
     # Returns a comma separated list of tags for this Story
     #
     def tag_list
-      self.tags.join(', ') if self.tags
+      tags.join(', ') if tags
     end
 
     def private?
-      self.privacy == "private"
+      privacy == 'private'
     end
 
     def public?
-      self.privacy == "public"
+      privacy == 'public'
     end
 
     def hidden?
-      self.privacy == "hidden"
+      privacy == 'hidden'
     end
 
     # A Story is viewable by anyone if it's public or hidden
@@ -191,9 +192,9 @@ module Supplejack
     # @return [ true, false ] True if the user can view the current Story, false if not.
     #
     def viewable_by?(user)
-      return true if self.public? || self.hidden?
+      return true if public? || hidden?
 
-      self.owned_by?(user)
+      owned_by?(user)
     end
 
     # Executes a GET request to the API /stories/moderations endpoint to retrieve
@@ -215,9 +216,9 @@ module Supplejack
     # @return [ true, false ] True if the user owns the current Story, false if not.
     #
     def owned_by?(user)
-      return false if user.try(:api_key).blank? || self.api_key.blank?
+      return false if user.try(:api_key).blank? || api_key.blank?
 
-      user.try(:api_key) == self.api_key
+      user.try(:api_key) == api_key
     end
 
     def as_json(include_contents: true)
@@ -233,11 +234,10 @@ module Supplejack
     def retrieve_attributes(attributes_list)
       {}.tap do |attributes|
         attributes_list.each do |attribute|
-          value = self.send(attribute)
+          value = send(attribute)
           attributes[attribute] = value
         end
       end
     end
-
   end
 end

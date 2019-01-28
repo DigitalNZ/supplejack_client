@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Supplejack
   class StoryItemRelation
@@ -30,26 +31,22 @@ module Supplejack
     end
 
     def move_item(item_id, position)
-      begin
-        response = post("/stories/#{story.id}/items/#{item_id}/moves", { api_key: story.api_key, user_key: story.api_key}, {item_id: item_id, position: position})
+      response = post("/stories/#{story.id}/items/#{item_id}/moves", { api_key: story.api_key, user_key: story.api_key }, item_id: item_id, position: position)
 
-        build_items(response)
+      build_items(response)
 
-        true
-      rescue StandardError => e
-        @errors = e.inspect
+      true
+    rescue StandardError => e
+      @errors = e.inspect
 
-        false
-      end
+      false
     end
 
     def find(id)
-      @items.detect{ |i| i.id.to_s == id.to_s }
+      @items.detect { |i| i.id.to_s == id.to_s }
     end
 
-    def to_json
-      all.to_json
-    end
+    delegate :to_json, to: :all
 
     # Any method missing on this class is delegated to the StoryItems objects array
     # so that the developer can easily execute any Array method on the StoryItemRelation

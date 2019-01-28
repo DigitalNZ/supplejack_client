@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module Supplejack
-	describe StoryItem do
-
+  describe StoryItem do
     describe '#initialize' do
       it 'accepts a hash of attributes' do
         Supplejack::StoryItem.new(type: 'embed', sub_type: 'supplejack_user')
       end
 
       it 'accepts a hash with string keys' do
-        expect(Supplejack::StoryItem.new({'type' => 'embed', 'sub_type' => 'supplejack_user'}).type).to eq('embed')
+        expect(Supplejack::StoryItem.new('type' => 'embed', 'sub_type' => 'supplejack_user').type).to eq('embed')
       end
 
       it 'handles nil attributes' do
@@ -18,7 +19,7 @@ module Supplejack
 
       Supplejack::StoryItem::ATTRIBUTES.each do |attribute|
         it "should initialize the attribute #{attribute}" do
-          Supplejack::StoryItem.new({attribute => 'value'}).send(attribute).should eq 'value'
+          Supplejack::StoryItem.new(attribute => 'value').send(attribute).should eq 'value'
         end
       end
     end
@@ -28,7 +29,7 @@ module Supplejack
 
       context 'new item' do
         it 'triggers a POST request to create a story_item with the story api_key' do
-          expect(item).to receive(:post).with('/stories/1234/items', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'supplejack_user'}})
+          expect(item).to receive(:post).with('/stories/1234/items', { user_key: 'abc' }, item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
           expect(item.save).to eq(true)
         end
@@ -37,7 +38,7 @@ module Supplejack
       context 'existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
-          expect(item).to receive(:patch).with('/stories/1234/items/1', {user_key: 'abc'}, {item: {meta: {}, type: 'embed', sub_type: 'supplejack_user'}})
+          expect(item).to receive(:patch).with('/stories/1234/items/1', { user_key: 'abc' }, item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
           expect(item.save).to eq(true)
         end
@@ -64,7 +65,7 @@ module Supplejack
       let(:item) { Supplejack::StoryItem.new(story_id: '1234', api_key: 'abc', id: 5) }
 
       it 'triggers a DELETE request with the story api_key' do
-        expect(item).to receive(:delete).with('/stories/1234/items/5', {user_key: 'abc'})
+        expect(item).to receive(:delete).with('/stories/1234/items/5', user_key: 'abc')
 
         item.destroy
       end
@@ -87,7 +88,7 @@ module Supplejack
     end
 
     describe '#update_attributes' do
-      let(:story_item) {Supplejack::StoryItem.new(type: 'foo', sub_type: 'bar')}
+      let(:story_item) { Supplejack::StoryItem.new(type: 'foo', sub_type: 'bar') }
 
       it 'sets the attributes on the StoryItem' do
         story_item.update_attributes(type: 'Mac')

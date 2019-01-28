@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module Supplejack
   describe UserSetRelation do
-    let(:user) { Supplejack::User.new({authentication_token: '123abc'}) }
+    let(:user) { Supplejack::User.new(authentication_token: '123abc') }
     let(:relation) { Supplejack::UserSetRelation.new(user) }
 
     before :each do
-      relation.stub(:get) { {'sets' => [{'id' => '1', 'name' => 'dogs', 'count' => 1, 'priority' => 2}, {'id' => '2', 'name' => 'Favourites', 'count' => 1, 'priority' => 1}]} }
+      relation.stub(:get) { { 'sets' => [{ 'id' => '1', 'name' => 'dogs', 'count' => 1, 'priority' => 2 }, { 'id' => '2', 'name' => 'Favourites', 'count' => 1, 'priority' => 1 }] } }
     end
-    
+
     describe '#initialize' do
       it 'initializes with a UserSet object' do
         @user = user
@@ -28,7 +30,7 @@ module Supplejack
           set.should be_a Supplejack::UserSet
         end
       end
-      
+
       it 'should order the user sets by priority' do
         relation.fetch_sets.first.name.should eq 'Favourites'
         relation.fetch_sets.last.name.should eq 'dogs'
@@ -49,7 +51,7 @@ module Supplejack
         context 'user with use_own_api_key set to true' do
           it 'fetches the user sets with it\'s own API Key' do
             user.stub(:use_own_api_key?) { true }
-            relation.should_receive(:get).with('/sets', {api_key: '123abc'})
+            relation.should_receive(:get).with('/sets', api_key: '123abc')
             relation.sets_response
           end
         end
@@ -79,7 +81,7 @@ module Supplejack
       end
 
       it 'initializes the UserSet with the provided attributes' do
-        user_set = relation.build({name: 'Dogs', description: 'Hi'})
+        user_set = relation.build(name: 'Dogs', description: 'Hi')
         user_set.name.should eq 'Dogs'
         user_set.description.should eq 'Hi'
       end
@@ -87,16 +89,16 @@ module Supplejack
 
     describe '#create' do
       it 'initializes the UserSet and saves it' do
-        user_set = relation.build({name: 'Dogs'})
+        user_set = relation.build(name: 'Dogs')
         relation.should_receive(:build).with(name: 'Dogs') { user_set }
         user_set.should_receive(:save) { true }
-        relation.create({name: 'Dogs'}).should be_a Supplejack::UserSet
+        relation.create(name: 'Dogs').should be_a Supplejack::UserSet
       end
     end
 
     describe '#order' do
       before :each do
-        relation.stub(:get) { {'sets' => [{'name' => 'dogs', 'priority' => 2, 'count' => 3}, { 'name' => 'zavourites', 'priority' => 1, 'count' => 2},{ 'name' => 'Favourites', 'priority' => 2, 'count' => 1}]} }      
+        relation.stub(:get) { { 'sets' => [{ 'name' => 'dogs', 'priority' => 2, 'count' => 3 }, { 'name' => 'zavourites', 'priority' => 1, 'count' => 2 }, { 'name' => 'Favourites', 'priority' => 2, 'count' => 1 }] } }
       end
       it 'orders the sets based on the name' do
         relation.order(:name)[0].name.should eq 'zavourites'
@@ -106,11 +108,11 @@ module Supplejack
       it 'orders the sets based on the count' do
         relation.order(:count)[0].name.should eq 'zavourites'
         relation.order(:count)[1].name.should eq 'Favourites'
-        relation.order(:count)[2].name.should eq 'dogs' 
+        relation.order(:count)[2].name.should eq 'dogs'
       end
 
       it 'orders the sets based on the updated_at ignoring the priority' do
-        relation.stub(:get) { {'sets' => [{'name' => '1', 'updated_at' => Time.now.to_s, 'priority' => 2}, {'name' => '3', 'updated_at' => (Time.now-4.hours).to_s, 'priority' => 1},{'name' => '2', 'updated_at' => (Time.now-1.hours).to_s, 'priority' => 2}]} }
+        relation.stub(:get) { { 'sets' => [{ 'name' => '1', 'updated_at' => Time.now.to_s, 'priority' => 2 }, { 'name' => '3', 'updated_at' => (Time.now - 4.hours).to_s, 'priority' => 1 }, { 'name' => '2', 'updated_at' => (Time.now - 1.hour).to_s, 'priority' => 2 }] } }
         relation.order(:updated_at)[0].name.should eq '1'
         relation.order(:updated_at)[1].name.should eq '2'
         relation.order(:updated_at)[2].name.should eq '3'
@@ -125,7 +127,7 @@ module Supplejack
 
     context 'user sets array behaviour' do
       it 'executes array methods on the @sets array' do
-        sets = relation.stub(:sets) { [] }
+        relation.stub(:sets) { [] }
         relation.size.should eq 0
       end
 
@@ -137,6 +139,5 @@ module Supplejack
         relation.size.should eq 1
       end
     end
-
   end
 end

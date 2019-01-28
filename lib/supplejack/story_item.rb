@@ -1,6 +1,6 @@
+# frozen_string_literal: true
 
 module Supplejack
-
   # The +StoryItem+ class represents a StoryItem on the Supplejack API
   #
   # A StoryItem always belongs to a Story. represents.
@@ -15,15 +15,15 @@ module Supplejack
   class StoryItem
     include Supplejack::Request
 
-    MODIFIABLE_ATTRIBUTES = [:position, :meta, :content, :type, :sub_type, :record_id].freeze
-    UNMODIFIABLE_ATTRIBUTES = [:id, :story_id].freeze
+    MODIFIABLE_ATTRIBUTES = %i[position meta content type sub_type record_id].freeze
+    UNMODIFIABLE_ATTRIBUTES = %i[id story_id].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor *ATTRIBUTES
     attr_accessor :errors
     attr_reader :api_key
 
-    def initialize(attributes={})
+    def initialize(attributes = {})
       @attributes = attributes.try(:deep_symbolize_keys) || {}
       @api_key = @attributes[:api_key]
 
@@ -37,7 +37,7 @@ module Supplejack
       attributes = attributes.try(:deep_symbolize_keys) || {}
 
       attributes.each do |attr, value|
-        self.send("#{attr}=", value) if ATTRIBUTES.include?(attr)
+        send("#{attr}=", value) if ATTRIBUTES.include?(attr)
       end
     end
 
@@ -62,29 +62,27 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def save
-      begin
-        if self.new_record?
-          self.attributes = post(
-            "/stories/#{story_id}/items",
-            { user_key: api_key },
-            { item: self.api_attributes }
-          )
-        else
-          self.attributes = patch(
-            "/stories/#{story_id}/items/#{id}",
-            { user_key: api_key },
-            { item: self.api_attributes }
-          )
-        end
+      self.attributes = if new_record?
+                          post(
+                            "/stories/#{story_id}/items",
+                            { user_key: api_key },
+                            item: api_attributes
+                          )
+                        else
+                          patch(
+                            "/stories/#{story_id}/items/#{id}",
+                            { user_key: api_key },
+                            item: api_attributes
+                          )
+                        end
 
-        Rails.cache.delete("/users/#{self.api_key}/stories") if Supplejack.enable_caching
+      Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
 
-        true
-      rescue StandardError => e
-        self.errors = e.message
+      true
+    rescue StandardError => e
+      self.errors = e.message
 
-        false
-      end
+      false
     end
 
     # Executes a DELETE request to the API with the StoryItem ID and the stories api_key
@@ -95,10 +93,10 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def destroy
-      return false if self.new_record?
+      return false if new_record?
 
       begin
-        delete("/stories/#{story_id}/items/#{id}", { user_key: api_key })
+        delete("/stories/#{story_id}/items/#{id}", user_key: api_key)
 
         Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
 
@@ -114,15 +112,13 @@ module Supplejack
     #
     # @return [ true, false ] True if the API response was successful, false if not.
     #
-    def update_attributes(attributes={})
+    def update_attributes(attributes = {})
       self.attributes = attributes
 
-      self.save
+      save
     end
 
-    def to_json
-      attributes.to_json
-    end
+    delegate :to_json, to: :attributes
 
     private
 
@@ -130,7 +126,7 @@ module Supplejack
       attributes = {}
 
       attributes_list.each do |attribute|
-        value = self.send(attribute)
+        value = send(attribute)
 
         attributes[attribute] = value unless value.nil?
       end

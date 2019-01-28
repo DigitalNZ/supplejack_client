@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 begin
   require 'pry'
 rescue LoadError
+  nil
 end
 
 require 'supplejack/config'
@@ -14,7 +17,7 @@ module Supplejack
   require 'supplejack/log_subscriber'
   require 'supplejack/record'
   require 'supplejack/concept'
-  require "supplejack/request"
+  require 'supplejack/request'
   require 'supplejack/paginated_collection'
   require 'supplejack/controllers/helpers'
   require 'supplejack/url_formats/item_hash'

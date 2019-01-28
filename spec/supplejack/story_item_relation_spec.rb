@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module Supplejack
@@ -5,11 +7,11 @@ module Supplejack
     let(:supplejack_story) do
       Supplejack::Story.new(
         id: '1234567890',
-        user: {api_key: 'foobar'},
+        user: { api_key: 'foobar' },
         name: 'test',
         contents: [
-          {id: 1, type: 'embed', sub_type: 'supplejack_user', position: 1},
-          {id: 2, type: 'embed', sub_type: 'supplejack_user', position: 2}
+          { id: 1, type: 'embed', sub_type: 'supplejack_user', position: 1 },
+          { id: 2, type: 'embed', sub_type: 'supplejack_user', position: 2 }
         ]
       )
     end
@@ -105,11 +107,11 @@ module Supplejack
         expect(relation).to receive(:post).with(
           "/stories/#{supplejack_story.id}/items/#{item.id}/moves",
           { api_key: 'foobar', user_key: 'foobar' },
-          {item_id: 1, position: 2}
+          item_id: 1, position: 2
         ).and_return([
-          {id: 2, type: 'embed', sub_type: 'supplejack_user', position: 1},
-          {id: 1, type: 'embed', sub_type: 'supplejack_user', position: 2}
-        ])
+                       { id: 2, type: 'embed', sub_type: 'supplejack_user', position: 1 },
+                       { id: 1, type: 'embed', sub_type: 'supplejack_user', position: 2 }
+                     ])
       end
 
       it 'calls the api move item endpoint with the new position' do
@@ -125,7 +127,7 @@ module Supplejack
 
     context 'items array behaviour' do
       it 'executes array methods on the @items array' do
-        expect(relation.any?{|x| x.id == 1}).to eq(true)
+        expect(relation.any? { |x| x.id == 1 }).to eq(true)
       end
 
       it 'should be able to iterate through the items relation' do

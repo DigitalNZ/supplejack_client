@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 class SupplejackRecord
@@ -11,29 +13,28 @@ module Supplejack
     end
 
     describe '#initialize' do
-      Supplejack::Story::ATTRIBUTES.reject{|a| a =~ /_at/}.each do |attribute|
+      Supplejack::Story::ATTRIBUTES.reject { |a| a =~ /_at/ }.each do |attribute|
         it "initializes the #{attribute}" do
-          expect(Supplejack::Story.new({attribute => 'value'}).send(attribute)).to eq 'value'
+          expect(Supplejack::Story.new(attribute => 'value').send(attribute)).to eq 'value'
         end
       end
 
-
       it 'handles nil attributes' do
-        expect{Supplejack::Story.new(nil).attributes}.not_to raise_error
+        expect { Supplejack::Story.new(nil).attributes }.not_to raise_error
       end
 
       it 'initializes a user object' do
-        story = Supplejack::Story.new({user: {name: 'Juanito'}})
+        story = Supplejack::Story.new(user: { name: 'Juanito' })
         expect(story.user).to be_a Supplejack::User
         expect(story.user.name).to eq 'Juanito'
       end
     end
 
-    [:updated_at, :created_at].each do |field|
+    %i[updated_at created_at].each do |field|
       describe "##{field}" do
-        let(:story) {Supplejack::Story.new(field => '2012-08-17T10:01:00+12:00')}
+        let(:story) { Supplejack::Story.new(field => '2012-08-17T10:01:00+12:00') }
 
-        it "converts it into a time object" do
+        it 'converts it into a time object' do
           expect(story.send(field)).to be_a Time
         end
 
@@ -77,7 +78,7 @@ module Supplejack
 
     describe '#tag_list' do
       it 'returns a comma sepparated list of tags' do
-        expect(Supplejack::Story.new(tags: ['dog', 'cat']).tag_list).to eq 'dog, cat'
+        expect(Supplejack::Story.new(tags: %w[dog cat]).tag_list).to eq 'dog, cat'
       end
     end
 
@@ -123,26 +124,26 @@ module Supplejack
 
     describe '#api_key' do
       it 'returns the users api_key' do
-        expect(Supplejack::Story.new(user: {api_key: 'foobar'}).api_key).to eq 'foobar'
+        expect(Supplejack::Story.new(user: { api_key: 'foobar' }).api_key).to eq 'foobar'
       end
     end
 
     describe '#save' do
       context 'Story is a new_record' do
-        let(:attributes) {{name: 'Story Name', description: nil, privacy: nil, copyright:nil, featured_at:nil, featured:nil, approved:nil, tags:nil, subjects: nil, record_ids: nil, count: nil, category: nil}}
-        let(:user) {{ api_key: 'foobar' }}
+        let(:attributes) { { name: 'Story Name', description: nil, privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
+        let(:user) { { api_key: 'foobar' } }
         let(:story) { Supplejack::Story.new(attributes.merge(user: user)) }
 
         before do
-          expect(Supplejack::Story).to receive(:post).with("/stories", { user_key: "foobar" }, { story: attributes }) do
+          expect(Supplejack::Story).to receive(:post).with('/stories', { user_key: 'foobar' }, story: attributes) do
             {
-              "id" => "new-id",
-              "name" => attributes[:name],
-              "description" => "",
-              "tags" => [],
-              "subjects" => [],
-              "contents" => [],
-              "category" => nil
+              'id' => 'new-id',
+              'name' => attributes[:name],
+              'description' => '',
+              'tags' => [],
+              'subjects' => [],
+              'contents' => [],
+              'category' => nil
             }
           end
         end
@@ -172,20 +173,20 @@ module Supplejack
       end
 
       context 'story is not new' do
-        let(:attributes) {{name: 'Story Name', description: 'desc', privacy: nil, copyright:nil, featured_at:nil, featured:nil, approved:nil, tags:nil, subjects: nil, record_ids:nil, count: nil, category: nil}}
+        let(:attributes) { { name: 'Story Name', description: 'desc', privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
         let(:user) { { api_key: 'foobar' } }
         let(:story) { Supplejack::Story.new(attributes.merge(user: user, id: '123')) }
 
         before do
-          expect(Supplejack::Story).to receive(:patch).with("/stories/123", { user_key: user[:api_key] }, {story: attributes}) do
+          expect(Supplejack::Story).to receive(:patch).with('/stories/123', { user_key: user[:api_key] }, story: attributes) do
             {
-              "id" => "new-id",
-              "name" => attributes[:name],
-              "description" => "desc",
-              "tags" => [],
-              "subjects" => [],
-              "contents" => [],
-              "category" => nil
+              'id' => 'new-id',
+              'name' => attributes[:name],
+              'description' => 'desc',
+              'tags' => [],
+              'subjects' => [],
+              'contents' => [],
+              'category' => nil
             }
           end
         end
@@ -203,7 +204,7 @@ module Supplejack
     end
 
     describe '#update_attributes' do
-      let(:story) {Supplejack::Story.new(name: 'test', description: 'test')}
+      let(:story) { Supplejack::Story.new(name: 'test', description: 'test') }
 
       it 'sets the attributes on the Story' do
         story.update_attributes(name: 'Mac')
@@ -219,17 +220,17 @@ module Supplejack
     end
 
     describe '#attributes=' do
-      let(:story) {Supplejack::Story.new(name: 'Foo')}
+      let(:story) { Supplejack::Story.new(name: 'Foo') }
 
       it 'updates the attributes on the story' do
-        story.attributes = {name: 'Mac'}
+        story.attributes = { name: 'Mac' }
 
         expect(story.name).to eq 'Mac'
       end
 
       it 'should only update passed attributes' do
         story.id = '12345'
-        story.attributes = {name: 'Mac'}
+        story.attributes = { name: 'Mac' }
 
         expect(story.id).to eq '12345'
       end
@@ -239,7 +240,7 @@ module Supplejack
       let(:story) { Supplejack::Story.new(id: '999', user: { api_key: 'keysome' }) }
 
       it 'executes a delete request to the API with the user set api_key' do
-        expect(Supplejack::Story).to receive(:delete).with('/stories/999', { user_key: 'keysome' })
+        expect(Supplejack::Story).to receive(:delete).with('/stories/999', user_key: 'keysome')
 
         expect(story.destroy).to eq(true)
       end
@@ -263,7 +264,7 @@ module Supplejack
       let(:story) { Supplejack::Story.new(id: '123456') }
 
       it 'fetches the set from the api and repopulates the set' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { {'id' => 'abc'} }
+        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { { 'id' => 'abc' } }
 
         story.reload
 
@@ -273,11 +274,11 @@ module Supplejack
       it 'raises Supplejack::StoryNotFound if the Story is not found' do
         expect(Supplejack::Story).to receive(:get).and_raise(RestClient::ResourceNotFound.new)
 
-        expect{story.reload}.to raise_error(Supplejack::StoryNotFound)
+        expect { story.reload }.to raise_error(Supplejack::StoryNotFound)
       end
 
       it 'removes the existing @items relation' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { {'id' => 'abc'} }
+        expect(Supplejack::Story).to receive(:get).with('/stories/123456') { { 'id' => 'abc' } }
 
         story.items
         story.reload
@@ -330,28 +331,27 @@ module Supplejack
       let(:nil_api_key_story) { Supplejack::Story.new(user: { api_key: nil }) }
 
       it "returns true when the users api_key is the same as the set's" do
-        expect(users_story.owned_by? user).to eq(true)
+        expect(users_story.owned_by?(user)).to eq(true)
       end
 
       it 'returns false when the set and user have different api_keys' do
-        expect(other_story.owned_by? user).to eq(false)
+        expect(other_story.owned_by?(user)).to eq(false)
       end
 
       it 'returns false when both keys are nil' do
-        expect(nil_api_key_story.owned_by? user).to eq(false)
+        expect(nil_api_key_story.owned_by?(user)).to eq(false)
       end
     end
 
     describe '#all_public_stories' do
       let(:api_key) { '123456' }
-      it "returns an array with all stories from /stories/moderations endpoint" do
-
-        expect(Supplejack::Story).to receive(:get).and_return({
+      it 'returns an array with all stories from /stories/moderations endpoint' do
+        expect(Supplejack::Story).to receive(:get).and_return(
           'sets' => [
             Supplejack::User.new(api_key: api_key).attributes,
             Supplejack::User.new(api_key: api_key).attributes
           ]
-        })
+        )
 
         expect(Supplejack::Story.all_public_stories.count).to eq(2)
       end
@@ -362,26 +362,25 @@ module Supplejack
         {
           name: 'foo',
           description: 'desc',
-          privacy:  nil,
+          privacy: nil,
           copyright: nil,
           featured: nil,
           approved: nil,
           tags: nil,
           subjects: nil,
           record_ids: nil,
-          contents:  nil,
+          contents: nil,
           created_at: nil,
           featured_at: nil,
           updated_at: nil,
           number_of_items: nil,
           id: nil,
-          record_ids: nil,
           cover_thumbnail: nil,
           creator: 'Wilfred',
           count: nil,
           user_id: nil,
           category: nil
-       }
+        }
       end
 
       it 'fetches the Story from the API' do
@@ -401,7 +400,7 @@ module Supplejack
       # I've removed this functionality because I don't understand the use case
       # If we _do_ end up needing it in the future we can re add it
       it 'initializes the Story and sets the user api_key' do
-        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', { user_key: '98765' }).and_return(attributes)
+        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', user_key: '98765').and_return(attributes)
 
         story = Supplejack::Story.find('123abc', user_key: '98765')
 

@@ -1,15 +1,16 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module Supplejack
-	describe Item do
-
+  describe Item do
     describe '#initialize' do
       it 'accepts a hash of attributes' do
-        Supplejack::Item.new({record_id: '123', name: 'Dog'})
+        Supplejack::Item.new(record_id: '123', name: 'Dog')
       end
 
       it 'accepts a hash with string keys' do
-        Supplejack::Item.new({'record_id' => '123'}).record_id.should eq '123'
+        Supplejack::Item.new('record_id' => '123').record_id.should eq '123'
       end
 
       it 'handles nil attributes' do
@@ -17,19 +18,19 @@ module Supplejack
       end
 
       [:record_id].each do |attribute|
-        it 'should initialize the attribute #{attribute}' do
-          Supplejack::Item.new({attribute => 'value'}).send(attribute).should eq 'value'
+        it 'should initialize the attribute # {attribute}' do
+          Supplejack::Item.new(attribute => 'value').send(attribute).should eq 'value'
         end
       end
     end
 
     describe '#attributes' do
       it 'should not include the api_key' do
-        Supplejack::Item.new({api_key: '1234'}).attributes.should_not have_key(:api_key)
+        Supplejack::Item.new(api_key: '1234').attributes.should_not have_key(:api_key)
       end
 
       it 'should not include the user_set_id' do
-        Supplejack::Item.new({user_set_id: '1234'}).attributes.should_not have_key(:user_set_id)
+        Supplejack::Item.new(user_set_id: '1234').attributes.should_not have_key(:user_set_id)
       end
     end
 
@@ -37,14 +38,14 @@ module Supplejack
       let(:item) { Supplejack::Item.new(record_id: 1, title: 'Dogs', user_set_id: '1234', api_key: 'abc') }
 
       it 'triggers a post request to create a set_item with the set api_key' do
-        item.should_receive(:post).with('/sets/1234/records', {api_key: 'abc'}, {record: {record_id: 1}})
-        item.save.should be_true
+        item.should_receive(:post).with('/sets/1234/records', { api_key: 'abc' }, record: { record_id: 1 })
+        item.save.should be_truthy
       end
 
       it 'sends the position when set' do
-        item.should_receive(:post).with('/sets/1234/records', {api_key: 'abc'}, {record: {record_id: 1, position: 3}})
+        item.should_receive(:post).with('/sets/1234/records', { api_key: 'abc' }, record: { record_id: 1, position: 3 })
         item.position = 3
-        item.save.should be_true
+        item.save.should be_truthy
       end
 
       context 'HTTP error is raised' do
@@ -53,7 +54,7 @@ module Supplejack
         end
 
         it 'returns false when a HTTP error is raised' do
-          item.save.should be_false
+          item.save.should be_falsey
         end
 
         it 'stores the error when a error is raised' do
@@ -67,7 +68,7 @@ module Supplejack
       let(:item) { Supplejack::Item.new(user_set_id: '1234', api_key: 'abc', record_id: 5) }
 
       it 'triggers a delete request with the user_set api_key' do
-        item.should_receive(:delete).with('/sets/1234/records/5', {api_key: 'abc'})
+        item.should_receive(:delete).with('/sets/1234/records/5', api_key: 'abc')
         item.destroy
       end
 
@@ -77,7 +78,7 @@ module Supplejack
         end
 
         it 'returns false when a HTTP error is raised' do
-          item.destroy.should be_false
+          item.destroy.should be_falsey
         end
 
         it 'stores the error when a error is raised' do

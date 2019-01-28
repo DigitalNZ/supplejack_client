@@ -1,10 +1,10 @@
+# frozen_string_literal: true
 
 module Supplejack
-
   # The +User+ class represents a User on the Supplejack API
   #
   # A User instance can have a relationship to many UserSet objects, this
-  # relationship is managed through the UserSetRelation class which adds 
+  # relationship is managed through the UserSetRelation class which adds
   # ActiveRecord like behaviour to the relationship.
   #
   # A User object can have the following values:
@@ -21,7 +21,7 @@ module Supplejack
     attr_reader :id, :attributes, :api_key, :name, :username, :email, :encrypted_password, :sets_attributes
     attr_accessor :use_own_api_key, :regenerate_api_key
 
-    def initialize(attributes={})
+    def initialize(attributes = {})
       @attributes = attributes.try(:symbolize_keys) || {}
       @api_key = @attributes[:api_key] || @attributes[:authentication_token]
       @id = @attributes[:id]
@@ -29,8 +29,8 @@ module Supplejack
       @use_own_api_key = @attributes[:use_own_api_key] || false
       @regenerate_api_key = @attributes[:regenerate_api_key] || false
 
-      [:name, :username, :email, :encrypted_password].each do |attr|
-        self.instance_variable_set("@#{attr}", @attributes[attr])
+      %i[name username email encrypted_password].each do |attr|
+        instance_variable_set("@#{attr}", @attributes[attr])
       end
     end
 
@@ -56,13 +56,11 @@ module Supplejack
     # @return [ true, false ] True if the API returned a success response, false if not.
     #
     def save
-      begin
-        updated_user = self.class.put("/users/#{self.api_key}", {}, self.api_attributes)
-        @api_key = updated_user['user']['api_key'] if regenerate_api_key?
-        return true
-      rescue StandardError => e
-        return false
-      end
+      updated_user = self.class.put("/users/#{api_key}", {}, api_attributes)
+      @api_key = updated_user['user']['api_key'] if regenerate_api_key?
+      true
+    rescue StandardError
+      false
     end
 
     # Execures a DELETE request to the API to remove the User object.
@@ -70,13 +68,11 @@ module Supplejack
     # @return [ true, false ] True if the API returned a success response, false if not.
     #
     def destroy
-      begin
-        id_or_api_key = self.id || self.api_key
-        self.class.delete("/users/#{id_or_api_key}")
-        return true
-      rescue StandardError => e
-        return false
-      end
+      id_or_api_key = id || api_key
+      self.class.delete("/users/#{id_or_api_key}")
+      true
+    rescue StandardError
+      false
     end
 
     # Returns a Hash of attributes which will be sent with the POST request.
@@ -85,12 +81,12 @@ module Supplejack
     #
     def api_attributes
       attrs = {}
-    
-      [:name, :username, :email, :encrypted_password].each do |attr|
-        value = self.public_send(attr)
+
+      %i[name username email encrypted_password].each do |attr|
+        value = public_send(attr)
         attrs[attr] = value if value.present?
       end
-      
+
       attrs[:sets] = @sets_attributes if @sets_attributes.present?
       attrs[:authentication_token] = nil if regenerate_api_key?
       attrs
@@ -119,21 +115,21 @@ module Supplejack
     #
     def self.find(id)
       response = get("/users/#{id}")
-      new(response["user"])
+      new(response['user'])
     end
 
     # Executes a POST request to the API with the user attributes to create a User object.
     #
     # @return [ Supplejack::User ] A Supplejack::User object with recently created id and api_key.
     #
-    def self.create(attributes={})
-      response = post("/users", {}, {user: attributes})
-      new(response["user"])
+    def self.create(attributes = {})
+      response = post('/users', {}, user: attributes)
+      new(response['user'])
     end
 
-    def self.update(attributes={})
-      response = put("/users/#{attributes[:api_key]}", {}, {user: attributes})
-      new(response["user"])
+    def self.update(attributes = {})
+      response = put("/users/#{attributes[:api_key]}", {}, user: attributes)
+      new(response['user'])
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def assert(left, right, message)
   ok = left == right
   p message unless ok
@@ -25,19 +27,19 @@ p 'Done Create Story'
 
 # Update story
 p 'Update Story'
-user.stories.first.update_attributes(name: 'A new name', description: 'fizzle', tags: ['love', 'me', 'some', 'tags'])
+user.stories.first.update(name: 'A new name', description: 'fizzle', tags: %w[love me some tags])
 
 assert(user.stories.first.name, 'A new name', 'name of story does not match')
 assert(user.stories.first.description, 'fizzle', 'description of story does not match')
-assert(user.stories.first.tags, ['love', 'me', 'some', 'tags'], 'tags of story does not match')
+assert(user.stories.first.tags, %w[love me some tags], 'tags of story does not match')
 
 p 'Done Update Story'
 
 # Create items
 p 'Create Items'
 
-assert(user.stories.first.items.create(type: 'embed', sub_type: 'supplejack_user', content: {record_id: 123}, meta: {}), true, 'supplejack_user embed item failed to create')
-assert(user.stories.first.items.create(type: 'text', sub_type: 'heading', content: {value: 'Heading'}, meta: {size: 1}), true, 'heading item failed to create')
+assert(user.stories.first.items.create(type: 'embed', sub_type: 'supplejack_user', content: { record_id: 123 }, meta: {}), true, 'supplejack_user embed item failed to create')
+assert(user.stories.first.items.create(type: 'text', sub_type: 'heading', content: { value: 'Heading' }, meta: { size: 1 }), true, 'heading item failed to create')
 
 assert(user.stories.first.items.first.content[:record_id], 123, 'record_id does not match')
 assert(user.stories.first.items.last.content[:value], 'Heading', 'heading value does not match')
@@ -48,9 +50,9 @@ p 'Done Create Items'
 # Update item
 p 'Update Item'
 
-user.stories.first.items.first.update_attributes(content: {record_id: 456})
+user.stories.first.items.first.update(content: { record_id: 456 })
 
-assert(user.stories.first.items.first.content, {record_id: 456}, 'record_id does not match')
+assert(user.stories.first.items.first.content, { record_id: 456 }, 'record_id does not match')
 
 p 'Done Update Item'
 
@@ -78,9 +80,7 @@ start = Time.now
 user.stories.fetch(force: true)
 end_time = Time.now
 
-if ((start - end_time) * 1000) > 100
-  p 'did not refetch'
-end
+p 'did not refetch' if ((start - end_time) * 1000) > 100
 # Have to refetch to check if item is deleted, so I put it here
 assert(user.stories.first.items.count, 1, 'item was not deleted')
 

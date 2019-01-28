@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
+# rubocop:disable Lint/AmbiguousBlockAssociation
 module Supplejack
   describe UserStoryRelation do
-    let(:user) { Supplejack::User.new({authentication_token: '123abc'}) }
+    let(:user) { Supplejack::User.new(authentication_token: '123abc') }
     let(:relation) { Supplejack::UserStoryRelation.new(user) }
 
     before do
@@ -12,20 +15,20 @@ module Supplejack
             'id' => '1',
             'name' => 'dogs',
             'description' => 'desc',
-            'privacy' => "public",
+            'privacy' => 'public',
             'featured' => false,
             'approved' => true,
-            'number_of_items' => 1,
+            'number_of_items' => 1
           },
           {
             'id' => '2',
             'name' => 'cats',
             'description' => 'desc',
-            'privacy' => "public",
+            'privacy' => 'public',
             'featured' => false,
             'approved' => true,
-            'number_of_items' => 1,
-          },
+            'number_of_items' => 1
+          }
         ]
       end
     end
@@ -38,7 +41,7 @@ module Supplejack
 
     describe '#find' do
       it 'calls get method with story path and user_key' do
-        expect(relation).to receive(:get).with('/stories/th1s1sast0ry1d', { user_key: '123abc' })
+        expect(relation).to receive(:get).with('/stories/th1s1sast0ry1d', user_key: '123abc')
 
         relation.find('th1s1sast0ry1d')
       end
@@ -54,10 +57,10 @@ module Supplejack
       end
 
       context 'use_own_api_key? is true' do
-        let(:user) {Supplejack::User.new(api_key: '123abc', use_own_api_key: true)}
+        let(:user) { Supplejack::User.new(api_key: '123abc', use_own_api_key: true) }
 
         it 'fetches the users stories with their api_key' do
-          expect(relation).to receive(:get).with('/stories', {api_key: '123abc'})
+          expect(relation).to receive(:get).with('/stories', api_key: '123abc')
 
           relation.fetch
         end
@@ -95,7 +98,7 @@ module Supplejack
       end
 
       it 'initializes the Story with the provided attributes' do
-        story = relation.build({name: 'Dogs', description: 'Hi'})
+        story = relation.build(name: 'Dogs', description: 'Hi')
 
         expect(story.name).to eq('Dogs')
         expect(story.description).to eq('Hi')
@@ -104,12 +107,12 @@ module Supplejack
 
     describe '#create' do
       it 'initializes the Story and saves it' do
-        story = relation.build({name: 'Dogs'})
+        story = relation.build(name: 'Dogs')
         allow(relation).to receive(:build).with(name: 'Dogs') { story }
 
         expect(story).to receive(:save) { true }
 
-        expect(relation.create({name: 'Dogs'})).to be_a Supplejack::Story
+        expect(relation.create(name: 'Dogs')).to be_a Supplejack::Story
       end
 
       it 'adds the new Story to the relation' do
@@ -123,9 +126,9 @@ module Supplejack
       before do
         relation.stub(:get) do
           [
-            {'name' => 'dogs'},
-            {'name' => 'zavourites'},
-            {'name' => 'Favourites'}
+            { 'name' => 'dogs' },
+            { 'name' => 'zavourites' },
+            { 'name' => 'Favourites' }
           ]
         end
       end
@@ -154,3 +157,4 @@ module Supplejack
     end
   end
 end
+# rubocop:enable Lint/AmbiguousBlockAssociation

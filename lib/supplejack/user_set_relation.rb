@@ -1,10 +1,10 @@
+# frozen_string_literal: true
 
 module Supplejack
-
   # The +UserSetRelation+ class provides ActiveRecord like functionality to the
   # relationship between a User object and it's UserSet objects.
-  # 
-  # @exmaple 
+  #
+  # @exmaple
   #   user = Supplejack::User.find(1)
   #
   #   user.sets.build({name: "Dogs and cats"})    => Returns a new UserSet object linked to the User
@@ -20,10 +20,10 @@ module Supplejack
       @user = user
     end
 
-    # Returns an array of UserSet objects and memoizes the array 
+    # Returns an array of UserSet objects and memoizes the array
     #
     def sets
-      @sets ||= self.fetch_sets
+      @sets ||= fetch_sets
     end
 
     # Initialize an array of UserSet objects and orders them by priority.
@@ -32,8 +32,8 @@ module Supplejack
     #
     def fetch_sets
       response = sets_response
-      sets_array = response["sets"] || []
-      @sets = sets_array.map {|attributes| Supplejack::UserSet.new(attributes) }.sort_by { |set| set.priority }
+      sets_array = response['sets'] || []
+      @sets = sets_array.map { |attributes| Supplejack::UserSet.new(attributes) }.sort_by(&:priority)
     end
 
     # Execute a GET request to the API to retrieve the user_sets from a User.
@@ -46,7 +46,7 @@ module Supplejack
       params = {}
 
       if user.use_own_api_key?
-        path = "/sets"
+        path = '/sets'
         params[:api_key] = user.api_key
       else
         path = "/users/#{user.api_key}/sets"
@@ -69,16 +69,16 @@ module Supplejack
     # @return [ Supplejack::UserSet ] A UserSet object
     #
     def find(user_set_id)
-      Supplejack::UserSet.find(user_set_id, self.user.api_key)
+      Supplejack::UserSet.find(user_set_id, user.api_key)
     end
 
     # Initializes a new UserSet object and links it to the current User
     #
     # @param [ Hash ] A hash with the UserSet field names and values
     #
-    # @return [ Supplejack::UserSet] A new UserSet object 
+    # @return [ Supplejack::UserSet] A new UserSet object
     #
-    def build(attributes={})
+    def build(attributes = {})
       user_set = Supplejack::UserSet.new(attributes)
       user_set.api_key = user.api_key
       user_set
@@ -90,22 +90,22 @@ module Supplejack
     #
     # @return [ Supplejack::UserSet ] A persisted UserSet object
     #
-    def create(attributes={})
-      user_set = self.build(attributes)
+    def create(attributes = {})
+      user_set = build(attributes)
       user_set.save
       user_set
     end
 
     # Return a array of UserSet objects ordered by the priority first and then
     # in ascending order by the specified attribute.
-    # 
+    #
     # The only exception is for the "updated_at" attribute, for which ignores
     # the priority and orders on descending order.
     #
     # @param [ Symbol ] A symbol with the attribute to order the UserSet objects on.
     #
     # @return [ Array ] A array of Supplejack::UserSet objects.
-    # 
+    #
     def order(attribute)
       @sets = sets.sort_by do |set|
         value = set.send(attribute)
@@ -117,9 +117,9 @@ module Supplejack
     end
 
     # Returns an array of all UserSet objects for the current User
-    # 
+    #
     def all
-      self.sets
+      sets
     end
 
     # Any method missing on this class is delegated to the UserSet objects array
@@ -128,10 +128,9 @@ module Supplejack
     # @example
     #   user.sets.each ....     => Iterate through the UserSet objects array
     #   user.sets.size          => Get the size of the UserSet objects array
-    # 
+    #
     def method_missing(method, *args, &block)
       sets.send(method, *args, &block)
     end
-
   end
 end

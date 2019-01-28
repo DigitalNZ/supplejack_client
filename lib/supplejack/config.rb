@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Supplejack
   module Config
-
     # Default values for the supplejack configuration.
     #
     # These values can be overwritten in a rails initializer for example:
@@ -16,7 +17,7 @@ module Supplejack
     API_KEY                   = nil
     API_URL                   = 'http://api.digitalnz.org'
     URL_FORMAT                = :item_hash
-    FACETS                    = []
+    FACETS                    = [].freeze
     FACETS_PER_PAGE           = 10
     FACETS_SORT               = nil
     PER_PAGE                  = 20
@@ -25,52 +26,51 @@ module Supplejack
     RECORD_KLASS              = 'Record'
     CURRENT_USER_METHOD       = :current_user
     SEARCH_KLASS              = nil
-    FIELDS                    = [:default]
-    SUPPLEJACK_FIELDS         = []
-    SPECIAL_FIELDS            = []
+    FIELDS                    = [:default].freeze
+    SUPPLEJACK_FIELDS         = [].freeze
+    SPECIAL_FIELDS            = [].freeze
     ENABLE_DEBUGGING          = false
     ENABLE_CACHING            = false
     ATTRIBUTE_TAG             = :p
     LABEL_TAG                 = :strong
     LABEL_CLASS               = nil
     STICKY_FACETS             = false
-    NON_TEXT_FIELDS           = []
+    NON_TEXT_FIELDS           = [].freeze
 
-
-    VALID_OPTIONS_KEYS = [
-      :api_key,
-      :api_url,
-      :facets,
-      :facets_per_page,
-      :facets_sort,
-      :single_value_methods,
-      :search_attributes,
-      :url_format,
-      :per_page,
-      :pagination_limit,
-      :timeout,
-      :record_klass,
-      :current_user_method,
-      :search_klass,
-      :fields,
-      :supplejack_fields,
-      :special_fields,
-      :enable_debugging,
-      :enable_caching,
-      :attribute_tag,
-      :label_tag,
-      :label_class,
-      :sticky_facets,
-      :non_text_fields
-    ]
+    VALID_OPTIONS_KEYS = %i[
+      api_key
+      api_url
+      facets
+      facets_per_page
+      facets_sort
+      single_value_methods
+      search_attributes
+      url_format
+      per_page
+      pagination_limit
+      timeout
+      record_klass
+      current_user_method
+      search_klass
+      fields
+      supplejack_fields
+      special_fields
+      enable_debugging
+      enable_caching
+      attribute_tag
+      label_tag
+      label_class
+      sticky_facets
+      non_text_fields
+    ].freeze
 
     SINGLE_VALUE_METHODS = [
       :description
-    ]
+    ].freeze
 
     SEARCH_ATTRIBUTES = [
       :location
-    ]
+    ].freeze
 
     attr_accessor *VALID_OPTIONS_KEYS
 
