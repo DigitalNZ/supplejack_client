@@ -204,8 +204,8 @@ module Supplejack
 
     def self.all_public_stories(options = {})
       response = get('/stories/moderations', options)
-      sets_array = response['sets'] || []
-      sets_array.map { |attrs| new(attrs) }
+      response['sets'].map! { |attrs| new(attrs) } || []
+      options[:meta_included] ? response : response['sets']
     end
 
     # Compares the api_key of the user and the api_key assigned to the Story
