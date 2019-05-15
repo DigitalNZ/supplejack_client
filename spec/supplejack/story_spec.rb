@@ -355,6 +355,20 @@ module Supplejack
 
         expect(Supplejack::Story.all_public_stories.count).to eq(2)
       end
+
+      it 'includes stories metadata if :meta_included option passed' do
+        expect(Supplejack::Story).to receive(:get).and_return(
+          'sets' => [
+            Supplejack::User.new(api_key: api_key).attributes,
+            Supplejack::User.new(api_key: api_key).attributes
+          ],
+          'per_page' => 10,
+          'page' => 1,
+          'total' => 2,
+          'total_filtered' => 2
+        )
+        expect(Supplejack::Story.all_public_stories(meta_included: true)).to include('sets', 'total_filtered', 'total', 'page', 'per_page')
+      end
     end
 
     describe '#find' do
