@@ -127,15 +127,18 @@ module Supplejack
         return '' unless params[:search]
 
         links = ''.html_safe
-
         options = search.options
-
-        previous_label = html_options[:prev_label] ||= t('supplejack_client.previous', default: 'Previous')
-        next_label = html_options[:next_label] ||= t('supplejack_client.next', default: 'Next')
-        previous_label = previous_label.html_safe
-        next_label = next_label.html_safe
-
         options[:path] = params[:search][:path].gsub(/(\W|\d)/, '') if params[:search] && params[:search][:path]
+
+        links = previous_record_link(links, record, options, html_options)
+        links = next_record_link(links, record, options, html_options)
+
+        content_tag(:span, links, class: html_options[:wrapper_class])
+      end
+
+      def previous_record_link(links, record, options, html_options)
+        previous_label = html_options[:prev_label] ||= t('supplejack_client.previous', default: 'Previous')
+        previous_label = previous_label.html_safe
 
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
@@ -143,6 +146,12 @@ module Supplejack
         else
           links += content_tag(:span, previous_label, class: html_options[:prev_class])
         end
+        links
+      end
+
+      def next_record_link(links, record, options, html_options)
+        next_label = html_options[:next_label] ||= t('supplejack_client.next', default: 'Next')
+        next_label = next_label.html_safe
 
         if record.next_record
           options[:page] = record.next_page if record.next_page.to_i > 1
@@ -150,8 +159,7 @@ module Supplejack
         else
           links += content_tag(:span, next_label, class: html_options[:next_class])
         end
-
-        content_tag(:span, links, class: html_options[:wrapper_class])
+        links
       end
 
       def attribute_link_replacement(value, link_pattern)
