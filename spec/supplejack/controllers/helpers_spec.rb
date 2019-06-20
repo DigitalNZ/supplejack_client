@@ -265,6 +265,26 @@ module Supplejack
           @c.attribute_link_replacement('Images', '/records?i[category]=%7B%7Bvalue%7D%7D').should eq(@c.link_to('Images', '/records?i[category]=Images'))
         end
       end
+
+      describe '#next_previous_links' do
+        before(:each) do
+          @previous_record = mock_record(record_id: 1234)
+          @next_record = mock_record(record_id: 5678)
+          @record = mock_record(record_id: 1_234_567, previous_record: @previous_record, next_record: @next_record)
+          @c.stub(:params) { { search: { text: 'cat' } } }
+        end
+
+        it 'returns empty when there is no search query' do
+          @c.stub(:params) { {} }
+          @c.next_previous_links(@record).should eq ''
+        end
+
+        it 'displays the next and previous links' do
+          @c.stub(:previous_record_link) { '<a class="prev" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Previous result</a>' }
+          @c.stub(:next_record_link) { '<a class="next" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Next result</a>' }
+          @c.next_previous_links(@record).should eq %(<span class=\"nav\">&lt;a class=&quot;next&quot; href=&quot;/records/37674826?search%5Bpath%5D=items&amp;amp;search%5Btext%5D=Forest+fire&quot;&gt;Next result&lt;/a&gt;</span>)
+        end
+      end
     end
   end
 end
