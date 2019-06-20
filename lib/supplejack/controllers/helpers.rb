@@ -120,6 +120,7 @@ module Supplejack
       # @option options [ String ] :wrapper_class The CSS class to use on the wrapping span
       # @option options [ String ] :prev_label Any HTML to be put inside the previous button
       # @option options [ String ] :next_label Any HTML to be put inside the next button
+      # @option options [ String ] :include_query_string includes the querystring in the button links
       #
       def next_previous_links(record, html_options = {})
         html_options.reverse_merge!(prev_class: 'prev', next_class: 'next', wrapper_class: 'nav', prev_label: nil, next_label: nil)
@@ -137,16 +138,19 @@ module Supplejack
 
         options[:path] = params[:search][:path].gsub(/(\W|\d)/, '') if params[:search] && params[:search][:path]
 
+        path = record_path(record.previous_record, search: options)
+        path = "/#{path}?#{request.query_string}" if options.include_query_string
+
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
-          links += link_to(raw(previous_label), record_path(record.previous_record, search: options), class: html_options[:prev_class]).html_safe
+          links += link_to(raw(previous_label), path, class: html_options[:prev_class]).html_safe
         else
           links += content_tag(:span, previous_label, class: html_options[:prev_class])
         end
 
         if record.next_record
           options[:page] = record.next_page if record.next_page.to_i > 1
-          links += link_to(raw(next_label), record_path(record.next_record, search: options), class: html_options[:next_class]).html_safe
+          links += link_to(raw(next_label), path, class: html_options[:next_class]).html_safe
         else
           links += content_tag(:span, next_label, class: html_options[:next_class])
         end
@@ -277,51 +281,6 @@ module Supplejack
         end
         url = url + '?' + { search: search_options }.to_query if search_options.try(:any?)
         link_to(name, url, html_options)
-      end
-
-      # Displays the next and/or previous links based on the record and current search
-      #
-      # @params [ Supplejack::Record ] The record object which has information about the next/previous record and pages.
-      # @params [ Hash ] options Hash of options to customize the output,
-      #   supported options: :prev_class, :next_class, :prev_label, :next_label
-      #
-      # @option options [ String ] :prev_class The CSS class to use on the previous button
-      # @option options [ String ] :next_class The CSS class to use on the next button
-      # @option options [ String ] :wrapper_class The CSS class to use on the wrapping span
-      # @option options [ String ] :prev_label Any HTML to be put inside the previous button
-      # @option options [ String ] :next_label Any HTML to be put inside the next button
-      #
-      def next_previous_links(record, html_options = {})
-        html_options.reverse_merge!(prev_class: 'prev', next_class: 'next', wrapper_class: 'nav', prev_label: nil, next_label: nil)
-
-        return '' unless params[:search]
-
-        links = ''.html_safe
-
-        options = search.options
-
-        previous_label = html_options[:prev_label] ||= t('supplejack_client.previous', default: 'Previous')
-        next_label = html_options[:next_label] ||= t('supplejack_client.next', default: 'Next')
-        previous_label = previous_label.html_safe
-        next_label = next_label.html_safe
-
-        options[:path] = params[:search][:path].gsub(/(\W|\d)/, '') if params[:search] && params[:search][:path]
-
-        if record.previous_record
-          options[:page] = record.previous_page if record.previous_page.to_i > 1
-          links += link_to(raw(previous_label), record_path(record.previous_record, search: options), class: html_options[:prev_class]).html_safe
-        else
-          links += content_tag(:span, previous_label, class: html_options[:prev_class])
-        end
-
-        if record.next_record
-          options[:page] = record.next_page if record.next_page.to_i > 1
-          links += link_to(raw(next_label), record_path(record.next_record, search: options), class: html_options[:next_class]).html_safe
-        else
-          links += content_tag(:span, next_label, class: html_options[:next_class])
-        end
-
-        content_tag(:span, links, class: html_options[:wrapper_class])
       end
 
       def generate_path(name, options = {})
