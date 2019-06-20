@@ -139,7 +139,7 @@ module Supplejack
         options[:path] = params[:search][:path].gsub(/(\W|\d)/, '') if params[:search] && params[:search][:path]
 
         path = record_path(record.previous_record, search: options)
-        path = "/#{path}?#{request.query_string}" if options.include_query_string
+        path = "/#{path}?#{request.query_string}" if html_options[:include_query_string]
 
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
