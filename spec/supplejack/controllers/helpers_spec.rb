@@ -270,7 +270,7 @@ module Supplejack
         before(:each) do
           @previous_record = mock_record(record_id: 1234)
           @next_record = mock_record(record_id: 5678)
-          @record = mock_record(record_id: 987654321, previous_record: @previous_record, next_record: @next_record)
+          @record = mock_record(record_id: 1_234_567, previous_record: @previous_record, next_record: @next_record)
           @c.stub(:params) { { search: { text: 'cat' } } }
         end
 
