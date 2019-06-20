@@ -142,7 +142,9 @@ module Supplejack
 
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
-          links += link_to(raw(previous_label), link_to_record(record_path(record.previous_record, search: options)), class: html_options[:prev_class]).html_safe
+          path = record_path(record.previous_record, search: options)
+          path = "#{path}?#{request.query_string}" if html_options[:include_query_string]
+          links += link_to(raw(previous_label), path, class: html_options[:prev_class]).html_safe
         else
           links += content_tag(:span, previous_label, class: html_options[:prev_class])
         end
