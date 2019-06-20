@@ -120,6 +120,7 @@ module Supplejack
       # @option options [ String ] :wrapper_class The CSS class to use on the wrapping span
       # @option options [ String ] :prev_label Any HTML to be put inside the previous button
       # @option options [ String ] :next_label Any HTML to be put inside the next button
+      # @option options [ String ] :include_querystring Includes the query string in the button links
       #
       def next_previous_links(record, html_options = {})
         html_options.reverse_merge!(prev_class: 'prev', next_class: 'next', wrapper_class: 'nav', prev_label: nil, next_label: nil)
@@ -142,7 +143,9 @@ module Supplejack
 
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
-          links += link_to(raw(previous_label), link_to_record(record_path(record.previous_record, search: options)), class: html_options[:prev_class]).html_safe
+          path = record_path(record.previous_record, search: options)
+          path = "#{path}?#{request.query_string}" if html_options[:include_querystring]
+          links += link_to(raw(previous_label), path, class: html_options[:prev_class]).html_safe
         else
           links += content_tag(:span, previous_label, class: html_options[:prev_class])
         end
@@ -155,7 +158,9 @@ module Supplejack
 
         if record.next_record
           options[:page] = record.next_page if record.next_page.to_i > 1
-          links += link_to(raw(next_label), link_to_record(record_path(record.next_record, search: options)), class: html_options[:next_class]).html_safe
+          path = record_path(record.next_record, search: options)
+          path = "#{path}?#{request.query_string}" if html_options[:include_querystring]
+          links += link_to(raw(next_label), path, class: html_options[:next_class]).html_safe
         else
           links += content_tag(:span, next_label, class: html_options[:next_class])
         end
