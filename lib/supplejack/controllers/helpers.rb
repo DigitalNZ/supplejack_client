@@ -138,11 +138,10 @@ module Supplejack
 
         options[:path] = params[:search][:path].gsub(/(\W|\d)/, '') if params[:search] && params[:search][:path]
 
-        path = record_path(record.previous_record, search: options)
-        path = "/#{path}?#{request.query_string}" if html_options[:include_query_string]
-
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
+          path = record_path(record.previous_record, search: options)
+          path = "#{path}?#{request.query_string}" if html_options[:include_query_string]
           links += link_to(raw(previous_label), path, class: html_options[:prev_class]).html_safe
         else
           links += content_tag(:span, previous_label, class: html_options[:prev_class])
@@ -150,6 +149,8 @@ module Supplejack
 
         if record.next_record
           options[:page] = record.next_page if record.next_page.to_i > 1
+          path = record_path(record.next_record, search: options)
+          path = "#{path}?#{request.query_string}" if html_options[:include_query_string]
           links += link_to(raw(next_label), path, class: html_options[:next_class]).html_safe
         else
           links += content_tag(:span, next_label, class: html_options[:next_class])
