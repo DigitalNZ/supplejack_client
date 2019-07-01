@@ -138,12 +138,16 @@ module Supplejack
       end
 
       def previous_record_link(links, record, options, html_options)
+        binding.pry
+
         previous_label = html_options[:prev_label] ||= t('supplejack_client.previous', default: 'Previous')
         previous_label = previous_label.html_safe
 
         if record.previous_record
           options[:page] = record.previous_page if record.previous_page.to_i > 1
           path = record_path(record.previous_record, search: options)
+          binding.pry
+
           path = "#{path}?#{request.query_string}" if html_options[:include_querystring]
           links += link_to(raw(previous_label), path, class: html_options[:prev_class]).html_safe
         else
@@ -153,12 +157,16 @@ module Supplejack
       end
 
       def next_record_link(links, record, options, html_options)
+        binding.pry
+
         next_label = html_options[:next_label] ||= t('supplejack_client.next', default: 'Next')
         next_label = next_label.html_safe
 
         if record.next_record
           options[:page] = record.next_page if record.next_page.to_i > 1
           path = record_path(record.next_record, search: options)
+
+          binding.pry
           path = "#{path}?#{request.query_string}" if html_options[:include_querystring]
           links += link_to(raw(next_label), path, class: html_options[:next_class]).html_safe
         else
