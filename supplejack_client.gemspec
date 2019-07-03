@@ -16,13 +16,11 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
   gem.version       = Supplejack::VERSION
 
-  # rubocop:disable Gemspec/RubyVersionGlobalsUsage
   if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.2.2')
     gem.add_dependency 'rails', '>= 3.2.12', '< 5.0'
   else
     gem.add_dependency 'rails', '>= 3.2.12'
   end
-  # rubocop:enable Gemspec/RubyVersionGlobalsUsage
 
   gem.add_dependency 'rails_autolink', '~> 1.0'
   gem.add_dependency 'rest-client', '~> 2.0'
