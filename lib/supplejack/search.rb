@@ -112,6 +112,17 @@ module Supplejack
       facets.find { |facet| facet.name == value }
     end
 
+    def facet_pivots
+      return @facet_pivots if @facet_pivots
+
+      execute_request
+
+      facet_pivots = @response['search']['facet_pivots'] || {}
+
+      facet_array = facet_pivots.sort_by { |facet, _rows| Supplejack.facets.find_index(facet.to_sym) || 100 }
+      @facet_pivots = facet_array.map { |name, values| Supplejack::FacetPivot.new(name, values) }
+    end
+
     # Returns a array of +Supplejack::Record+ objects wrapped in a Paginated Collection
     # which provides methods for will_paginate and kaminari to work properly
     #
