@@ -34,6 +34,8 @@ module Supplejack
       @url_format       = Supplejack.url_format_klass.new(@params, self)
       @filters          = @url_format.filters
 
+      @facet_pivots     = @params[:facet_pivots]
+
       @api_params       = @url_format.to_api_hash
       @record_klass     = @params[:record_klass] || Supplejack.record_klass
 
@@ -42,7 +44,6 @@ module Supplejack
       @total        = nil
       @results      = nil
       @facets       = nil
-      @facet_pivots = nil
 
       Supplejack.search_attributes.each do |attribute|
         # We have to define the attribute accessors for the filters at initialization of the search instance
