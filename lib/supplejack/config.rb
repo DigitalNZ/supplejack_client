@@ -40,6 +40,7 @@ module Supplejack
     VALID_OPTIONS_KEYS = %i[
       api_key
       api_url
+      facet_pivots
       facets
       facets_per_page
       facets_sort
