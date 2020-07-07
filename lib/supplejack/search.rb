@@ -33,7 +33,7 @@ module Supplejack
       @direction        = @params[:direction]
       @url_format       = Supplejack.url_format_klass.new(@params, self)
       @filters          = @url_format.filters
-      
+
       @api_params       = @url_format.to_api_hash
       @record_klass     = @params[:record_klass] || Supplejack.record_klass
 
