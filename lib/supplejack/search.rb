@@ -38,9 +38,9 @@ module Supplejack
 
       # Do not execute the actual search right away, it should be lazy loaded
       # when the user needs one of the following values.
-      @total        = nil
-      @results      = nil
-      @facets       = nil
+      @total    = nil
+      @results  = nil
+      @facets   = nil
 
       Supplejack.search_attributes.each do |attribute|
         # We have to define the attribute accessors for the filters at initialization of the search instance

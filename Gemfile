@@ -5,8 +5,6 @@ source 'http://rubygems.org'
 # Specify your gem's dependencies in supplejack.gemspec
 gemspec
 
-gem 'pry'
-
 group :development do
   if RUBY_VERSION >= '2.2.5'
     gem 'guard'
