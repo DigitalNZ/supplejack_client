@@ -33,9 +33,6 @@ module Supplejack
       @direction        = @params[:direction]
       @url_format       = Supplejack.url_format_klass.new(@params, self)
       @filters          = @url_format.filters
-
-      @facet_pivots     = @params[:facet_pivots]
-
       @api_params       = @url_format.to_api_hash
       @record_klass     = @params[:record_klass] || Supplejack.record_klass
 
@@ -120,7 +117,7 @@ module Supplejack
       facet_pivots = @response['search']['facet_pivots'] || {}
 
       facet_array = facet_pivots.sort_by { |facet, _rows| Supplejack.facets.find_index(facet.to_sym) || 100 }
-      facet_array.map { |name, values| Supplejack::FacetPivot.new(name, values) }
+      facet_array.map { |name, values| Supplejack::Facet.new(name, values) }
     end
 
     # Returns a array of +Supplejack::Record+ objects wrapped in a Paginated Collection
@@ -307,7 +304,7 @@ module Supplejack
 
     def execute_request
       return @response if @response
-
+      
       @api_params = merge_extra_filters(@api_params)
 
       begin
