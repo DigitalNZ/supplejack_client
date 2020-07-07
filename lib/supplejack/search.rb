@@ -304,7 +304,7 @@ module Supplejack
 
     def execute_request
       return @response if @response
-      
+
       @api_params = merge_extra_filters(@api_params)
 
       begin
