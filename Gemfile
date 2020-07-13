@@ -14,5 +14,6 @@ end
 
 group :test do
   gem 'rubocop', require: false
+  gem 'rubocop-rails', '2.5.0', require: false
   gem 'simplecov', require: false
 end
