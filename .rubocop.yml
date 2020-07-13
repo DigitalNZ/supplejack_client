@@ -6,9 +6,4 @@ AllCops:
     - 'vendor/**/*'
   DisplayStyleGuide: true
   DisplayCopNames: true
-Rails:
-  Enabled: true
 # https://github.com/bbatsov/rubocop/issues/1633
-Rails/Output:
-  Exclude:
-    - 'lib/**/*'

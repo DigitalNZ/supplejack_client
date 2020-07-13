@@ -14,5 +14,8 @@ end
 
 group :test do
   gem 'rubocop', require: false
+
+  gem 'rubocop-rails', require: false if RUBY_VERSION >= '2.2.5'
+
   gem 'simplecov', require: false
 end

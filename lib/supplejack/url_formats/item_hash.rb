@@ -26,6 +26,7 @@ module Supplejack
         hash[:and]              = and_filters if and_filters.try(:any?)
         hash[:without]          = without_filters if without_filters.try(:any?)
         hash[:facets]           = params[:facets] if params[:facets].present?
+        hash[:facet_pivots]     = params[:facet_pivots] if params[:facet_pivots].present?
         hash[:facets_per_page]  = params[:facets_per_page].to_i if params[:facets_per_page].present?
         hash[:fields]           = params[:fields] || Supplejack.fields.join(',')
         hash[:query_fields]     = query_fields if query_fields

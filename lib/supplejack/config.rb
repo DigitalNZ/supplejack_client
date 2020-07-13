@@ -18,6 +18,7 @@ module Supplejack
     API_URL                   = 'http://api.digitalnz.org'
     URL_FORMAT                = :item_hash
     FACETS                    = [].freeze
+    FACETS_PIVOTS             = [].freeze
     FACETS_PER_PAGE           = 10
     FACETS_SORT               = nil
     PER_PAGE                  = 20
@@ -40,6 +41,7 @@ module Supplejack
     VALID_OPTIONS_KEYS = %i[
       api_key
       api_url
+      facet_pivots
       facets
       facets_per_page
       facets_sort
@@ -92,6 +94,7 @@ module Supplejack
       self.api_key                  = API_KEY
       self.api_url                  = API_URL
       self.facets                   = FACETS
+      self.facet_pivots             = FACETS_PIVOTS
       self.facets_per_page          = FACETS_PER_PAGE
       self.facets_sort              = FACETS_SORT
       self.sticky_facets            = STICKY_FACETS

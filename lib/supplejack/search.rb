@@ -3,6 +3,7 @@
 require 'supplejack/request'
 require 'digest/md5'
 
+# rubocop:disable Metrics/ClassLength
 module Supplejack
   # FIXME: make me smaller!
   class Search
@@ -110,6 +111,15 @@ module Supplejack
 
     def facet(value)
       facets.find { |facet| facet.name == value }
+    end
+
+    def facet_pivots
+      execute_request
+
+      facet_pivots = @response['search']['facet_pivots'] || @response['search'][:facet_pivots] || {}
+
+      facet_array = facet_pivots.sort_by { |facet, _rows| Supplejack.facets.find_index(facet.to_sym) || 100 }
+      facet_array.map { |name, values| Supplejack::Facet.new(name, values) }
     end
 
     # Returns a array of +Supplejack::Record+ objects wrapped in a Paginated Collection
@@ -271,6 +281,7 @@ module Supplejack
       facet_params[:facets] = facet_name.to_s
       facet_params[:per_page] = 0
       facet_params[:facets_per_page] = options[:facets_per_page] if options[:facets_per_page]
+      facet_params[:facet_pivots] = options[:facet_pivots] if options[:facet_pivots]
 
       facet_params = merge_extra_filters(facet_params)
 
@@ -365,3 +376,4 @@ module Supplejack
     end
   end
 end
+# rubocop:enable Metrics/ClassLength

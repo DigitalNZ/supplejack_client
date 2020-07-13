@@ -224,10 +224,10 @@ module Supplejack
         begin
           self.class.delete("/sets/#{id}", api_key: api_key)
           Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
-          return true
+          true
         rescue StandardError => e
           self.errors = e.message
-          return false
+          false
         end
       end
     end
