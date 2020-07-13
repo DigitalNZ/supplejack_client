@@ -217,14 +217,14 @@ module Supplejack
       end
 
       it 'returns facet_pivots correct when there are facet pivots' do
-        @search.instance_variable_set(:@response, 'search' => { 'facet_pivots':
+        @search.instance_variable_set(:@response, 'search' => { facet_pivots:
           {
             'display_collection_s':
               [
                 {
-                  'field': 'display_collection_s',
-                  'value': 'Auckland Libraries Heritage Images Collection',
-                  'count': 26
+                  'field' => 'display_collection_s',
+                  'value' => 'Auckland Libraries Heritage Images Collection',
+                  'count' => 26
                 }
               ]
           } })
