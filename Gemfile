@@ -17,8 +17,6 @@ group :test do
 
   if RUBY_VERSION >= '2.2.5'
     gem 'rubocop-rails', require: false
-  else
-    gem 'rubocop-rails', '2.5.0', require: false
   end
 
   gem 'simplecov', require: false
