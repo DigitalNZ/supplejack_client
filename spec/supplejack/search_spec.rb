@@ -10,6 +10,8 @@ class TestItem
   def initialize(attributes = {}) end
 end
 
+# rubocop:disable Metrics/BlockLength
+# rubocop:disable Metrics/ModuleLength
 module Supplejack
   describe Search do
     describe '#initalize' do
@@ -203,7 +205,7 @@ module Supplejack
       end
 
       it 'returns empty array when there are no facet pivots' do
-        @search.instance_variable_set(:@response, 'search' => { })
+        @search.instance_variable_set(:@response, 'search' => {})
 
         expect(@search.facet_pivots).to eq []
       end
@@ -215,14 +217,17 @@ module Supplejack
       end
 
       it 'returns facet_pivots correct when there are facet pivots' do
-        @search.instance_variable_set(:@response, 'search' => { 'facet_pivots': {
-          "display_collection_s": [
-            {
-              "field": "display_collection_s",
-              "value": "Auckland Libraries Heritage Images Collection",
-              "count": 26
-            }]
-        } })
+        @search.instance_variable_set(:@response, 'search' => { 'facet_pivots':
+          {
+            'display_collection_s':
+              [
+                {
+                  'field': 'display_collection_s',
+                  'value': 'Auckland Libraries Heritage Images Collection',
+                  'count': 26
+                }
+              ]
+          } })
 
         expect(@search.facet_pivots).to_not eq []
       end
@@ -769,3 +774,5 @@ module Supplejack
     end
   end
 end
+# rubocop:enable Metrics/BlockLength
+# rubocop:enable Metrics/ModuleLength
