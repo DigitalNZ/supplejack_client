@@ -4,6 +4,7 @@ require 'supplejack_client'
 require 'rails'
 require 'active_model'
 
+# rubocop:disable Lint/SendWithMixinArgument
 module Supplejack
   class Engine < Rails::Engine
     initializer 'supplejack.helpers' do
@@ -12,3 +13,4 @@ module Supplejack
     end
   end
 end
+# rubocop:enable Lint/SendWithMixinArgument
