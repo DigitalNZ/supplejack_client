@@ -219,7 +219,7 @@ module Supplejack
       it 'returns facet_pivots correct when there are facet pivots' do
         @search.instance_variable_set(:@response, 'search' => { facet_pivots:
           {
-            'display_collection_s':
+            'display_collection_s' =>
               [
                 {
                   'field' => 'display_collection_s',
