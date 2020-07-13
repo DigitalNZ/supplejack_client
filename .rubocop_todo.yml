@@ -88,6 +88,11 @@ Rails/ActiveRecordAliases:
     - 'spec/supplejack/story_spec.rb'
     - 'spec/supplejack/user_set_spec.rb'
 
+# Offense count: 19
+Rails/OutputSafety:
+  Exclude:
+    - 'lib/supplejack/controllers/helpers.rb'
+
 # Offense count: 14
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: strict, flexible
