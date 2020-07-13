@@ -80,33 +80,6 @@ Naming/PredicateName:
     - 'lib/supplejack/url_formats/item_hash.rb'
     - 'lib/supplejack/user_set.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-Rails/ActiveRecordAliases:
-  Exclude:
-    - 'spec/supplejack/story_item_spec.rb'
-    - 'spec/supplejack/story_spec.rb'
-    - 'spec/supplejack/user_set_spec.rb'
-
-# Offense count: 19
-Rails/OutputSafety:
-  Exclude:
-    - 'lib/supplejack/controllers/helpers.rb'
-
-# Offense count: 14
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: strict, flexible
-Rails/TimeZone:
-  Exclude:
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/request.rb'
-    - 'lib/supplejack/util.rb'
-    - 'spec/supplejack/item_spec.rb'
-    - 'spec/supplejack/story_spec.rb'
-    - 'spec/supplejack/user_set_relation_spec.rb'
-    - 'spec/supplejack/user_set_spec.rb'
-    - 'stories_integration_test.rb'
-
 # Offense count: 19
 Style/Documentation:
   Enabled: false
