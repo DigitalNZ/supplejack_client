@@ -5,7 +5,7 @@ require 'digest/md5'
 
 # rubocop:disable Metrics/ClassLength
 module Supplejack
-  # FIXME: make me smaller!
+  # FIXME: Please make me smaller!
   class Search
     include Supplejack::Request
 

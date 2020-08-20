@@ -16,6 +16,7 @@ module Supplejack
   require 'supplejack/exceptions'
   require 'supplejack/log_subscriber'
   require 'supplejack/record'
+  require 'supplejack/more_like_this_record'
   require 'supplejack/concept'
   require 'supplejack/request'
   require 'supplejack/paginated_collection'
