@@ -223,19 +223,10 @@ module Supplejack
       params[:text] = url_format.text
       params[:text] = text if text.present?
       params[:geo_bbox] = geo_bbox if geo_bbox.present?
+      params[:per_page] = per_page if per_page.present?
       params[:query_fields] = url_format.query_fields
       params = merge_extra_filters(params)
       params
-    end
-
-    # Gets the type facet unrestricted by the current type filter
-    #
-    # @return [Hash{String => Integer}] A hash of type names and counts
-    #
-    def categories(options = {})
-      return @categories if @categories
-
-      @categories = facet_values('category', options)
     end
 
     # Gets the facet values unrestricted by the current filter

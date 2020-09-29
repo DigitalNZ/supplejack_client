@@ -435,6 +435,11 @@ module Supplejack
           expected_filters = { photos: { has_large_thumbnail_url: 'Y', '-category'.to_sym => 'Groups' } }
           @search.counts_params(query_parameters).should include(facet_query: expected_filters)
         end
+
+        it 'adds per_page params if present' do
+          @search = Search.new(per_page: 0)
+          @search.counts_params({}).should include(per_page: 0)
+        end
       end
     end
 
