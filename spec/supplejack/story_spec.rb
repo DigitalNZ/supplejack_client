@@ -8,9 +8,7 @@ end
 
 module Supplejack
   describe Story do
-    before do
-      Supplejack.stub(:enable_caching) { false }
-    end
+    before { Supplejack.stub(:enable_caching) { false } }
 
     describe '#initialize' do
       Supplejack::Story::ATTRIBUTES.reject { |a| a =~ /_at/ }.each do |attribute|
@@ -55,13 +53,30 @@ module Supplejack
     end
 
     describe '#attributes' do
-      it 'returns a hash of the set attributes' do
-        story = Supplejack::Story.new
+      let(:story) { Supplejack::Story.new({ name: 'Dogs', description: 'Hi', special_field: true }) }
 
-        story.name = 'Dogs'
-        story.description = 'Hi'
+      context 'when Supplejack special_story_attributes is not configured' do
+        it 'returns a hash of the set attributes' do
+          expect(story.attributes).to include(name: 'Dogs', description: 'Hi')
+        end
 
-        expect(story.attributes).to include(name: 'Dogs', description: 'Hi')
+        it 'doesnt return special_field' do
+          expect(story.attributes).not_to include(special_field: true)
+        end
+      end
+
+      context 'when Supplejack special_story_attributes is configured' do
+        before { Supplejack.special_story_attributes = %i[special_field] }
+
+        it 'returns a hash of the set attributes' do
+          expect(story.attributes).to include(name: 'Dogs', description: 'Hi')
+        end
+
+        it 'doesnt return special_field' do
+          expect(story.attributes).to include(special_field: true)
+        end
+
+        after { Supplejack.special_story_attributes = %i[] }
       end
     end
 

@@ -41,7 +41,7 @@ module Supplejack
     end
 
     def attributes
-      retrieve_attributes(ATTRIBUTES)
+      retrieve_attributes(ATTRIBUTES + Supplejack.special_story_attributes)
     end
 
     def api_attributes
@@ -234,7 +234,7 @@ module Supplejack
     def retrieve_attributes(attributes_list)
       {}.tap do |attributes|
         attributes_list.each do |attribute|
-          value = send(attribute)
+          value = ATTRIBUTES.include?(attribute) ? send(attribute) : @attributes[attribute]
           attributes[attribute] = value
         end
       end

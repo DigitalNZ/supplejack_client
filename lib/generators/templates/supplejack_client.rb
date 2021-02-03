@@ -45,6 +45,14 @@ Supplejack.configure do |config|
     :default
   ]
 
+  # ===> Special story attributes
+  # This is a list of fields that the Story API / Story moderation API
+  # can return if extra fields are added to StoriesModerationSerializer of the API.
+  #
+  # config.special_story_attributes = [
+  #   :copyright_auto_checked
+  # ]
+
   # ===> Number of facet values
   # This will limit the number of facet values returned for each facet
   # Be carefull not to make it too high for performance reasons
