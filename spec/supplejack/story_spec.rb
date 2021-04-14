@@ -448,6 +448,14 @@ module Supplejack
         Supplejack::Story.should_receive(:get).with('/stories/featured')
         Supplejack::Story.featured
       end
+
+      context 'when RestClient service unavailable' do
+        before { allow(Supplejack::Story).to receive(:get).and_raise(RestClient::ServiceUnavailable) }
+
+        it 'fetches stories from the api' do
+          expect { Supplejack::Story.featured }.to raise_error(Supplejack::ApiNotAvailable)
+        end
+      end
     end
   end
 end

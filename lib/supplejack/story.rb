@@ -133,10 +133,11 @@ module Supplejack
     end
 
     # Fetches featured stories
-    # Oliver Stigley July 2017
     #
     def self.featured
       get('/stories/featured')
+    rescue RestClient::ServiceUnavailable
+      raise Supplejack::ApiNotAvailable, 'API is not responding'
     end
 
     # Assigns the provided attributes to the Story object
