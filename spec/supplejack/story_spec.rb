@@ -408,6 +408,7 @@ module Supplejack
           creator: 'Wilfred',
           count: nil,
           user_id: nil,
+          username: nil,
           category: nil
         }
       end
