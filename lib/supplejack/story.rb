@@ -103,8 +103,6 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def reposition_items(positions)
-      return false if new_record?
-
       begin
         self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
 
