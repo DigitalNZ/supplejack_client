@@ -30,18 +30,6 @@ module Supplejack
       story_item.save
     end
 
-    def move_item(item_id, position)
-      response = post("/stories/#{story.id}/items/#{item_id}/moves", { api_key: story.api_key, user_key: story.api_key }, item_id: item_id, position: position)
-
-      build_items(response)
-
-      true
-    rescue StandardError => e
-      @errors = e.inspect
-
-      false
-    end
-
     def find(id)
       @items.detect { |i| i.id.to_s == id.to_s }
     end

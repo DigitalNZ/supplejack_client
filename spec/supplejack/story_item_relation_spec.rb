@@ -100,31 +100,6 @@ module Supplejack
       end
     end
 
-    describe '#move_item' do
-      let(:item) { relation.all.first }
-
-      before do
-        expect(relation).to receive(:post).with(
-          "/stories/#{supplejack_story.id}/items/#{item.id}/moves",
-          { api_key: 'foobar', user_key: 'foobar' },
-          item_id: 1, position: 2
-        ).and_return([
-                       { id: 2, type: 'embed', sub_type: 'supplejack_user', position: 1 },
-                       { id: 1, type: 'embed', sub_type: 'supplejack_user', position: 2 }
-                     ])
-      end
-
-      it 'calls the api move item endpoint with the new position' do
-        relation.move_item(item.id, 2)
-      end
-
-      it 'updates the items with the response' do
-        relation.move_item(item.id, 2)
-
-        expect(relation.all.first.id).to eq(2)
-      end
-    end
-
     context 'items array behaviour' do
       it 'executes array methods on the @items array' do
         expect(relation.any? { |x| x.id == 1 }).to eq(true)

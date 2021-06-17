@@ -97,6 +97,23 @@ module Supplejack
       end
     end
 
+    # Executes a POST request to the API with the Story ID, the user's api_key &
+    # an Array of Hashes for item positions ex: [{ id: 'storyitemid', position: 100 }]
+    #
+    # @return [ true, false ] True if the API response was successful, false if not.
+    #
+    def reposition_items(positions)
+      self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
+
+      Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
+
+      true
+    rescue StandardError => e
+      self.errors = e.message
+
+      false
+    end
+
     # Fetches the Story information from the API again, in case it had changed.
     #
     # This can be useful if they items for a Story changed and you want the relation
