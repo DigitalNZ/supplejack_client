@@ -103,17 +103,15 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def reposition_items(positions)
-      begin
-        self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
+      self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
 
-        Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
+      Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
 
-        true
-      rescue StandardError => e
-        self.errors = e.message
+      true
+    rescue StandardError => e
+      self.errors = e.message
 
-        false
-      end
+      false
     end
 
     # Fetches the Story information from the API again, in case it had changed.
