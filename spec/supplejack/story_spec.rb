@@ -218,6 +218,18 @@ module Supplejack
       end
     end
 
+    describe '#reposition_items' do
+      let(:user) { { api_key: 'foobar' } }
+      let(:story) { Supplejack::Story.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:reposition_attributes) { [{ id: '111', position: 1 }, { id: '112', position: 2 }] }
+
+      it 'triggers a POST request to reposition_items' do
+        expect(Supplejack::Story).to receive(:post).with('/stories/123/reposition_items', { user_key: user[:api_key] }, items: reposition_attributes)
+
+        story.reposition_items(reposition_attributes)
+      end
+    end
+
     describe '#update_attributes' do
       let(:story) { Supplejack::Story.new(name: 'test', description: 'test') }
 
