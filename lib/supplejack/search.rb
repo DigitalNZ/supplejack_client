@@ -14,11 +14,7 @@ module Supplejack
     attr_accessor :url_format, :without, :and, :or, :params, :api_params
 
     def initialize(params = {})
-      @params = begin
-                  params.clone
-                rescue StandardError
-                  {}
-                end
+      @params = params.clone || {}
       @params[:facets] ||= Supplejack.facets.join(',')
       @params[:facets_per_page] ||= Supplejack.facets_per_page
       %i[action controller].each { |p| @params.delete(p) }
