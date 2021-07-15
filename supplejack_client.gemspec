@@ -3,6 +3,7 @@
 require File.expand_path('lib/supplejack/version', __dir__)
 
 Gem::Specification.new do |gem|
+  gem.required_ruby_version = '>= 2.7.2'
   gem.authors       = ['Supplejack']
   gem.email         = ['info@digitalnz.org']
   gem.description   = ' Library to abstract the interaction with the Supplejack API '
