@@ -17,12 +17,13 @@ module Supplejack
   class Item
     include Supplejack::Request
 
-    ATTRIBUTES = %i[record_id title description large_thumbnail_url thumbnail_url
-                    contributing_partner display_content_partner display_collection landing_url category date
-                    dnz_type dc_identifier creator].freeze
+    ATTRIBUTES         = %i[record_id title description large_thumbnail_url thumbnail_url
+                            contributing_partner display_content_partner display_collection
+                            landing_url category date dnz_type dc_identifier creator].freeze
+    SUPPORT_ATTRIBUTES = %i[attributes user_set_id].freeze
+    ALL_ATTRIBUTES     = ATTRIBUTES + SUPPORT_ATTRIBUTES
 
-    attr_reader *ATTRIBUTES
-    attr_reader :attributes, :user_set_id
+    attr_reader *ALL_ATTRIBUTES
     attr_accessor :api_key, :errors, :position
 
     def initialize(attributes = {})
