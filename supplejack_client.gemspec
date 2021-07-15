@@ -2,28 +2,28 @@
 
 require File.expand_path('lib/supplejack/version', __dir__)
 
-Gem::Specification.new do |gem|
-  gem.required_ruby_version = '>= 2.7.2'
-  gem.authors       = ['Supplejack']
-  gem.email         = ['info@digitalnz.org']
-  gem.description   = ' Library to abstract the interaction with the Supplejack API '
-  gem.summary       = ' Connects to the API, and allows you to treat models as if they were in a local database '
-  gem.homepage      = 'http://digitalnz.org'
+Gem::Specification.new do |spec|
+  spec.required_ruby_version = '>= 2.7.2'
+  spec.authors               = ['Supplejack']
+  spec.email                 = ['info@digitalnz.org']
+  spec.description           = ' Library to abstract the interaction with the Supplejack API '
+  spec.summary               = ' Connects to the API, and allows you to treat models as if they were in a local database '
+  spec.homepage              = 'http://digitalnz.org'
 
-  gem.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
-  gem.files         = `git ls-files`.split("\n")
-  gem.test_files    = `git ls-files -- spec/*`.split("\n")
-  gem.name          = 'supplejack_client'
-  gem.require_paths = ['lib']
-  gem.version       = Supplejack::VERSION
+  spec.executables           = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
+  spec.files                 = `git ls-files`.split("\n")
+  spec.test_files            = `git ls-files -- spec/*`.split("\n")
+  spec.name                  = 'supplejack_client'
+  spec.require_paths         = ['lib']
+  spec.version               = Supplejack::VERSION
 
-  gem.add_dependency 'rails', '~> 6.1.4'
-  gem.add_dependency 'rails_autolink', '~> 1.0'
-  gem.add_dependency 'rest-client', '~> 2.0'
+  spec.add_dependency 'rails', '~> 6.1.4'
+  spec.add_dependency 'rails_autolink', '~> 1.0'
+  spec.add_dependency 'rest-client', '~> 2.0'
 
-  gem.add_development_dependency 'codeclimate-test-reporter'
-  gem.add_development_dependency 'pry'
-  gem.add_development_dependency 'rspec', '~> 2.8'
-  gem.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
-  gem.add_development_dependency 'rubocop-rspec', '~> 2.4'
+  spec.add_development_dependency 'codeclimate-test-reporter'
+  spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'rspec', '~> 2.8'
+  spec.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.4'
 end
