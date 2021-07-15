@@ -45,9 +45,7 @@ module Supplejack
       end
 
       context 'HTTP error is raised' do
-        before do
-          item.stub(:post).and_raise(RestClient::Forbidden.new)
-        end
+        before { item.stub(:post).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when an HTTP error is raised' do
           expect(item.save).to eq(false)
