@@ -10,8 +10,12 @@ module Supplejack
     UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id username].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
+    # rubocop: disable Style/AccessorGrouping
+
     attr_accessor *ATTRIBUTES
     attr_accessor :user, :errors, :api_key
+
+    # rubocop: enable Style/AccessorGrouping
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
