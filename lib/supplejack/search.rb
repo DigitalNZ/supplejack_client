@@ -3,15 +3,14 @@
 require 'supplejack/request'
 require 'digest/md5'
 
-# rubocop:disable Metrics/ClassLength
 module Supplejack
   # FIXME: Please make me smaller!
   class Search
     include Supplejack::Request
 
-    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction
-    attr_accessor :sort, :filters, :record_type, :record_klass, :geo_bbox
-    attr_accessor :url_format, :without, :and, :or, :params, :api_params
+    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction,
+                  :sort, :filters, :record_type, :record_klass, :geo_bbox,
+                  :url_format, :without, :and, :or, :params, :api_params
 
     def initialize(params = {})
       @params = params.clone || {}
@@ -209,7 +208,7 @@ module Supplejack
         filters = url_format.and_filters(type).dup
 
         without_filters = url_format.without_filters(type).dup
-        without_filters = Hash[without_filters.map { |key, value| ["-#{key}".to_sym, value] }]
+        without_filters = without_filters.transform_keys { |key| "-#{key}".to_sym }
 
         filters.merge!(without_filters)
         query_with_filters.merge!(count_name.to_sym => Supplejack::Util.deep_merge(filters, count_filters))
@@ -221,8 +220,8 @@ module Supplejack
       params[:geo_bbox] = geo_bbox if geo_bbox.present?
       params[:per_page] = per_page if per_page.present?
       params[:query_fields] = url_format.query_fields
-      params = merge_extra_filters(params)
-      params
+
+      merge_extra_filters(params)
     end
 
     # Gets the facet values unrestricted by the current filter
@@ -363,4 +362,3 @@ module Supplejack
     end
   end
 end
-# rubocop:enable Metrics/ClassLength
