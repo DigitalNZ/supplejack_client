@@ -20,8 +20,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'rails_autolink', '~> 1.0'
   gem.add_dependency 'rest-client', '~> 2.0'
 
-  gem.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
   gem.add_development_dependency 'codeclimate-test-reporter'
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'rspec', '~> 2.8'
+  gem.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
+  gem.add_development_dependency 'rubocop-rspec', '~> 2.4'
 end
