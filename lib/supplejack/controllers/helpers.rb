@@ -35,7 +35,7 @@ module Supplejack
       # @option options [ Symbol ] :tag_class The class for the attribute tag
       #
       # @return [ String ] A HTML snippet with the attribute name and value
-      #
+      # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def attribute(record, attributes, options = {})
         options.reverse_merge!(label: true, label_inline: true, limit: nil, delimiter: ', ',
                                link_path: false, tag: Supplejack.attribute_tag, label_tag: Supplejack.label_tag,
@@ -93,7 +93,7 @@ module Supplejack
         content = ''
         if options[:label]
           if options[:trans_key].present?
-            translation = I18n.t(options[:trans_key], default: attribute.to_s.capitalize) + ': '
+            translation = "#{I18n.t(options[:trans_key], default: attribute.to_s.capitalize)}: "
           else
             i18n_class_name = record.class.to_s.tableize.downcase.gsub(%r{/}, '_')
             translation = "#{I18n.t("#{i18n_class_name}.#{attribute}", default: attribute.to_s.capitalize)}: "
@@ -108,6 +108,7 @@ module Supplejack
           options[:tag] ? content_tag(options[:tag], content.html_safe, class: options[:tag_class]) : content.html_safe
         end
       end
+      # rubocop: enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       # Displays the next and/or previous links based on the record and current search
       #
@@ -209,10 +210,11 @@ module Supplejack
             next unless Supplejack.sticky_facets || %i[il hl].include?(symbol) || options[:all_filters]
 
             filters = begin
-                        search.url_format.send(instance_name)
-                      rescue StandardError
-                        {}
-                      end
+              search.url_format.send(instance_name)
+            rescue StandardError
+              {}
+            end
+
             filters.each do |name, value|
               field_name = value.is_a?(Array) ? "#{symbol}[#{name}][]" : "#{symbol}[#{name}]"
               values = *value
@@ -290,16 +292,17 @@ module Supplejack
           search_options = args[2] || {}
           html_options = args[3] || {}
         end
-        url = url + '?' + { search: search_options }.to_query if search_options.try(:any?)
+
+        url = "#{url} + ? #{{ search: search_options }.to_query}" if search_options.try(:any?)
         link_to(name, url, html_options)
       end
 
       def generate_path(name, options = {})
         segments = name.split('.')
-        if segments.size == 1
-          send("#{segments[0]}_path", options)
-        elsif segments.size == 2
-          send(segments[0]).send("#{segments[1]}_path", options)
+
+        case segments.size
+        when 1 then send("#{segments[0]}_path", options)
+        when 2 then send(segments[0]).send("#{segments[1]}_path", options)
         end
       end
     end
