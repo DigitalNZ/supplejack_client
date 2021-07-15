@@ -93,11 +93,10 @@ module Supplejack
 
     def full_url(path, format = nil, params = {})
       params ||= {}
-      format ||= 'json'
       params[:api_key] ||= Supplejack.api_key
       params[:debug] = true if Supplejack.enable_debugging
 
-      Supplejack.api_url + path + ".#{format}" + '?' + params.to_query
+      "#{Supplejack.api_url}#{path}.#{format || 'json'}?#{params.to_query}"
     end
 
     # Found ou that RestClient timeouts are not reliable. Setting a 30 sec
