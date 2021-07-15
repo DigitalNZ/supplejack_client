@@ -23,10 +23,12 @@ module Supplejack
 
     ATTRIBUTES = %i[id name description privacy url priority count tags tag_list
                     subjects featured records created_at updated_at approved record featured_at].freeze
-    attr_accessor *ATTRIBUTES
-    attr_accessor :api_key, :errors, :user
+
+    SUPPORT_ATTRIBUTES = %i[api_key errors user].freeze
 
     PRIVACY_STATES = %w[public hidden private].freeze
+
+    attr_accessor *(ATTRIBUTES + SUPPORT_ATTRIBUTES)
 
     def initialize(attributes = {})
       @attributes = attributes.try(:symbolize_keys) || {}
