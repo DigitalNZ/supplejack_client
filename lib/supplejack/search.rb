@@ -156,7 +156,7 @@ module Supplejack
     end
 
     def record?
-      record_type == 0
+      record_type.zero?
     end
 
     # Calculates counts for specific queries using solr's facet.query
@@ -204,7 +204,7 @@ module Supplejack
       query_parameters.each_pair do |count_name, count_filters|
         count_filters = count_filters.symbolize_keys
         query_record_type = count_filters[:record_type].to_i
-        type = query_record_type == 0 ? :items : :headings
+        type = query_record_type.zero? ? :items : :headings
         filters = url_format.and_filters(type).dup
 
         without_filters = url_format.without_filters(type).dup

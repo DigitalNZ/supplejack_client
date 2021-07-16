@@ -104,7 +104,7 @@ module Supplejack
         if filter_type
           filter_type == :items ? 'i' : 'h'
         else
-          params[:record_type].to_i == 0 ? 'i' : 'h'
+          params[:record_type].to_i.zero? ? 'i' : 'h'
         end
       end
 
@@ -205,7 +205,7 @@ module Supplejack
         end
 
         hash[:page] = search.page if !filter_options[:except].include?(:page) && search.page.present? && search.page != 1
-        hash[:record_type] = 1 if search.record_type > 0
+        hash[:record_type] = 1 if search.record_type.positive?
 
         hash
       end

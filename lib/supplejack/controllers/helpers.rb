@@ -63,7 +63,7 @@ module Supplejack
         attribute = attributes.first
 
         if value.is_a?(Array)
-          if options[:limit] && options[:limit].to_i > 0
+          if options[:limit].to_i.positive?
             value = value[0..(options[:limit].to_i - 1)]
           end
 
@@ -81,7 +81,7 @@ module Supplejack
           value = truncate(value, length: options[:limit]) if options[:limit].to_i > 20
           value
         else
-          if options[:limit] && options[:limit].to_i > 0
+          if options[:limit].to_i.positive?
             value = truncate(value, length: options[:limit].to_i)
           end
 
@@ -260,7 +260,7 @@ module Supplejack
       # @return [ String ] A link to with the correct search options.
       #
       def link_to_add_filter(name, value, path_name, options = {}, html_options = {}, &block)
-        symbol = search.record_type == 0 ? :i : :h
+        symbol = search.record_type.zero? ? :i : :h
         options[:except] = Util.array(options[:except]) + [:page]
         path = generate_path(path_name, search.options(plus: { symbol => { name => value } }, except: options[:except]))
         link_text = options[:display_name].presence || I18n.t("facets.values.#{value}", default: value)
@@ -268,7 +268,7 @@ module Supplejack
       end
 
       def link_to_lock_filter(name, value, path_name, options = {}, html_options = {}, &block)
-        symbol = search.record_type == 0 ? :il : :hl
+        symbol = search.record_type.zero? ? :il : :hl
         path = generate_path(path_name, search.options(except: [{ name => value }], plus: { symbol => { name => value } }))
         link_text = options[:display_name].presence || I18n.t("facets.values.#{value}", default: value)
         link_to block_given? ? capture(&block) : link_text, path.html_safe, html_options

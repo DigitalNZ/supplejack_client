@@ -114,18 +114,6 @@ Style/MissingRespondToMissing:
     - 'lib/supplejack/user_set_relation.rb'
     - 'lib/supplejack/user_story_relation.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle, IgnoredMethods.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/request.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/url_formats/item_hash.rb'
-
 # Offense count: 584
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
