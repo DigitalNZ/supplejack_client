@@ -6,15 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 5
-Lint/AmbiguousOperator:
-  Exclude:
-    - 'lib/supplejack/config.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/story.rb'
-    - 'lib/supplejack/story_item.rb'
-    - 'lib/supplejack/user_set.rb'
-
 # Offense count: 3
 Lint/DuplicateMethods:
   Exclude:

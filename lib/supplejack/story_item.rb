@@ -20,7 +20,7 @@ module Supplejack
     SUPPORT_ATTRIBUTES      = %i[errors].freeze
     ATTRIBUTES              = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES + SUPPORT_ATTRIBUTES).freeze
 
-    attr_accessor *ATTRIBUTES
+    attr_accessor(*ATTRIBUTES)
     attr_reader :api_key
 
     def initialize(attributes = {})

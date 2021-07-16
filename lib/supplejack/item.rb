@@ -23,7 +23,7 @@ module Supplejack
     SUPPORT_ATTRIBUTES = %i[attributes user_set_id].freeze
     ALL_ATTRIBUTES     = ATTRIBUTES + SUPPORT_ATTRIBUTES
 
-    attr_reader *ALL_ATTRIBUTES
+    attr_reader(*ALL_ATTRIBUTES)
     attr_accessor :api_key, :errors, :position
 
     def initialize(attributes = {})

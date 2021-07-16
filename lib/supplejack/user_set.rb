@@ -28,7 +28,7 @@ module Supplejack
 
     PRIVACY_STATES = %w[public hidden private].freeze
 
-    attr_accessor *(ATTRIBUTES + SUPPORT_ATTRIBUTES)
+    attr_accessor(*(ATTRIBUTES + SUPPORT_ATTRIBUTES))
 
     def initialize(attributes = {})
       @attributes = attributes.try(:symbolize_keys) || {}

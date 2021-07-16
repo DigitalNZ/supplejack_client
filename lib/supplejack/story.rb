@@ -12,7 +12,7 @@ module Supplejack
 
     # rubocop: disable Style/AccessorGrouping
 
-    attr_accessor *ATTRIBUTES
+    attr_accessor(*ATTRIBUTES)
     attr_accessor :user, :errors, :api_key
 
     # rubocop: enable Style/AccessorGrouping
