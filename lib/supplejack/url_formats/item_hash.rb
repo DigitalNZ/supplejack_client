@@ -57,10 +57,11 @@ module Supplejack
         filters = Supplejack::Util.deep_merge!(unlocked, locked)
 
         @all_filters = begin
-                         filters.dup.symbolize_keys.to_hash
-                       rescue StandardError
-                         {}
-                       end
+          filters.dup.symbolize_keys.to_hash
+        rescue StandardError
+          {}
+        end
+
         instance_variable_set("@#{symbol}_filters", @all_filters)
         @all_filters
       end
@@ -203,11 +204,9 @@ module Supplejack
           hash.merge!(attribute => attribute_value) if attribute_value.present?
         end
 
-        unless filter_options[:except].include?(:page)
-          hash[:page] = search.page if search.page.present? && search.page != 1
-        end
-
+        hash[:page] = search.page if !filter_options[:except].include?(:page) && search.page.present? && search.page != 1
         hash[:record_type] = 1 if search.record_type > 0
+
         hash
       end
     end
