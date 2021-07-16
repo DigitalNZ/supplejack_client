@@ -15,14 +15,11 @@ Lint/AmbiguousOperator:
     - 'lib/supplejack/story_item.rb'
     - 'lib/supplejack/user_set.rb'
 
-# Offense count: 7
+# Offense count: 3
 Lint/DuplicateMethods:
   Exclude:
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/item.rb'
     - 'lib/supplejack/search.rb'
     - 'lib/supplejack/story.rb'
-    - 'lib/supplejack/user_set.rb'
 
 # Offense count: 1
 Lint/UriEscapeUnescape:
