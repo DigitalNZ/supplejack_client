@@ -68,7 +68,7 @@ module Supplejack
           next unless @attributes.key?(field)
 
           values = @attributes[field]
-          values ||= [] unless !!values == values # Testing if boolean
+          values ||= [] unless [true, false].include?(values)
           values = [values] unless values.is_a?(Array)
 
           case fields[:format]

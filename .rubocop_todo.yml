@@ -84,13 +84,6 @@ Naming/PredicateName:
 Style/Documentation:
   Enabled: false
 
-# Offense count: 4
-Style/DoubleNegation:
-  Exclude:
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/user.rb'
-    - 'lib/supplejack/user_set.rb'
-
 # Offense count: 1
 # Configuration parameters: .
 # SupportedStyles: annotated, template, unannotated
