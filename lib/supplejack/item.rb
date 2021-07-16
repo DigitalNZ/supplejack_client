@@ -90,5 +90,9 @@ module Supplejack
     def method_missing(_symbol, *_args)
       nil
     end
+
+    def respond_to_missing?(_symbol, *_args)
+      true
+    end
   end
 end

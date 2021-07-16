@@ -90,19 +90,6 @@ Style/Documentation:
 Style/FormatStringToken:
   EnforcedStyle: unannotated
 
-# Offense count: 9
-Style/MissingRespondToMissing:
-  Exclude:
-    - 'lib/supplejack/concept.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/item_relation.rb'
-    - 'lib/supplejack/paginated_collection.rb'
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/story_item_relation.rb'
-    - 'lib/supplejack/user_set_relation.rb'
-    - 'lib/supplejack/user_story_relation.rb'
-
 # Offense count: 584
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

@@ -60,6 +60,10 @@ module Supplejack
       raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Concept:Module"
     end
 
+    def respond_to_missing?(symbol, *_args)
+      @attributes.key?(symbol)
+    end
+
     module ClassMethods
       # Finds a record or array of records from the Supplejack API
       #

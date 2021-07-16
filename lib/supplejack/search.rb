@@ -350,6 +350,10 @@ module Supplejack
       # rubocop: enable Style/GuardClause, Style/IfUnlessModifier
     end
 
+    def respond_to_missing?(_symbol, *_args)
+      true
+    end
+
     # Adds any filters defined in the :or, :and or :without attr_accessors
     # By setting them directly it allows to nest any conditions that is not
     # normally possible though the item_hash URL format.
