@@ -27,16 +27,17 @@ module Supplejack
     def initialize(attributes = {})
       if attributes.is_a?(String)
         attributes = begin
-                       JSON.parse(attributes)
-                     rescue StandardError
-                       {}
-                     end
+          JSON.parse(attributes)
+        rescue StandardError
+          {}
+        end
       end
+
       @attributes = begin
-                      attributes.symbolize_keys
-                    rescue StandardError
-                      {}
-                    end
+        attributes.symbolize_keys
+      rescue StandardError
+        {}
+      end
     end
 
     def id
