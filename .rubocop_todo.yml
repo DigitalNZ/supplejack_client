@@ -90,14 +90,6 @@ Style/Documentation:
 Style/FormatStringToken:
   EnforcedStyle: unannotated
 
-# Offense count: 4
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/search.rb'
-
 # Offense count: 13
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:

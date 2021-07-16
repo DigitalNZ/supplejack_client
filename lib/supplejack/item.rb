@@ -77,12 +77,13 @@ module Supplejack
     #
     def date
       @date = @date.first if @date.is_a?(Array)
-      if @date
-        begin
-          Time.parse(@date)
-        rescue StandardError
-          nil
-        end
+
+      return unless @date
+
+      begin
+        Time.parse(@date)
+      rescue StandardError
+        nil
       end
     end
 
