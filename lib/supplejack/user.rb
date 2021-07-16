@@ -98,7 +98,7 @@ module Supplejack
     # @return [ true/false ] False by default, true when intentionally set at user initialization.
     #
     def use_own_api_key?
-      !!@use_own_api_key
+      @use_own_api_key
     end
 
     # Returns true/false depending whether it will regenerate it's API Key
@@ -106,7 +106,7 @@ module Supplejack
     # @return [ true/false ] False by default, true when intentionally set.
     #
     def regenerate_api_key?
-      !!@regenerate_api_key
+      @regenerate_api_key
     end
 
     # Executes a GET request to the API to find the user with the provided ID.
