@@ -343,11 +343,11 @@ module Supplejack
     end
 
     def method_missing(symbol, *args)
-      # rubocop: disable Style/GuardClause
+      # rubocop: disable Style/GuardClause, Style/IfUnlessModifier
       if symbol.to_s.match(/has_(.+)\?/) && Supplejack.search_attributes.include?(Regexp.last_match(1).to_sym)
         has_filter_and_value?(Regexp.last_match(1), args.first)
       end
-      # rubocop: enable Style/GuardClause
+      # rubocop: enable Style/GuardClause, Style/IfUnlessModifier
     end
 
     # Adds any filters defined in the :or, :and or :without attr_accessors

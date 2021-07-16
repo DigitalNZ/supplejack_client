@@ -90,17 +90,6 @@ Style/Documentation:
 Style/FormatStringToken:
   EnforcedStyle: unannotated
 
-# Offense count: 13
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/supplejack/concept.rb'
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/url_formats/item_hash.rb'
-    - 'lib/supplejack/user_set.rb'
-
 # Offense count: 9
 Style/MissingRespondToMissing:
   Exclude:

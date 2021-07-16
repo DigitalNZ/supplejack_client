@@ -55,11 +55,9 @@ module Supplejack
     end
 
     def method_missing(symbol, *_args)
-      unless @attributes.key?(symbol)
-        raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Concept:Module"
-      end
+      return @attributes[symbol] if @attributes.key?(symbol)
 
-      @attributes[symbol]
+      raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Concept:Module"
     end
 
     module ClassMethods

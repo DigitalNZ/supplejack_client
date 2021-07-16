@@ -63,13 +63,8 @@ module Supplejack
         attribute = attributes.first
 
         if value.is_a?(Array)
-          if options[:limit].to_i.positive?
-            value = value[0..(options[:limit].to_i - 1)]
-          end
-
-          if options[:link_path]
-            value = value.map { |v| link_to(v, send(options[:link_path], i: { attribute => v })) }
-          end
+          value = value[0..(options[:limit].to_i - 1)] if options[:limit].to_i.positive?
+          value = value.map { |v| link_to(v, send(options[:link_path], i: { attribute => v })) } if options[:link_path]
 
           if options[:link]
             value = value.map do |v|
@@ -81,13 +76,9 @@ module Supplejack
           value = truncate(value, length: options[:limit]) if options[:limit].to_i > 20
           value
         else
-          if options[:limit].to_i.positive?
-            value = truncate(value, length: options[:limit].to_i)
-          end
+          value = truncate(value, length: options[:limit].to_i) if options[:limit].to_i.positive?
 
-          if options[:link]
-            value = attribute_link_replacement(value, options[:link])
-          end
+          value = attribute_link_replacement(value, options[:link]) if options[:link]
         end
 
         content = ''
@@ -202,9 +193,7 @@ module Supplejack
         fields = %i[record_type sort direction]
         fields.delete(:record_type) if search.record?
 
-        if options[:except].try(:any?)
-          fields.delete_if { |field| options[:except].include?(field) }
-        end
+        fields.delete_if { |field| options[:except].include?(field) } if options[:except].try(:any?)
 
         fields.each do |field|
           tags += hidden_field_tag(field.to_s, search.send(field)) if search.send(field).present?

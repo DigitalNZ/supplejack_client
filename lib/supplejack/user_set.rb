@@ -70,9 +70,7 @@ module Supplejack
       records = self.records.is_a?(Array) ? self.records : []
       records.map do |record_hash|
         record_hash = record_hash.try(:symbolize_keys) || {}
-        if record_hash[:record_id]
-          { record_id: record_hash[:record_id], position: record_hash[:position] }
-        end
+        { record_id: record_hash[:record_id], position: record_hash[:position] } if record_hash[:record_id]
       end.compact
     end
 
