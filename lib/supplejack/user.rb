@@ -34,6 +34,11 @@ module Supplejack
       end
     end
 
+    # Initializes a UserSetRelation class which adds behaviour to build, create
+    # find and order sets related to this particular User instance
+    #
+    # @return [ UserSetRelation ] A UserSetRelation object
+    #
     def sets
       @sets ||= UserSetRelation.new(self)
     end
@@ -41,15 +46,6 @@ module Supplejack
     def stories
       @stories ||= UserStoryRelation.new(self)
     end
-
-    # Initializes a UserSetRelation class which adds behaviour to build, create
-    # find and order sets related to this particular User instance
-    #
-    # @return [ UserSetRelation ] A UserSetRelation object
-    #
-    # def sets
-    #   @sets ||= UserSetRelation.new(self)
-    # end
 
     # Executes a PUT request to the API with the user attributes
     #
