@@ -102,7 +102,7 @@ module Supplejack
     def tag_list
       return @tag_list if @tag_list
 
-      tags.join(', ') if tags
+      tags&.join(', ')
     end
 
     def favourite?

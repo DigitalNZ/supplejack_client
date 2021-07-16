@@ -126,16 +126,6 @@ Style/NumericPredicate:
     - 'lib/supplejack/search.rb'
     - 'lib/supplejack/url_formats/item_hash.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
-# Whitelist: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/supplejack/request.rb'
-    - 'lib/supplejack/story.rb'
-    - 'lib/supplejack/user_set.rb'
-
 # Offense count: 584
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

@@ -191,7 +191,7 @@ module Supplejack
     # Returns a comma separated list of tags for this Story
     #
     def tag_list
-      tags.join(', ') if tags
+      tags&.join(', ')
     end
 
     def private?
