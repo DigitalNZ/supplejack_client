@@ -55,19 +55,6 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 29
 
-# Offense count: 3
-# Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
-# NamePrefix: is_, has_, have_
-# NamePrefixBlacklist: is_, has_, have_
-# NameWhitelist: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
-Naming/PredicateName:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/url_formats/item_hash.rb'
-    - 'lib/supplejack/user_set.rb'
-
 # Offense count: 19
 Style/Documentation:
   Enabled: false

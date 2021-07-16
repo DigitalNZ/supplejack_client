@@ -335,7 +335,7 @@ module Supplejack
     #   search = Search.new(:i => {:category => ["Images"]})
     #   search.has_category?("Images") => true
 
-    def has_filter_and_value?(filter, value)
+    def filter_and_value?(filter, value)
       actual_value = *send(filter)
       return false unless actual_value
 
@@ -345,7 +345,7 @@ module Supplejack
     def method_missing(symbol, *args)
       # rubocop: disable Style/GuardClause, Style/IfUnlessModifier
       if symbol.to_s.match(/has_(.+)\?/) && Supplejack.search_attributes.include?(Regexp.last_match(1).to_sym)
-        has_filter_and_value?(Regexp.last_match(1), args.first)
+        filter_and_value?(Regexp.last_match(1), args.first)
       end
       # rubocop: enable Style/GuardClause, Style/IfUnlessModifier
     end

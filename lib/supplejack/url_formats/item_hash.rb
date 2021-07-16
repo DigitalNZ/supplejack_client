@@ -69,11 +69,11 @@ module Supplejack
       def and_filters(filter_type = nil)
         @and_filters ||= {}
         valid_filters = filters(filter_type).reject { |filter, _value| filter.to_s.match(/-(.+)/) }
-                                            .reject { |filter, _value| is_text_field?(filter) }
+                                            .reject { |filter, _value| text_field?(filter) }
         @and_filters[filter_symbol(filter_type)] ||= valid_filters
       end
 
-      def is_text_field?(filter)
+      def text_field?(filter)
         return false if filter.nil? || Supplejack.non_text_fields.include?(filter.to_sym)
 
         filter.to_s.split(//).last(5).join('').to_s == '_text'
@@ -117,7 +117,7 @@ module Supplejack
         text_values << default_text if default_text.present?
 
         all_filters.each do |filter, value|
-          text_values << value if is_text_field?(filter)
+          text_values << value if text_field?(filter)
         end
 
         return nil if text_values.empty?
@@ -131,7 +131,7 @@ module Supplejack
       #
       def query_fields
         fields = all_filters.map do |filter, _value|
-          filter.to_s.chomp!('_text').to_sym if is_text_field?(filter)
+          filter.to_s.chomp!('_text').to_sym if text_field?(filter)
         end.compact
 
         return nil if fields.empty?

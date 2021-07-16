@@ -125,7 +125,7 @@ module Supplejack
     #
     # @return [ true, false ] True if the provided record_id is part of the UserSet, false otherwise.
     #
-    def has_record?(record_id)
+    def record?(record_id)
       !!items.detect { |i| i.record_id == record_id.to_i }
     end
 
