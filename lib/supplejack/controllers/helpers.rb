@@ -35,7 +35,7 @@ module Supplejack
       # @option options [ Symbol ] :tag_class The class for the attribute tag
       #
       # @return [ String ] A HTML snippet with the attribute name and value
-      # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/GuardClause
       def attribute(record, attributes, options = {})
         options.reverse_merge!(label: true, label_inline: true, limit: nil, delimiter: ', ',
                                link_path: false, tag: Supplejack.attribute_tag, label_tag: Supplejack.label_tag,
@@ -96,13 +96,11 @@ module Supplejack
         content << value.to_s
         content << options[:extra_html] if options[:extra_html]
 
-        # rubocop: disable Style/GuardClause
         if value.present? && (value != 'Not specified')
           options[:tag] ? content_tag(options[:tag], content.html_safe, class: options[:tag_class]) : content.html_safe
         end
-        # rubocop: enable Style/GuardClause
       end
-      # rubocop: enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop: enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/GuardClause
 
       # Displays the next and/or previous links based on the record and current search
       #
