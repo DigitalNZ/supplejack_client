@@ -6,23 +6,11 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 5
-Lint/AmbiguousOperator:
-  Exclude:
-    - 'lib/supplejack/config.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/story.rb'
-    - 'lib/supplejack/story_item.rb'
-    - 'lib/supplejack/user_set.rb'
-
-# Offense count: 7
+# Offense count: 3
 Lint/DuplicateMethods:
   Exclude:
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/item.rb'
     - 'lib/supplejack/search.rb'
     - 'lib/supplejack/story.rb'
-    - 'lib/supplejack/user_set.rb'
 
 # Offense count: 1
 Lint/UriEscapeUnescape:
@@ -42,7 +30,7 @@ Metrics/BlockLength:
 # Offense count: 4
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 219
+  Max: 225
 
 # Offense count: 10
 Metrics/CyclomaticComplexity:
@@ -67,102 +55,15 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 29
 
-# Offense count: 3
-# Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
-# NamePrefix: is_, has_, have_
-# NamePrefixBlacklist: is_, has_, have_
-# NameWhitelist: is_a?
-# MethodDefinitionMacros: define_method, define_singleton_method
-Naming/PredicateName:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/url_formats/item_hash.rb'
-    - 'lib/supplejack/user_set.rb'
-
 # Offense count: 19
 Style/Documentation:
   Enabled: false
-
-# Offense count: 4
-Style/DoubleNegation:
-  Exclude:
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/user.rb'
-    - 'lib/supplejack/user_set.rb'
 
 # Offense count: 1
 # Configuration parameters: .
 # SupportedStyles: annotated, template, unannotated
 Style/FormatStringToken:
   EnforcedStyle: unannotated
-
-# Offense count: 4
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/search.rb'
-
-# Offense count: 13
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/supplejack/concept.rb'
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/url_formats/item_hash.rb'
-    - 'lib/supplejack/user_set.rb'
-
-# Offense count: 9
-Style/MethodMissingSuper:
-  Exclude:
-    - 'lib/supplejack/concept.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/item_relation.rb'
-    - 'lib/supplejack/paginated_collection.rb'
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/story_item_relation.rb'
-    - 'lib/supplejack/user_set_relation.rb'
-    - 'lib/supplejack/user_story_relation.rb'
-
-# Offense count: 9
-Style/MissingRespondToMissing:
-  Exclude:
-    - 'lib/supplejack/concept.rb'
-    - 'lib/supplejack/item.rb'
-    - 'lib/supplejack/item_relation.rb'
-    - 'lib/supplejack/paginated_collection.rb'
-    - 'lib/supplejack/record.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/story_item_relation.rb'
-    - 'lib/supplejack/user_set_relation.rb'
-    - 'lib/supplejack/user_story_relation.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle, IgnoredMethods.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/supplejack/controllers/helpers.rb'
-    - 'lib/supplejack/request.rb'
-    - 'lib/supplejack/search.rb'
-    - 'lib/supplejack/url_formats/item_hash.rb'
-
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
-# Whitelist: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/supplejack/request.rb'
-    - 'lib/supplejack/story.rb'
-    - 'lib/supplejack/user_set.rb'
 
 # Offense count: 584
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

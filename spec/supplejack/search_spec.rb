@@ -582,7 +582,7 @@ module Supplejack
 
         it 'shouldn\'t search for a non existent search attribute' do
           Supplejack.stub(:search_attributes) { [] }
-          @search.should_not_receive(:has_filter_and_value?)
+          @search.should_not_receive(:filter_and_value?)
           @search.has_category?('Cats')
         end
       end

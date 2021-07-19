@@ -47,6 +47,10 @@ module Supplejack
       all.send(method, *args, &block)
     end
 
+    def respond_to_missing?(_method, *_args, &_blocks)
+      true
+    end
+
     private
 
     def build_items(items)

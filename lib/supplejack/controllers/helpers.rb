@@ -35,7 +35,7 @@ module Supplejack
       # @option options [ Symbol ] :tag_class The class for the attribute tag
       #
       # @return [ String ] A HTML snippet with the attribute name and value
-      #
+      # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/GuardClause
       def attribute(record, attributes, options = {})
         options.reverse_merge!(label: true, label_inline: true, limit: nil, delimiter: ', ',
                                link_path: false, tag: Supplejack.attribute_tag, label_tag: Supplejack.label_tag,
@@ -63,13 +63,8 @@ module Supplejack
         attribute = attributes.first
 
         if value.is_a?(Array)
-          if options[:limit] && options[:limit].to_i > 0
-            value = value[0..(options[:limit].to_i - 1)]
-          end
-
-          if options[:link_path]
-            value = value.map { |v| link_to(v, send(options[:link_path], i: { attribute => v })) }
-          end
+          value = value[0..(options[:limit].to_i - 1)] if options[:limit].to_i.positive?
+          value = value.map { |v| link_to(v, send(options[:link_path], i: { attribute => v })) } if options[:link_path]
 
           if options[:link]
             value = value.map do |v|
@@ -81,19 +76,15 @@ module Supplejack
           value = truncate(value, length: options[:limit]) if options[:limit].to_i > 20
           value
         else
-          if options[:limit] && options[:limit].to_i > 0
-            value = truncate(value, length: options[:limit].to_i)
-          end
+          value = truncate(value, length: options[:limit].to_i) if options[:limit].to_i.positive?
 
-          if options[:link]
-            value = attribute_link_replacement(value, options[:link])
-          end
+          value = attribute_link_replacement(value, options[:link]) if options[:link]
         end
 
         content = ''
         if options[:label]
           if options[:trans_key].present?
-            translation = I18n.t(options[:trans_key], default: attribute.to_s.capitalize) + ': '
+            translation = "#{I18n.t(options[:trans_key], default: attribute.to_s.capitalize)}: "
           else
             i18n_class_name = record.class.to_s.tableize.downcase.gsub(%r{/}, '_')
             translation = "#{I18n.t("#{i18n_class_name}.#{attribute}", default: attribute.to_s.capitalize)}: "
@@ -104,10 +95,12 @@ module Supplejack
 
         content << value.to_s
         content << options[:extra_html] if options[:extra_html]
+
         if value.present? && (value != 'Not specified')
           options[:tag] ? content_tag(options[:tag], content.html_safe, class: options[:tag_class]) : content.html_safe
         end
       end
+      # rubocop: enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/GuardClause
 
       # Displays the next and/or previous links based on the record and current search
       #
@@ -191,37 +184,36 @@ module Supplejack
       # @return [ String ] A HTML snippet with hidden fields
       #
       def form_fields(search, options = {})
-        if search
-          tags = ''.html_safe
+        return unless search
 
-          fields = %i[record_type sort direction]
-          fields.delete(:record_type) if search.record?
+        tags = ''.html_safe
 
-          if options[:except].try(:any?)
-            fields.delete_if { |field| options[:except].include?(field) }
-          end
+        fields = %i[record_type sort direction]
+        fields.delete(:record_type) if search.record?
 
-          fields.each do |field|
-            tags += hidden_field_tag(field.to_s, search.send(field)) if search.send(field).present?
-          end
+        fields.delete_if { |field| options[:except].include?(field) } if options[:except].try(:any?)
 
-          { i: :i_unlocked, il: :i_locked, h: :h_unlocked, hl: :h_locked }.each_pair do |symbol, instance_name|
-            next unless Supplejack.sticky_facets || %i[il hl].include?(symbol) || options[:all_filters]
-
-            filters = begin
-                        search.url_format.send(instance_name)
-                      rescue StandardError
-                        {}
-                      end
-            filters.each do |name, value|
-              field_name = value.is_a?(Array) ? "#{symbol}[#{name}][]" : "#{symbol}[#{name}]"
-              values = *value
-              values.each { |v| tags << hidden_field_tag(field_name, v) }
-            end
-          end
-
-          tags
+        fields.each do |field|
+          tags += hidden_field_tag(field.to_s, search.send(field)) if search.send(field).present?
         end
+
+        { i: :i_unlocked, il: :i_locked, h: :h_unlocked, hl: :h_locked }.each_pair do |symbol, instance_name|
+          next unless Supplejack.sticky_facets || %i[il hl].include?(symbol) || options[:all_filters]
+
+          filters = begin
+            search.url_format.send(instance_name)
+          rescue StandardError
+            {}
+          end
+
+          filters.each do |name, value|
+            field_name = value.is_a?(Array) ? "#{symbol}[#{name}][]" : "#{symbol}[#{name}]"
+            values = *value
+            values.each { |v| tags << hidden_field_tag(field_name, v) }
+          end
+        end
+
+        tags
       end
 
       # Returns a link with all existing search options except the specified in the params
@@ -255,7 +247,7 @@ module Supplejack
       # @return [ String ] A link to with the correct search options.
       #
       def link_to_add_filter(name, value, path_name, options = {}, html_options = {}, &block)
-        symbol = search.record_type == 0 ? :i : :h
+        symbol = search.record_type.zero? ? :i : :h
         options[:except] = Util.array(options[:except]) + [:page]
         path = generate_path(path_name, search.options(plus: { symbol => { name => value } }, except: options[:except]))
         link_text = options[:display_name].presence || I18n.t("facets.values.#{value}", default: value)
@@ -263,7 +255,7 @@ module Supplejack
       end
 
       def link_to_lock_filter(name, value, path_name, options = {}, html_options = {}, &block)
-        symbol = search.record_type == 0 ? :il : :hl
+        symbol = search.record_type.zero? ? :il : :hl
         path = generate_path(path_name, search.options(except: [{ name => value }], plus: { symbol => { name => value } }))
         link_text = options[:display_name].presence || I18n.t("facets.values.#{value}", default: value)
         link_to block_given? ? capture(&block) : link_text, path.html_safe, html_options
@@ -290,16 +282,17 @@ module Supplejack
           search_options = args[2] || {}
           html_options = args[3] || {}
         end
-        url = url + '?' + { search: search_options }.to_query if search_options.try(:any?)
+
+        url = "#{url} + ? #{{ search: search_options }.to_query}" if search_options.try(:any?)
         link_to(name, url, html_options)
       end
 
       def generate_path(name, options = {})
         segments = name.split('.')
-        if segments.size == 1
-          send("#{segments[0]}_path", options)
-        elsif segments.size == 2
-          send(segments[0]).send("#{segments[1]}_path", options)
+
+        case segments.size
+        when 1 then send("#{segments[0]}_path", options)
+        when 2 then send(segments[0]).send("#{segments[1]}_path", options)
         end
       end
     end

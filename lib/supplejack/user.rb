@@ -34,6 +34,11 @@ module Supplejack
       end
     end
 
+    # Initializes a UserSetRelation class which adds behaviour to build, create
+    # find and order sets related to this particular User instance
+    #
+    # @return [ UserSetRelation ] A UserSetRelation object
+    #
     def sets
       @sets ||= UserSetRelation.new(self)
     end
@@ -41,15 +46,6 @@ module Supplejack
     def stories
       @stories ||= UserStoryRelation.new(self)
     end
-
-    # Initializes a UserSetRelation class which adds behaviour to build, create
-    # find and order sets related to this particular User instance
-    #
-    # @return [ UserSetRelation ] A UserSetRelation object
-    #
-    # def sets
-    #   @sets ||= UserSetRelation.new(self)
-    # end
 
     # Executes a PUT request to the API with the user attributes
     #
@@ -98,7 +94,7 @@ module Supplejack
     # @return [ true/false ] False by default, true when intentionally set at user initialization.
     #
     def use_own_api_key?
-      !!@use_own_api_key
+      @use_own_api_key
     end
 
     # Returns true/false depending whether it will regenerate it's API Key
@@ -106,7 +102,7 @@ module Supplejack
     # @return [ true/false ] False by default, true when intentionally set.
     #
     def regenerate_api_key?
-      !!@regenerate_api_key
+      @regenerate_api_key
     end
 
     # Executes a GET request to the API to find the user with the provided ID.

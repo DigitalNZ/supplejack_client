@@ -110,6 +110,10 @@ module Supplejack
       all.send(method, *args, &block)
     end
 
+    def respond_to_missing?(_method, *_args, &_block)
+      true
+    end
+
     private
 
     def fetch_api_stories

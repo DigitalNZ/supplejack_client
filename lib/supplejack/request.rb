@@ -26,7 +26,7 @@ module Supplejack
         raise e
       ensure
         duration = (Time.now - started) * 1000 # Convert to milliseconds
-        solr_request_params = result['search']['solr_request_params'] if result && result.is_a?(Hash) && result['search']
+        solr_request_params = result['search']['solr_request_params'] if result.is_a?(Hash) && result['search']
         @subscriber = Supplejack::LogSubscriber.new
         @subscriber.log_request(duration, payload, solr_request_params)
       end
@@ -93,18 +93,17 @@ module Supplejack
 
     def full_url(path, format = nil, params = {})
       params ||= {}
-      format ||= 'json'
       params[:api_key] ||= Supplejack.api_key
       params[:debug] = true if Supplejack.enable_debugging
 
-      Supplejack.api_url + path + ".#{format}" + '?' + params.to_query
+      "#{Supplejack.api_url}#{path}.#{format || 'json'}?#{params.to_query}"
     end
 
     # Found ou that RestClient timeouts are not reliable. Setting a 30 sec
     # timeout is taking about 60 seconds re raise timeout error. So now the
     # default value is 15
     def timeout(options = {})
-      timeout = Supplejack.timeout.to_i == 0 ? 15 : Supplejack.timeout.to_i
+      timeout = Supplejack.timeout.to_i.zero? ? 15 : Supplejack.timeout.to_i
       options[:timeout] || timeout
     end
 

@@ -21,17 +21,13 @@ module Supplejack
       # Try to parse any string into a Time object
       #
       def time(time)
-        begin
-          if time.is_a?(String)
-            time = Time.parse(time)
-          elsif time.is_a?(Time) || time.is_a?(DateTime)
-            time = time
-          end
-        rescue StandardError
-          time = nil
-        end
+        return time if time.is_a?(Time) || time.is_a?(DateTime)
 
-        time
+        begin
+          Time.parse(time)
+        rescue StandardError
+          nil
+        end
       end
 
       #

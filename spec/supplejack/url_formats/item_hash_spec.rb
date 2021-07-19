@@ -129,17 +129,17 @@ module Supplejack
         end
       end
 
-      describe '#is_text_field?' do
+      describe '#text_field?' do
         it 'returns true when the passed field is text' do
-          item_hash.is_text_field?('title_text').should be_truthy
+          item_hash.text_field?('title_text').should be_truthy
         end
 
         it 'returns false when the passed field is not text' do
-          item_hash.is_text_field?('title_authority').should be_falsey
+          item_hash.text_field?('title_authority').should be_falsey
         end
 
         it 'returns false when the passed field is nil' do
-          item_hash.is_text_field?(nil).should be_falsey
+          item_hash.text_field?(nil).should be_falsey
         end
       end
 

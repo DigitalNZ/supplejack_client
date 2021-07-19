@@ -180,7 +180,7 @@ module Supplejack
         end
 
         it 'returns false for anything other that a 200 response' do
-          RSpec::Mocks.proxy_for(Supplejack::Story).reset
+          RSpec::Mocks.space.proxy_for(Supplejack::Story).reset
           Supplejack::Story.stub(:post).and_raise(RestClient::Forbidden.new)
 
           expect(story.save).to eq false

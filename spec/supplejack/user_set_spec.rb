@@ -137,15 +137,15 @@ module Supplejack
       end
     end
 
-    describe '#has_record?' do
+    describe '#record?' do
       let(:supplejack_set) { Supplejack::UserSet.new(records: [{ record_id: 1, position: 2, title: 'Dogs' }]) }
 
       it 'returns true when the record is part of the set' do
-        supplejack_set.has_record?(1).should be_truthy
+        supplejack_set.record?(1).should be_truthy
       end
 
       it 'returns false when the record is not part of the set' do
-        supplejack_set.has_record?(3).should be_falsey
+        supplejack_set.record?(3).should be_falsey
       end
     end
 
