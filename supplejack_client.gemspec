@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rails_autolink', '~> 1.0'
   spec.add_dependency 'rest-client', '~> 2.0'
 
-  spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rspec', '~> 2.8'
   spec.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
   spec.add_development_dependency 'rubocop-rspec', '~> 2.4'
