@@ -132,5 +132,9 @@ module Supplejack
     def method_missing(method, *args, &block)
       sets.send(method, *args, &block)
     end
+
+    def respond_to_missing?(_method, *_args, &_block)
+      true
+    end
   end
 end

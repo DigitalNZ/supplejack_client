@@ -57,10 +57,11 @@ module Supplejack
         filters = Supplejack::Util.deep_merge!(unlocked, locked)
 
         @all_filters = begin
-                         filters.dup.symbolize_keys.to_hash
-                       rescue StandardError
-                         {}
-                       end
+          filters.dup.symbolize_keys.to_hash
+        rescue StandardError
+          {}
+        end
+
         instance_variable_set("@#{symbol}_filters", @all_filters)
         @all_filters
       end
@@ -68,11 +69,11 @@ module Supplejack
       def and_filters(filter_type = nil)
         @and_filters ||= {}
         valid_filters = filters(filter_type).reject { |filter, _value| filter.to_s.match(/-(.+)/) }
-                                            .reject { |filter, _value| is_text_field?(filter) }
+                                            .reject { |filter, _value| text_field?(filter) }
         @and_filters[filter_symbol(filter_type)] ||= valid_filters
       end
 
-      def is_text_field?(filter)
+      def text_field?(filter)
         return false if filter.nil? || Supplejack.non_text_fields.include?(filter.to_sym)
 
         filter.to_s.split(//).last(5).join('').to_s == '_text'
@@ -85,10 +86,9 @@ module Supplejack
 
         @without_filters[symbol] = {}
         filters(filter_type).each_pair do |filter, value|
-          if filter.to_s =~ /-(.+)/
-            @without_filters[symbol][Regexp.last_match(1).to_sym] = value
-          end
+          @without_filters[symbol][Regexp.last_match(1).to_sym] = value if filter.to_s =~ /-(.+)/
         end
+
         @without_filters[symbol]
       end
 
@@ -103,7 +103,7 @@ module Supplejack
         if filter_type
           filter_type == :items ? 'i' : 'h'
         else
-          params[:record_type].to_i == 0 ? 'i' : 'h'
+          params[:record_type].to_i.zero? ? 'i' : 'h'
         end
       end
 
@@ -117,7 +117,7 @@ module Supplejack
         text_values << default_text if default_text.present?
 
         all_filters.each do |filter, value|
-          text_values << value if is_text_field?(filter)
+          text_values << value if text_field?(filter)
         end
 
         return nil if text_values.empty?
@@ -130,17 +130,13 @@ module Supplejack
       # The '_text' is removed from the end of the field name
       #
       def query_fields
-        query_fields = []
+        fields = all_filters.map do |filter, _value|
+          filter.to_s.chomp!('_text').to_sym if text_field?(filter)
+        end.compact
 
-        all_filters.each do |filter, _value|
-          if is_text_field?(filter)
-            query_fields << filter.to_s.chomp!('_text').to_sym
-          end
-        end
+        return nil if fields.empty?
 
-        return nil if query_fields.empty?
-
-        query_fields
+        fields
       end
 
       # Returns one type of filters
@@ -191,9 +187,7 @@ module Supplejack
             end
           end
 
-          if filter_options[:plus].try(:any?) && filter_options[:plus][symbol].try(:any?)
-            filters = Util.deep_merge(filters, filter_options[:plus][symbol])
-          end
+          filters = Util.deep_merge(filters, filter_options[:plus][symbol]) if requires_deep_merge?(filter_options[:plus], symbol)
 
           hash[symbol] = filters.symbolize_keys if filters.any?
         end
@@ -203,12 +197,14 @@ module Supplejack
           hash.merge!(attribute => attribute_value) if attribute_value.present?
         end
 
-        unless filter_options[:except].include?(:page)
-          hash[:page] = search.page if search.page.present? && search.page != 1
-        end
+        hash[:page] = search.page if !filter_options[:except].include?(:page) && search.page.present? && search.page != 1
+        hash[:record_type] = 1 if search.record_type.positive?
 
-        hash[:record_type] = 1 if search.record_type > 0
         hash
+      end
+
+      def requires_deep_merge?(hash, key)
+        hash.try(:any?) && hash[key].try(:any?)
       end
     end
   end

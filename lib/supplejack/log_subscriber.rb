@@ -2,7 +2,6 @@
 
 module Supplejack
   class LogSubscriber < ActiveSupport::LogSubscriber
-    # FIXME: make line 24 (request = "") shorter
     def log_request(duration, payload, solr_request_params = {})
       return unless Supplejack.enable_debugging
 
@@ -32,10 +31,9 @@ module Supplejack
     end
 
     def colorize(text, color)
-      if text.is_a?(Hash)
-        "{#{text.map { |k, v| "#{k}: #{colorize(v, color)}" }.join(', ')}}"
-      elsif text.is_a?(Array)
-        "[#{text.map { |e| colorize(e, color) }.join(', ')}]"
+      case text
+      when Array then "[#{text.map { |e| colorize(e, color) }.join(', ')}]"
+      when Hash then "{#{text.map { |k, v| "#{k}: #{colorize(v, color)}" }.join(', ')}}"
       else
         "#{BOLD}#{color}#{text}#{CLEAR}"
       end

@@ -3,22 +3,17 @@
 require 'supplejack/request'
 require 'digest/md5'
 
-# rubocop:disable Metrics/ClassLength
 module Supplejack
   # FIXME: Please make me smaller!
   class Search
     include Supplejack::Request
 
-    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction
-    attr_accessor :sort, :filters, :record_type, :record_klass, :geo_bbox
-    attr_accessor :url_format, :without, :and, :or, :params, :api_params
+    attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction,
+                  :sort, :filters, :record_type, :record_klass, :geo_bbox,
+                  :url_format, :without, :and, :or, :params, :api_params
 
     def initialize(params = {})
-      @params = begin
-                  params.clone
-                rescue StandardError
-                  {}
-                end
+      @params = params.clone || {}
       @params[:facets] ||= Supplejack.facets.join(',')
       @params[:facets_per_page] ||= Supplejack.facets_per_page
       %i[action controller].each { |p| @params.delete(p) }
@@ -161,7 +156,7 @@ module Supplejack
     end
 
     def record?
-      record_type == 0
+      record_type.zero?
     end
 
     # Calculates counts for specific queries using solr's facet.query
@@ -209,11 +204,11 @@ module Supplejack
       query_parameters.each_pair do |count_name, count_filters|
         count_filters = count_filters.symbolize_keys
         query_record_type = count_filters[:record_type].to_i
-        type = query_record_type == 0 ? :items : :headings
+        type = query_record_type.zero? ? :items : :headings
         filters = url_format.and_filters(type).dup
 
         without_filters = url_format.without_filters(type).dup
-        without_filters = Hash[without_filters.map { |key, value| ["-#{key}".to_sym, value] }]
+        without_filters = without_filters.transform_keys { |key| "-#{key}".to_sym }
 
         filters.merge!(without_filters)
         query_with_filters.merge!(count_name.to_sym => Supplejack::Util.deep_merge(filters, count_filters))
@@ -225,8 +220,8 @@ module Supplejack
       params[:geo_bbox] = geo_bbox if geo_bbox.present?
       params[:per_page] = per_page if per_page.present?
       params[:query_fields] = url_format.query_fields
-      params = merge_extra_filters(params)
-      params
+
+      merge_extra_filters(params)
     end
 
     # Gets the facet values unrestricted by the current filter
@@ -340,7 +335,7 @@ module Supplejack
     #   search = Search.new(:i => {:category => ["Images"]})
     #   search.has_category?("Images") => true
 
-    def has_filter_and_value?(filter, value)
+    def filter_and_value?(filter, value)
       actual_value = *send(filter)
       return false unless actual_value
 
@@ -348,9 +343,15 @@ module Supplejack
     end
 
     def method_missing(symbol, *args)
+      # rubocop: disable Style/GuardClause, Style/IfUnlessModifier
       if symbol.to_s.match(/has_(.+)\?/) && Supplejack.search_attributes.include?(Regexp.last_match(1).to_sym)
-        has_filter_and_value?(Regexp.last_match(1), args.first)
+        filter_and_value?(Regexp.last_match(1), args.first)
       end
+      # rubocop: enable Style/GuardClause, Style/IfUnlessModifier
+    end
+
+    def respond_to_missing?(_symbol, *_args)
+      true
     end
 
     # Adds any filters defined in the :or, :and or :without attr_accessors
@@ -367,4 +368,3 @@ module Supplejack
     end
   end
 end
-# rubocop:enable Metrics/ClassLength

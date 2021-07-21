@@ -15,12 +15,12 @@ module Supplejack
   class StoryItem
     include Supplejack::Request
 
-    MODIFIABLE_ATTRIBUTES = %i[position meta content type sub_type record_id].freeze
+    MODIFIABLE_ATTRIBUTES   = %i[position meta content type sub_type record_id].freeze
     UNMODIFIABLE_ATTRIBUTES = %i[id story_id].freeze
-    ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
+    SUPPORT_ATTRIBUTES      = %i[errors].freeze
+    ATTRIBUTES              = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES + SUPPORT_ATTRIBUTES).freeze
 
-    attr_accessor *ATTRIBUTES
-    attr_accessor :errors
+    attr_accessor(*ATTRIBUTES)
     attr_reader :api_key
 
     def initialize(attributes = {})

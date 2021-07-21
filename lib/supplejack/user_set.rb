@@ -23,10 +23,12 @@ module Supplejack
 
     ATTRIBUTES = %i[id name description privacy url priority count tags tag_list
                     subjects featured records created_at updated_at approved record featured_at].freeze
-    attr_accessor *ATTRIBUTES
-    attr_accessor :api_key, :errors, :user
+
+    SUPPORT_ATTRIBUTES = %i[api_key errors user].freeze
 
     PRIVACY_STATES = %w[public hidden private].freeze
+
+    attr_accessor(*(ATTRIBUTES + SUPPORT_ATTRIBUTES))
 
     def initialize(attributes = {})
       @attributes = attributes.try(:symbolize_keys) || {}
@@ -68,9 +70,7 @@ module Supplejack
       records = self.records.is_a?(Array) ? self.records : []
       records.map do |record_hash|
         record_hash = record_hash.try(:symbolize_keys) || {}
-        if record_hash[:record_id]
-          { record_id: record_hash[:record_id], position: record_hash[:position] }
-        end
+        { record_id: record_hash[:record_id], position: record_hash[:position] } if record_hash[:record_id]
       end.compact
     end
 
@@ -100,7 +100,7 @@ module Supplejack
     def tag_list
       return @tag_list if @tag_list
 
-      tags.join(', ') if tags
+      tags&.join(', ')
     end
 
     def favourite?
@@ -125,7 +125,7 @@ module Supplejack
     #
     # @return [ true, false ] True if the provided record_id is part of the UserSet, false otherwise.
     #
-    def has_record?(record_id)
+    def record?(record_id)
       !!items.detect { |i| i.record_id == record_id.to_i }
     end
 

@@ -18,16 +18,17 @@ module Supplejack
     def initialize(attributes = {})
       if attributes.is_a?(String)
         attributes = begin
-                       JSON.parse(attributes)
-                     rescue StandardError
-                       {}
-                     end
+          JSON.parse(attributes)
+        rescue StandardError
+          {}
+        end
       end
+
       @attributes = begin
-                      attributes.symbolize_keys
-                    rescue StandardError
-                      {}
-                    end
+        attributes.symbolize_keys
+      rescue StandardError
+        {}
+      end
     end
 
     def id
@@ -54,11 +55,13 @@ module Supplejack
     end
 
     def method_missing(symbol, *_args)
-      unless @attributes.key?(symbol)
-        raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Concept:Module"
-      end
+      return @attributes[symbol] if @attributes.key?(symbol)
 
-      @attributes[symbol]
+      raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Concept:Module"
+    end
+
+    def respond_to_missing?(symbol, *_args)
+      @attributes.key?(symbol)
     end
 
     module ClassMethods

@@ -27,16 +27,17 @@ module Supplejack
     def initialize(attributes = {})
       if attributes.is_a?(String)
         attributes = begin
-                       JSON.parse(attributes)
-                     rescue StandardError
-                       {}
-                     end
+          JSON.parse(attributes)
+        rescue StandardError
+          {}
+        end
       end
+
       @attributes = begin
-                      attributes.symbolize_keys
-                    rescue StandardError
-                      {}
-                    end
+        attributes.symbolize_keys
+      rescue StandardError
+        {}
+      end
     end
 
     def id
@@ -67,7 +68,7 @@ module Supplejack
           next unless @attributes.key?(field)
 
           values = @attributes[field]
-          values ||= [] unless !!values == values # Testing if boolean
+          values ||= [] unless [true, false].include?(values)
           values = [values] unless values.is_a?(Array)
 
           case fields[:format]
@@ -87,11 +88,9 @@ module Supplejack
     end
 
     def format
-      unless @attributes.key?(:format)
-        raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module"
-      end
+      return @attributes[:format] if @attributes.key?(:format)
 
-      @attributes[:format]
+      raise NoMethodError, "undefined method 'format' for Supplejack::Record:Module"
     end
 
     %i[next_page previous_page next_record previous_record].each do |pagination_field|
@@ -105,11 +104,13 @@ module Supplejack
     end
 
     def method_missing(symbol, *_args)
-      unless @attributes.key?(symbol)
-        raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Record:Module"
-      end
+      return @attributes[symbol] if @attributes.key?(symbol)
 
-      @attributes[symbol]
+      raise NoMethodError, "undefined method '#{symbol}' for Supplejack::Record:Module"
+    end
+
+    def respond_to_missing?(symbol, *_args)
+      @attributes.key?(symbol)
     end
 
     module ClassMethods
