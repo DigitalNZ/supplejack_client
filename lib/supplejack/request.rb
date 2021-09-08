@@ -81,6 +81,16 @@ module Supplejack
                                                payload: payload.to_json,
                                                timeout: timeout(options),
                                                headers: { content_type: :json, accept: :json })
+        # begin
+        #   response = RestClient::Request.execute(url: full_url(path, nil, params),
+        #                                          method: :patch,
+        #                                          payload: payload.to_json,
+        #                                          timeout: timeout(options),
+        #                                          headers: { content_type: :json, accept: :json })
+        # rescue RestClient::ExceptionWithResponse => e
+        #   e.response.body
+        # end
+
         begin
           JSON.parse(response)
         rescue StandardError
