@@ -38,13 +38,13 @@ module Supplejack
       payload ||= {}
       log_request(:post, path, params, payload) do
         response = begin
-                    RestClient::Request.execute(url: full_url(path, nil, params),
-                                                              method: :post, payload: payload.to_json,
-                                                              timeout: timeout(options),
-                                                              headers: { content_type: :json, accept: :json })
-                  rescue RestClient::ExceptionWithResponse => e
-                    e.response.body
-                  end
+          RestClient::Request.execute(url: full_url(path, nil, params),
+                                      method: :post, payload: payload.to_json,
+                                      timeout: timeout(options),
+                                      headers: { content_type: :json, accept: :json })
+        rescue RestClient::ExceptionWithResponse => e
+          e.response.body
+        end
         begin
           JSON.parse(response)
         rescue StandardError
@@ -64,17 +64,15 @@ module Supplejack
     def put(path, params = {}, payload = {}, options = {})
       payload ||= {}
       log_request(:put, path, params, payload) do
-
-
-        response = begin 
-                    RestClient::Request.execute(url: full_url(path, nil, params),
-                                                method: :put,
-                                                payload: payload.to_json,
-                                                timeout: timeout(options),
-                                                headers: { content_type: :json, accept: :json })
-                  rescue RestClient::ExceptionWithResponse => e
-                    e.response.body
-                  end
+        response = begin
+          RestClient::Request.execute(url: full_url(path, nil, params),
+                                      method: :put,
+                                      payload: payload.to_json,
+                                      timeout: timeout(options),
+                                      headers: { content_type: :json, accept: :json })
+        rescue RestClient::ExceptionWithResponse => e
+          e.response.body
+        end
 
         begin
           JSON.parse(response)
@@ -88,17 +86,14 @@ module Supplejack
       payload ||= {}
       log_request(:patch, path, params, payload) do
         response = begin
-                    RestClient::Request.execute(url: full_url(path, nil, params),
-                                                          method: :patch,
-                                                          payload: payload.to_json,
-                                                          timeout: timeout(options),
-                                                          headers: { content_type: :json, accept: :json })
-                  rescue RestClient::ExceptionWithResponse => e
-
-                    binding.pry
-
-                    e.response.body
-                  end
+          RestClient::Request.execute(url: full_url(path, nil, params),
+                                      method: :patch,
+                                      payload: payload.to_json,
+                                      timeout: timeout(options),
+                                      headers: { content_type: :json, accept: :json })
+        rescue RestClient::ExceptionWithResponse => e
+          e.response.body
+        end
 
         begin
           JSON.parse(response)
