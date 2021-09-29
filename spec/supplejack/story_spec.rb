@@ -145,7 +145,7 @@ module Supplejack
 
     describe '#save' do
       context 'Story is a new_record' do
-        let(:attributes) { { name: 'Story Name', description: nil, privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
+        let(:attributes) { { name: 'Story Name', description: nil, errors: nil, privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
         let(:user) { { api_key: 'foobar' } }
         let(:story) { Supplejack::Story.new(attributes.merge(user: user)) }
 
@@ -155,6 +155,7 @@ module Supplejack
               'id' => 'new-id',
               'name' => attributes[:name],
               'description' => '',
+              'errors' => nil,
               'tags' => [],
               'subjects' => [],
               'contents' => [],
@@ -188,7 +189,7 @@ module Supplejack
       end
 
       context 'story is not new' do
-        let(:attributes) { { name: 'Story Name', description: 'desc', privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
+        let(:attributes) { { name: 'Story Name', description: 'desc', errors: nil, privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
         let(:user) { { api_key: 'foobar' } }
         let(:story) { Supplejack::Story.new(attributes.merge(user: user, id: '123')) }
 
@@ -198,6 +199,7 @@ module Supplejack
               'id' => 'new-id',
               'name' => attributes[:name],
               'description' => 'desc',
+              'errors' => nil,
               'tags' => [],
               'subjects' => [],
               'contents' => [],
@@ -403,6 +405,7 @@ module Supplejack
         {
           name: 'foo',
           description: 'desc',
+          errors: nil,
           privacy: nil,
           copyright: nil,
           featured: nil,

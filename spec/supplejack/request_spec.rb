@@ -16,9 +16,7 @@ module Supplejack
     end
 
     describe '#get' do
-      before(:each) do
-        RestClient::Request.stub(:execute).and_return(%( {"search": {}} ))
-      end
+      before(:each) { RestClient::Request.stub(:execute).and_return(%( {"search": {}} )) }
 
       it 'serializes the parameters in the url' do
         RestClient::Request.should_receive(:execute).with(url: "http://api.org/records.json?#{{ and: { name: 'John' } }.to_query}&api_key=123", method: :get, read_timeout: 20)
@@ -76,9 +74,7 @@ module Supplejack
     end
 
     describe '#post' do
-      before(:each) do
-        RestClient::Request.stub(:execute)
-      end
+      before(:each) { RestClient::Request.stub(:execute) }
 
       it 'executes a post request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :post))
@@ -108,9 +104,7 @@ module Supplejack
     end
 
     describe '#delete' do
-      before(:each) do
-        RestClient::Request.stub(:execute)
-      end
+      before(:each) { RestClient::Request.stub(:execute) }
 
       it 'executes a delete request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :delete))
@@ -124,9 +118,7 @@ module Supplejack
     end
 
     describe '#put' do
-      before(:each) do
-        RestClient::Request.stub(:execute)
-      end
+      before(:each) { RestClient::Request.stub(:execute) }
 
       it 'executes a put request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :put))
@@ -151,6 +143,40 @@ module Supplejack
       it 'parses the JSON response' do
         RestClient::Request.stub(:execute) { { user: { name: 'John' } }.to_json }
         @test.put('/users/1', {}, {}).should eq('user' => { 'name' => 'John' })
+      end
+    end
+
+    describe '#patch' do
+      before(:each) { RestClient::Request.stub(:execute) }
+
+      it 'executes a patch request' do
+        RestClient::Request.should_receive(:execute).with(hash_including(method: :patch))
+
+        @test.patch('/records/1/ucm/1')
+      end
+
+      it 'passes the payload along' do
+        RestClient::Request.should_receive(:execute).with(hash_including(payload: { name: 1 }.to_json))
+
+        @test.put('/records/1/ucm/1', {}, name: 1)
+      end
+
+      it 'adds the extra parameters to the patch request' do
+        @test.should_receive(:full_url).with('/records/1/ucm/1', nil, api_key: '12344')
+
+        @test.patch('/records/1/ucm/1', { api_key: '12344' }, {})
+      end
+
+      it 'adds json headers and converts the payload into json' do
+        RestClient::Request.should_receive(:execute).with(hash_including(headers: { content_type: :json, accept: :json }, payload: { records: [1, 2, 3] }.to_json))
+
+        @test.patch('/records/1/ucm/1', {}, records: [1, 2, 3])
+      end
+
+      it 'parses the JSON response' do
+        RestClient::Request.stub(:execute) { { user: { name: 'John' } }.to_json }
+
+        @test.patch('/users/1', {}, {}).should eq('user' => { 'name' => 'John' })
       end
     end
 
