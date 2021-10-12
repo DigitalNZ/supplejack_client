@@ -45,6 +45,7 @@ module Supplejack
         rescue RestClient::ExceptionWithResponse => e
           e.response.body
         end
+
         begin
           JSON.parse(response)
         rescue StandardError
