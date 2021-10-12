@@ -23,6 +23,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rspec', '~> 3.10'
-  spec.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
+  spec.add_development_dependency 'rubocop', '~> 1.22', '>= 1.22.1'
   spec.add_development_dependency 'rubocop-rspec', '~> 2.4'
 end

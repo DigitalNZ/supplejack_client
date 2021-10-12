@@ -9,12 +9,7 @@ module Supplejack
     UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id username].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
-    # rubocop: disable Style/AccessorGrouping
-
-    attr_accessor(*ATTRIBUTES)
-    attr_accessor :user, :errors, :api_key
-
-    # rubocop: enable Style/AccessorGrouping
+    attr_accessor(*(ATTRIBUTES + %i[user errors api_key]))
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
@@ -60,13 +55,11 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def save
-      # rubocop:disable Style/ConditionalAssignment
-      if new_record?
-        self.attributes = self.class.post('/stories', { user_key: api_key }, story: api_attributes)
-      else
-        self.attributes = self.class.patch("/stories/#{id}", { user_key: api_key }, story: api_attributes)
-      end
-      # rubocop:enable Style/ConditionalAssignment
+      self.attributes = if new_record?
+                          self.class.post('/stories', { user_key: api_key }, story: api_attributes)
+                        else
+                          self.class.patch("/stories/#{id}", { user_key: api_key }, story: api_attributes)
+                        end
 
       Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
       true
