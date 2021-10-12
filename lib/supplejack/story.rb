@@ -3,7 +3,6 @@
 module Supplejack
   class Story
     extend Supplejack::Request
-    extend ActiveModel::Naming
 
     MODIFIABLE_ATTRIBUTES = %i[name description privacy copyright featured approved tags subjects record_ids count featured_at category errors].freeze
     UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id username].freeze
