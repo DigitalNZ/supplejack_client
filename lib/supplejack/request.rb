@@ -4,6 +4,8 @@ require 'rest-client'
 
 module Supplejack
   module Request
+    extend ActiveSupport::Concern
+
     def get(path, params = {}, options = {})
       tries ||= 5
       params ||= {}
