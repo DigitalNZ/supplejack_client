@@ -250,6 +250,18 @@ module Supplejack
       end
     end
 
+    describe '#multiple_add' do
+      let(:user) { { api_key: 'foobar' } }
+      let(:story) { Supplejack::Story.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:stories) { [{ id: '1', items: [] }, { id: '2', items: [] }] }
+
+      it 'triggers a POST request to reposition_items' do
+        expect(Supplejack::Story).to receive(:post).with('/stories/multiple_add', { user_key: user[:api_key] }, stories: stories)
+
+        story.multiple_add(stories)
+      end
+    end
+
     describe '#update_attributes' do
       let(:story) { described_class.new(name: 'test', description: 'test') }
 

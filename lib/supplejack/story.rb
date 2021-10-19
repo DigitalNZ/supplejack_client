@@ -110,6 +110,18 @@ module Supplejack
       false
     end
 
+    def multiple_add(stories)
+      self.class.post('/stories/multple_add', { user_key: api_key }, stories: stories)
+
+      Rails.cache.delete("/stories/multiple_add") if Supplejack.enable_caching
+
+      true
+    rescue StandardError => e
+      self.errors = e.message
+
+      false 
+    end
+
     # Fetches the Story information from the API again, in case it had changed.
     #
     # This can be useful if they items for a Story changed and you want the relation
