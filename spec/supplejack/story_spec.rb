@@ -218,6 +218,17 @@ module Supplejack
           expect(story.description).to eq 'desc'
         end
       end
+
+      context 'when request fails' do
+        let(:story) { Supplejack::Story.new({ name: 'Story Name', user: { api_key: 'foobar' }, id: '123' }) }
+
+        it 'triggers a POST request to reposition_items' do
+          allow(Supplejack::Story).to receive(:patch).and_return({ 'errors' => 'save failed' })
+
+          expect(story.save).to be false
+          expect(story.errors).to eq 'save failed'
+        end
+      end
     end
 
     describe '#reposition_items' do
@@ -225,10 +236,21 @@ module Supplejack
       let(:story) { Supplejack::Story.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
       let(:reposition_attributes) { [{ id: '111', position: 1 }, { id: '112', position: 2 }] }
 
-      it 'triggers a POST request to reposition_items' do
-        expect(Supplejack::Story).to receive(:post).with('/stories/123/reposition_items', { user_key: user[:api_key] }, items: reposition_attributes)
+      context 'when request is successful' do
+        it 'triggers a POST request to reposition_items' do
+          expect(Supplejack::Story).to receive(:post).with('/stories/123/reposition_items', { user_key: user[:api_key] }, items: reposition_attributes)
 
-        story.reposition_items(reposition_attributes)
+          story.reposition_items(reposition_attributes)
+        end
+      end
+
+      context 'when request fails' do
+        it 'triggers a POST request to reposition_items' do
+          allow(Supplejack::Story).to receive(:post).and_return({ 'errors' => 'repositioning failed' })
+
+          expect(story.reposition_items(reposition_attributes)).to be false
+          expect(story.errors).to eq 'repositioning failed'
+        end
       end
     end
 

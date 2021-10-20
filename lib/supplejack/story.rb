@@ -3,19 +3,12 @@
 module Supplejack
   class Story
     extend Supplejack::Request
-    extend ActiveModel::Naming
-    include ActiveModel::Conversion
 
     MODIFIABLE_ATTRIBUTES = %i[name description privacy copyright featured approved tags subjects record_ids count featured_at category errors].freeze
     UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id username].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
-    # rubocop: disable Style/AccessorGrouping
-
-    attr_accessor(*ATTRIBUTES)
-    attr_accessor :user, :errors, :api_key
-
-    # rubocop: enable Style/AccessorGrouping
+    attr_accessor(*(ATTRIBUTES + %i[user errors api_key]))
 
     # Define setter methods for both created_at and updated_at so that
     # they always return a Time object.
@@ -61,16 +54,16 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def save
-      # rubocop:disable Style/ConditionalAssignment
-      if new_record?
-        self.attributes = self.class.post('/stories', { user_key: api_key }, story: api_attributes)
-      else
-        self.attributes = self.class.patch("/stories/#{id}", { user_key: api_key }, story: api_attributes)
-      end
-      # rubocop:enable Style/ConditionalAssignment
+      response = if new_record?
+                   self.class.post('/stories', { user_key: api_key }, story: api_attributes)
+                 else
+                   self.class.patch("/stories/#{id}", { user_key: api_key }, story: api_attributes)
+                 end
 
       Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
-      true
+      self.attributes = response
+
+      error?(response)
     rescue StandardError => e
       self.errors = e.message
 
@@ -106,11 +99,11 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def reposition_items(positions)
-      self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
+      response = self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
 
       Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
 
-      true
+      error?(response)
     rescue StandardError => e
       self.errors = e.message
 
@@ -251,6 +244,14 @@ module Supplejack
     end
 
     private
+
+    def error?(response)
+      return true if response['errors'].nil?
+
+      self.errors = response['errors']
+
+      false
+    end
 
     def retrieve_attributes(attributes_list)
       {}.tap do |attributes|

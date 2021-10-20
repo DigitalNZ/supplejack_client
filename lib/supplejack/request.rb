@@ -4,8 +4,6 @@ require 'rest-client'
 
 module Supplejack
   module Request
-    extend ActiveSupport::Concern
-
     def get(path, params = {}, options = {})
       tries ||= 5
       params ||= {}
@@ -45,6 +43,7 @@ module Supplejack
         rescue RestClient::ExceptionWithResponse => e
           e.response.body
         end
+
         begin
           JSON.parse(response)
         rescue StandardError
