@@ -12,17 +12,18 @@ module Supplejack
   describe Request do
     let(:subject) { Supplejack::TestClass.new }
 
-    before(:each) do
+    before do
       Supplejack.stub(:api_key) { '123' }
       Supplejack.stub(:api_url) { 'http://api.org' }
       Supplejack.stub(:timeout) { 20 }
     end
 
     describe '#get' do
-      before(:each) { RestClient::Request.stub(:execute).and_return(%( {"search": {}} )) }
+      before { RestClient::Request.stub(:execute).and_return(%( {"search": {}} )) }
 
       it 'serializes the parameters in the url' do
         RestClient::Request.should_receive(:execute).with(url: "http://api.org/records.json?#{{ and: { name: 'John' } }.to_query}&api_key=123", method: :get, read_timeout: 20)
+
         subject.get('/records', and: { name: 'John' })
       end
 
@@ -36,17 +37,20 @@ module Supplejack
         @subscriber = Supplejack::LogSubscriber.new
         Supplejack::LogSubscriber.stub(:new) { @subscriber }
         @subscriber.should_receive(:log_request)
+
         subject.get('/records')
       end
 
       context 'request format' do
         it 'executes a request in a json format' do
           RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json?api_key=123'))
+
           subject.get('/records')
         end
 
         it 'overrides the response format with xml' do
           RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.xml?api_key=123'))
+
           subject.get('/records', {}, format: :xml)
         end
       end
@@ -54,6 +58,7 @@ module Supplejack
       context 'api key' do
         it 'overrides the api key' do
           RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json?api_key=456'))
+
           subject.get('/records', api_key: '456')
         end
       end
@@ -61,6 +66,7 @@ module Supplejack
       context 'timeout' do
         it 'calculates the timeout' do
           subject.should_receive(:timeout).with(hash_including(timeout: 60))
+
           subject.get('/', {}, timeout: 60)
         end
       end
@@ -69,6 +75,7 @@ module Supplejack
         it 'retries request 5 times' do
           RestClient::Request.stub(:execute).and_raise(RestClient::ServiceUnavailable)
           RestClient::Request.should_receive(:execute).exactly(5).times
+
           expect do
             subject.get('/records')
           end.to raise_error(RestClient::ServiceUnavailable)
@@ -77,80 +84,92 @@ module Supplejack
     end
 
     describe '#post' do
-      before(:each) { RestClient::Request.stub(:execute) }
+      before { RestClient::Request.stub(:execute) }
 
       it 'executes a post request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :post))
+
         subject.post('/records/1/ucm', {})
       end
 
       it 'passes the payload along' do
         payload = { 'ucm_record' => { name: 'geocords', value: '1234' } }
         RestClient::Request.should_receive(:execute).with(hash_including(payload: payload.to_json))
+
         subject.post('/records/1/ucm', {}, payload)
       end
 
       it 'adds the extra parameters to the post request' do
         subject.should_receive(:full_url).with('/records/1/ucm', nil, api_key: '12344')
+
         subject.post('/records/1/ucm', { api_key: '12344' }, {})
       end
 
       it 'adds json headers and converts the payload into json' do
         RestClient::Request.should_receive(:execute).with(hash_including(headers: { content_type: :json, accept: :json }, payload: { records: [{ record_id: 1, position: 1 }, { record_id: 2, position: 2 }] }.to_json))
+
         subject.post('/records/1/ucm', {}, records: [{ record_id: 1, position: 1 }, { record_id: 2, position: 2 }])
       end
 
       it 'parses the JSON response' do
         RestClient::Request.stub(:execute) { { user: { name: 'John' } }.to_json }
+
         subject.post('/users', {}, {}).should eq('user' => { 'name' => 'John' })
       end
     end
 
     describe '#delete' do
-      before(:each) { RestClient::Request.stub(:execute) }
+      before { RestClient::Request.stub(:execute) }
 
       it 'executes a delete request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :delete))
+
         subject.delete('/records/1/ucm/1')
       end
 
       it 'adds the extra parameters to the delete request' do
         subject.should_receive(:full_url).with('/records/1/ucm/1', nil, api_key: '12344')
+
         subject.delete('/records/1/ucm/1', api_key: '12344')
       end
     end
 
     describe '#put' do
-      before(:each) { RestClient::Request.stub(:execute) }
+      before { RestClient::Request.stub(:execute) }
 
       it 'executes a put request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :put))
+
         subject.put('/records/1/ucm/1')
       end
 
       it 'passes the payload along' do
         RestClient::Request.should_receive(:execute).with(hash_including(payload: { name: 1 }.to_json))
+
         subject.put('/records/1/ucm/1', {}, name: 1)
       end
 
       it 'adds the extra parameters to the put request' do
         subject.should_receive(:full_url).with('/records/1/ucm/1', nil, api_key: '12344')
+
         subject.put('/records/1/ucm/1', { api_key: '12344' }, {})
       end
 
       it 'adds json headers and converts the payload into json' do
         RestClient::Request.should_receive(:execute).with(hash_including(headers: { content_type: :json, accept: :json }, payload: { records: [1, 2, 3] }.to_json))
+
         subject.put('/records/1/ucm/1', {}, records: [1, 2, 3])
       end
 
       it 'parses the JSON response' do
         RestClient::Request.stub(:execute) { { user: { name: 'John' } }.to_json }
+
         subject.put('/users/1', {}, {}).should eq('user' => { 'name' => 'John' })
       end
     end
 
     describe '#patch' do
-      before(:each) { RestClient::Request.stub(:execute) }
+      before { RestClient::Request.stub(:execute) }
 
       it 'executes a patch request' do
         RestClient::Request.should_receive(:execute).with(hash_including(method: :patch))
