@@ -5,6 +5,7 @@ require 'rest-client'
 module Supplejack
   module Request
     def get(path, params = {}, options = {})
+      authetication_token = params.delete(:api_key) || Supplejack.api_key
       tries ||= 5
       params ||= {}
 
@@ -14,7 +15,7 @@ module Supplejack
       payload = { path: path, params: params, options: options }
 
       begin
-        result = RestClient::Request.execute(url: url, method: :get, read_timeout: timeout(options))
+        result = RestClient::Request.execute(url: url, method: :get, read_timeout: timeout(options), headers: { 'Authentication-Token': authetication_token })
         result = JSON.parse(result) if result
       rescue RestClient::ServiceUnavailable => e
         retry unless (tries -= 1).zero?
@@ -33,13 +34,15 @@ module Supplejack
     end
 
     def post(path, params = {}, payload = {}, options = {})
+      authetication_token = params.delete(:api_key) || Supplejack.api_key
       payload ||= {}
+
       log_request(:post, path, params, payload) do
         response = begin
           RestClient::Request.execute(url: full_url(path, nil, params),
                                       method: :post, payload: payload.to_json,
                                       timeout: timeout(options),
-                                      headers: { content_type: :json, accept: :json })
+                                      headers: { content_type: :json, accept: :json, 'Authentication-Token': authetication_token })
         rescue RestClient::ExceptionWithResponse => e
           e.response.body
         end
@@ -53,22 +56,27 @@ module Supplejack
     end
 
     def delete(path, params = {}, options = {})
+      authetication_token = params.delete(:api_key) || Supplejack.api_key
+
       log_request(:delete, path, params, {}) do
         RestClient::Request.execute(url: full_url(path, nil, params),
                                     method: :delete,
-                                    timeout: timeout(options))
+                                    timeout: timeout(options),
+                                    headers: { 'Authentication-Token': authetication_token })
       end
     end
 
     def put(path, params = {}, payload = {}, options = {})
       payload ||= {}
+      authetication_token = params.delete(:api_key) || Supplejack.api_key
+
       log_request(:put, path, params, payload) do
         response = begin
           RestClient::Request.execute(url: full_url(path, nil, params),
                                       method: :put,
                                       payload: payload.to_json,
                                       timeout: timeout(options),
-                                      headers: { content_type: :json, accept: :json })
+                                      headers: { content_type: :json, accept: :json, 'Authentication-Token': authetication_token })
         rescue RestClient::ExceptionWithResponse => e
           e.response.body
         end
@@ -83,13 +91,15 @@ module Supplejack
 
     def patch(path, params = {}, payload = {}, options = {})
       payload ||= {}
+      authetication_token = params.delete(:api_key) || Supplejack.api_key
+
       log_request(:patch, path, params, payload) do
         response = begin
           RestClient::Request.execute(url: full_url(path, nil, params),
                                       method: :patch,
                                       payload: payload.to_json,
                                       timeout: timeout(options),
-                                      headers: { content_type: :json, accept: :json })
+                                      headers: { content_type: :json, accept: :json, 'Authentication-Token': authetication_token })
         rescue RestClient::ExceptionWithResponse => e
           e.response.body
         end
@@ -106,10 +116,10 @@ module Supplejack
 
     def full_url(path, format = nil, params = {})
       params ||= {}
-      params[:api_key] ||= Supplejack.api_key
       params[:debug] = true if Supplejack.enable_debugging
+      query = params.any? ? "?#{params.to_query}" : ''
 
-      "#{Supplejack.api_url}#{path}.#{format || 'json'}?#{params.to_query}"
+      "#{Supplejack.api_url}#{path}.#{format || 'json'}#{query}"
     end
 
     # Found ou that RestClient timeouts are not reliable. Setting a 30 sec
@@ -140,3 +150,4 @@ module Supplejack
     end
   end
 end
+

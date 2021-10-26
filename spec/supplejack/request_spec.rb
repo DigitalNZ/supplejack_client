@@ -22,13 +22,18 @@ module Supplejack
       before { RestClient::Request.stub(:execute).and_return(%( {"search": {}} )) }
 
       it 'serializes the parameters in the url' do
-        RestClient::Request.should_receive(:execute).with(url: "http://api.org/records.json?#{{ and: { name: 'John' } }.to_query}&api_key=123", method: :get, read_timeout: 20)
+        RestClient::Request.should_receive(:execute)
+                           .with(url: "http://api.org/records.json?#{{ and: { name: 'John' } }.to_query}",
+                                 method: :get,
+                                 read_timeout: 20,
+                                 headers: { 'Authentication-Token': '123' })
 
         subject.get('/records', and: { name: 'John' })
       end
 
       it 'parses the JSON returned' do
         RestClient::Request.stub(:execute).and_return(%( {"search": {}} ))
+
         subject.get('/records').should eq('search' => {})
       end
 
@@ -43,13 +48,13 @@ module Supplejack
 
       context 'request format' do
         it 'executes a request in a json format' do
-          RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json?api_key=123'))
+          RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json', headers: { 'Authentication-Token': '123' }))
 
           subject.get('/records')
         end
 
         it 'overrides the response format with xml' do
-          RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.xml?api_key=123'))
+          RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.xml', headers: { 'Authentication-Token': '123' }))
 
           subject.get('/records', {}, format: :xml)
         end
@@ -57,7 +62,7 @@ module Supplejack
 
       context 'api key' do
         it 'overrides the api key' do
-          RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json?api_key=456'))
+          RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json', headers: { 'Authentication-Token': '456' }))
 
           subject.get('/records', api_key: '456')
         end
@@ -100,13 +105,18 @@ module Supplejack
       end
 
       it 'adds the extra parameters to the post request' do
-        subject.should_receive(:full_url).with('/records/1/ucm', nil, api_key: '12344')
+        subject.should_receive(:full_url).with('/records/1/ucm', nil, {})
 
         subject.post('/records/1/ucm', { api_key: '12344' }, {})
       end
 
       it 'adds json headers and converts the payload into json' do
-        RestClient::Request.should_receive(:execute).with(hash_including(headers: { content_type: :json, accept: :json }, payload: { records: [{ record_id: 1, position: 1 }, { record_id: 2, position: 2 }] }.to_json))
+        RestClient::Request.should_receive(:execute).with(
+          hash_including(
+            headers: { 'Authentication-Token': '123', content_type: :json, accept: :json },
+            payload: { records: [{ record_id: 1, position: 1 }, { record_id: 2, position: 2 }] }.to_json
+          )
+        )
 
         subject.post('/records/1/ucm', {}, records: [{ record_id: 1, position: 1 }, { record_id: 2, position: 2 }])
       end
@@ -128,7 +138,7 @@ module Supplejack
       end
 
       it 'adds the extra parameters to the delete request' do
-        subject.should_receive(:full_url).with('/records/1/ucm/1', nil, api_key: '12344')
+        subject.should_receive(:full_url).with('/records/1/ucm/1', nil, {})
 
         subject.delete('/records/1/ucm/1', api_key: '12344')
       end
@@ -150,13 +160,13 @@ module Supplejack
       end
 
       it 'adds the extra parameters to the put request' do
-        subject.should_receive(:full_url).with('/records/1/ucm/1', nil, api_key: '12344')
+        subject.should_receive(:full_url).with('/records/1/ucm/1', nil, {})
 
         subject.put('/records/1/ucm/1', { api_key: '12344' }, {})
       end
 
       it 'adds json headers and converts the payload into json' do
-        RestClient::Request.should_receive(:execute).with(hash_including(headers: { content_type: :json, accept: :json }, payload: { records: [1, 2, 3] }.to_json))
+        RestClient::Request.should_receive(:execute).with(hash_including(headers: { 'Authentication-Token': '123', content_type: :json, accept: :json }, payload: { records: [1, 2, 3] }.to_json))
 
         subject.put('/records/1/ucm/1', {}, records: [1, 2, 3])
       end
@@ -184,13 +194,13 @@ module Supplejack
       end
 
       it 'adds the extra parameters to the patch request' do
-        subject.should_receive(:full_url).with('/records/1/ucm/1', nil, api_key: '12344')
+        subject.should_receive(:full_url).with('/records/1/ucm/1', nil, {})
 
         subject.patch('/records/1/ucm/1', { api_key: '12344' }, {})
       end
 
       it 'adds json headers and converts the payload into json' do
-        RestClient::Request.should_receive(:execute).with(hash_including(headers: { content_type: :json, accept: :json }, payload: { records: [1, 2, 3] }.to_json))
+        RestClient::Request.should_receive(:execute).with(hash_including(headers: { 'Authentication-Token': '123', content_type: :json, accept: :json }, payload: { records: [1, 2, 3] }.to_json))
 
         subject.patch('/records/1/ucm/1', {}, records: [1, 2, 3])
       end
@@ -220,15 +230,11 @@ module Supplejack
 
     describe '#full_url' do
       it 'returns the full url with default api_url, format and api_key' do
-        subject.send(:full_url, '/records').should eq('http://api.org/records.json?api_key=123')
+        subject.send(:full_url, '/records').should eq('http://api.org/records.json')
       end
 
       it 'overrides the format' do
-        subject.send(:full_url, '/records', 'xml').should eq('http://api.org/records.xml?api_key=123')
-      end
-
-      it 'overrides the api key' do
-        subject.send(:full_url, '/records', nil, api_key: '456').should eq('http://api.org/records.json?api_key=456')
+        subject.send(:full_url, '/records', 'xml').should eq('http://api.org/records.xml')
       end
 
       it 'url encodes the parameters' do
@@ -237,11 +243,11 @@ module Supplejack
 
       it 'adds debug=true when enable_debugging is set to true' do
         Supplejack.stub(:enable_debugging) { true }
-        subject.send(:full_url, '/records', nil, {}).should eq 'http://api.org/records.json?api_key=123&debug=true'
+        subject.send(:full_url, '/records', nil, {}).should eq 'http://api.org/records.json?debug=true'
       end
 
       it 'handles nil params' do
-        subject.send(:full_url, '/records', nil, nil).should eq 'http://api.org/records.json?api_key=123'
+        subject.send(:full_url, '/records', nil, nil).should eq 'http://api.org/records.json'
       end
     end
   end
