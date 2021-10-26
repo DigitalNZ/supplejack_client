@@ -64,7 +64,7 @@ module Supplejack
         it 'overrides the api key' do
           RestClient::Request.should_receive(:execute).with(hash_including(url: 'http://api.org/records.json', headers: { 'Authentication-Token': '456' }))
 
-          subject.get('/records', api_key: '456')
+          subject.get('/records', {}, { authetication_token: '456' })
         end
       end
 
@@ -107,7 +107,7 @@ module Supplejack
       it 'adds the extra parameters to the post request' do
         subject.should_receive(:full_url).with('/records/1/ucm', nil, {})
 
-        subject.post('/records/1/ucm', { api_key: '12344' }, {})
+        subject.post('/records/1/ucm', {}, {})
       end
 
       it 'adds json headers and converts the payload into json' do
@@ -140,7 +140,7 @@ module Supplejack
       it 'adds the extra parameters to the delete request' do
         subject.should_receive(:full_url).with('/records/1/ucm/1', nil, {})
 
-        subject.delete('/records/1/ucm/1', api_key: '12344')
+        subject.delete('/records/1/ucm/1', {}, {})
       end
     end
 
@@ -162,7 +162,7 @@ module Supplejack
       it 'adds the extra parameters to the put request' do
         subject.should_receive(:full_url).with('/records/1/ucm/1', nil, {})
 
-        subject.put('/records/1/ucm/1', { api_key: '12344' }, {})
+        subject.put('/records/1/ucm/1', {}, {})
       end
 
       it 'adds json headers and converts the payload into json' do
@@ -196,7 +196,7 @@ module Supplejack
       it 'adds the extra parameters to the patch request' do
         subject.should_receive(:full_url).with('/records/1/ucm/1', nil, {})
 
-        subject.patch('/records/1/ucm/1', { api_key: '12344' }, {})
+        subject.patch('/records/1/ucm/1', {}, {})
       end
 
       it 'adds json headers and converts the payload into json' do
