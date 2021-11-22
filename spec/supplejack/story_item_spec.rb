@@ -19,7 +19,7 @@ module Supplejack
 
       Supplejack::StoryItem::ATTRIBUTES.each do |attribute|
         it "should initialize the attribute #{attribute}" do
-          Supplejack::StoryItem.new(attribute => 'value').send(attribute).should eq 'value'
+          expect(Supplejack::StoryItem.new(attribute => 'value').send(attribute)).to eq 'value'
         end
       end
     end
@@ -45,7 +45,7 @@ module Supplejack
       end
 
       context 'HTTP error is raised' do
-        before { item.stub(:post).and_raise(RestClient::Forbidden.new) }
+        before { allow(item).to receive(:post).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when an HTTP error is raised' do
           expect(item.save).to eq(false)
@@ -69,9 +69,7 @@ module Supplejack
       end
 
       context 'HTTP error is raised' do
-        before do
-          item.stub(:delete).and_raise(RestClient::Forbidden.new)
-        end
+        before { allow(item).to receive(:delete).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when a HTTP error is raised' do
           expect(item.destroy).to eq(false)

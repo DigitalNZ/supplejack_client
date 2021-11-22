@@ -24,25 +24,25 @@ module Supplejack
   describe Record do
     it 'initializes its attributes from a JSON string' do
       record = SupplejackRecord.new(%({"type": "Person", "location": "NZ"}))
-      
+
       expect(record.attributes).to eq(type: 'Person', location: 'NZ')
     end
 
     it 'handles nil params' do
       record = SupplejackRecord.new(nil)
-      
+
       expect(record.attributes).to eq({})
     end
 
     it 'handles a string as params' do
       record = SupplejackRecord.new('')
-      
+
       expect(record.attributes).to eq({})
     end
 
     it 'handles a array as params' do
       record = SupplejackRecord.new([])
-      
+
       expect(record.attributes).to eq({})
     end
 
@@ -53,20 +53,20 @@ module Supplejack
 
     it 'should return the value when is present in the attributes' do
       record = SupplejackRecord.new(weird_method: 'Something')
-      
+
       expect(record.weird_method).to eq 'Something'
     end
 
     describe 'id' do
       it 'returns the record_id' do
         record = SupplejackRecord.new('record_id' => '95')
-        
+
         expect(record.id).to eq 95
       end
 
       it 'returns the id' do
         record = SupplejackRecord.new('id' => '96')
-        
+
         expect(record.id).to eq 96
       end
     end
@@ -93,7 +93,7 @@ module Supplejack
         allow(Supplejack).to receive(:special_fields) { { admin: { fields: [:location] }, supplejack_user: { fields: [:description] } } }
 
         record = SupplejackRecord.new(location: 'Wellington', description: 'Some description')
-        
+
         expect(record.metadata).to include({ name: 'location', schema: 'admin', value: 'Wellington' }, name: 'description', schema: 'supplejack_user', value: 'Some description')
       end
 
@@ -116,7 +116,7 @@ module Supplejack
         allow(Supplejack).to receive(:supplejack_fields) { [:location] }
 
         record = SupplejackRecord.new(location: nil)
-        
+
         expect(record.metadata.empty?).to be true
       end
 
@@ -150,13 +150,13 @@ module Supplejack
 
       it 'converts values defined in the single_value_methods to a string' do
         record = SupplejackRecord.new('description' => %w[One Two])
-        
+
         expect(record.description).to eq 'One'
       end
 
       it 'returns the string if is already a string' do
         record = SupplejackRecord.new('description' => 'One')
-        
+
         expect(record.description).to eq 'One'
       end
     end
@@ -165,13 +165,13 @@ module Supplejack
       describe attr.to_s do
         it "returns the #{attr}" do
           record = SupplejackRecord.new(attr => 1)
-          
+
           expect(record.send(attr)).to eq 1
         end
 
         it 'returns the nil' do
           record = SupplejackRecord.new({})
-          
+
           expect(record.send(attr)).to be_nil
         end
       end
@@ -191,14 +191,14 @@ module Supplejack
 
         it 'requests the record from the API' do
           expect(SupplejackRecord).to receive(:get).with('/records/1', fields: 'default').and_return('record' => {})
-          
+
           SupplejackRecord.find(1)
         end
 
         it 'initializes a new SupplejackRecord object' do
           allow(SupplejackRecord).to receive(:get).and_return('record' => { 'record_id' => '1', 'title' => 'Wellington' })
           record = SupplejackRecord.find(1)
-          
+
           expect(record.class).to eq SupplejackRecord
           expect(record.id).to eq 1
           expect(record.title).to eq 'Wellington'
@@ -206,9 +206,9 @@ module Supplejack
 
         it 'send the fields defined in the configuration' do
           allow(Supplejack).to receive(:fields) { %i[verbose default] }
-          
+
           expect(SupplejackRecord).to receive(:get).with('/records/1', fields: 'verbose,default').and_return('record' => {})
-          
+
           SupplejackRecord.find(1)
         end
 

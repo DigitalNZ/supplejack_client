@@ -12,7 +12,7 @@ module Supplejack
 
     it 'initializes the facet with values' do
       facet = Supplejack::Facet.new('location', 'Wellington' => 100, 'Auckland' => 10)
-      
+
       expect(facet.values).to eq('Wellington' => 100, 'Auckland' => 10)
     end
 

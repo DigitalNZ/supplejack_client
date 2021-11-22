@@ -8,7 +8,7 @@ end
 
 module Supplejack
   describe Story do
-    before { Supplejack.stub(:enable_caching) { false } }
+    before { allow(Supplejack).to receive(:enable_caching) { false } }
 
     describe '#initialize' do
       Supplejack::Story::ATTRIBUTES.reject { |a| a =~ /_at/ }.each do |attribute|
@@ -182,7 +182,7 @@ module Supplejack
 
         it 'returns false for anything other that a 200 response' do
           RSpec::Mocks.space.proxy_for(Supplejack::Story).reset
-          Supplejack::Story.stub(:post).and_raise(RestClient::Forbidden.new)
+          allow(Supplejack::Story).to receive(:post).and_raise(RestClient::Forbidden.new)
 
           expect(story.save).to eq false
         end
@@ -451,13 +451,13 @@ module Supplejack
       end
 
       it 'fetches the Story from the API' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
+        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
         Supplejack::Story.find('123abc')
       end
 
       it 'initializes a Story object' do
-        Supplejack::Story.should_receive(:get).with('/stories/123abc', {}).and_return(attributes)
+        expect(Supplejack::Story).to receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
         story = Supplejack::Story.find('123abc')
 
@@ -475,7 +475,7 @@ module Supplejack
       end
 
       it 'raises a Supplejack::StoryNotFound' do
-        Supplejack::Story.stub(:get).and_raise(RestClient::ResourceNotFound)
+        allow(Supplejack::Story).to receive(:get).and_raise(RestClient::ResourceNotFound)
 
         expect { Supplejack::Story.find(id: '123') }.to raise_error(Supplejack::StoryNotFound)
       end
@@ -483,7 +483,7 @@ module Supplejack
 
     describe '#featured' do
       it 'fetches stories from the api' do
-        Supplejack::Story.should_receive(:get).with('/stories/featured')
+        expect(Supplejack::Story).to receive(:get).with('/stories/featured')
         Supplejack::Story.featured
       end
 

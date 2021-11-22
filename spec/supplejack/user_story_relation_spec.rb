@@ -9,7 +9,7 @@ module Supplejack
     let(:relation) { Supplejack::UserStoryRelation.new(user) }
 
     before do
-      relation.stub(:get) do
+      allow(relation).to receive(:get).and_return(
         [
           {
             'id' => '1',
@@ -30,7 +30,7 @@ module Supplejack
             'number_of_items' => 1
           }
         ]
-      end
+      )
     end
 
     describe '#initialize' do
@@ -124,13 +124,11 @@ module Supplejack
 
     describe '#order' do
       before do
-        relation.stub(:get) do
-          [
-            { 'name' => 'dogs' },
-            { 'name' => 'zavourites' },
-            { 'name' => 'Favourites' }
-          ]
-        end
+        allow(relation).to receive(:get).and_return(
+          [{ 'name' => 'dogs' },
+           { 'name' => 'zavourites' },
+           { 'name' => 'Favourites' }]
+        )
       end
 
       it 'orders the stories based on the supplied field' do
@@ -150,7 +148,7 @@ module Supplejack
 
     context 'stories array behaviour' do
       it 'executes array methods on the @stories array' do
-        relation.stub(:all) { [] }
+        allow(relation).to receive(:all) { [] }
 
         expect(relation.size).to eq(0)
       end

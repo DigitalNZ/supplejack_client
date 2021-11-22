@@ -14,98 +14,88 @@ end
 # rubocop:disable Metrics/ModuleLength
 module Supplejack
   describe Search do
-    describe '#initalize' do
-      it 'doesn\'t break when initalized with nil' do
-        Search.new(nil)
-      end
-    end
-
     describe '#params' do
       it 'defaults to facets set in initializer' do
-        Supplejack.stub(:facets) { %w[location description] }
-        Search.new.api_params[:facets].should eq('location,description')
+        allow(Supplejack).to receive(:facets) { %w[location description] }
+
+        expect(Search.new.api_params[:facets]).to eq('location,description')
       end
 
       it 'sets the facets through the params' do
-        Search.new(facets: 'name,description').api_params[:facets].should eq('name,description')
+        expect(Search.new(facets: 'name,description').api_params[:facets]).to eq('name,description')
       end
 
       it 'defaults to facets_per_page set in initializer' do
-        Supplejack.stub(:facets_per_page) { 33 }
-        Search.new.api_params[:facets_per_page].should eq 33
+        allow(Supplejack).to receive(:facets_per_page) { 33 }
+
+        expect(Search.new.api_params[:facets_per_page]).to eq 33
       end
 
       it 'sets the facets_per_page through the params' do
-        Search.new(facets_per_page: 13).api_params[:facets_per_page].should eq 13
+        expect(Search.new(facets_per_page: 13).api_params[:facets_per_page]).to eq 13
       end
 
       it 'deletes rails specific params' do
         params = Search.new(controller: 'records', action: 'index').api_params
-        params.should_not have_key(:controller)
-        params.should_not have_key(:action)
+
+        expect(params).not_to have_key(:controller)
+        expect(params).not_to have_key(:action)
       end
     end
 
     describe '#text' do
       it 'returns the search text' do
-        Search.new(text: 'dog').text.should eq('dog')
+        expect(Search.new(text: 'dog').text).to eq('dog')
       end
     end
 
-    # describe '#geo_bbox' do
-    # end
-
-    # describe "#record_type" do
-    # end
-
     describe '#page' do
       it 'defaults to 1' do
-        Search.new.page.should eq 1
+        expect(Search.new.page).to eq 1
       end
 
       it 'converts the page to a number' do
-        Search.new(page: '2').page.should eq 2
+        expect(Search.new(page: '2').page).to eq 2
       end
     end
 
     describe '#per_page' do
       it 'defaults to the per_page in the initializer' do
-        Supplejack.stub(:per_page) { 16 }
-        Search.new.per_page.should eq 16
+        allow(Supplejack).to receive(:per_page) { 16 }
+
+        expect(Search.new.per_page).to eq 16
       end
 
       it 'sers the per_page through the params' do
-        Search.new(per_page: '3').per_page.should eq 3
+        expect(Search.new(per_page: '3').per_page).to eq 3
       end
     end
 
     describe '#sort' do
       it 'returns the field to sort on' do
-        Search.new(sort: 'content_partner').sort.should eq 'content_partner'
+        expect(Search.new(sort: 'content_partner').sort).to eq 'content_partner'
       end
 
       it 'returns nil when not set' do
-        Search.new.sort.should be_nil
+        expect(Search.new.sort).to be nil
       end
     end
 
     describe '#direction' do
       it 'returns the direction to sort the results' do
-        Search.new(direction: 'asc').direction.should eq 'asc'
+        expect(Search.new(direction: 'asc').direction).to eq 'asc'
       end
 
       it 'returns nil when not set' do
-        Search.new.direction.should be_nil
+        expect(Search.new.direction).to be nil
       end
     end
 
-    # describe "#custom_search" do
-    # end
-
     describe '#search_attributes' do
       it 'sets the filter defined in Supplejack.search_attributes with its current value' do
-        Supplejack.stub(:search_attributes) { [:location] }
-        Search.new(i: { location: 'Wellington' }).location.should eq 'Wellington'
+        allow(Supplejack).to receive(:search_attributes) { [:location] }
+
+        expect(Search.new(i: { location: 'Wellington' }).location).to eq 'Wellington'
       end
     end
 
@@ -115,21 +105,21 @@ module Supplejack
       end
 
       it 'returns filters in a array format by default' do
-        Search.new(i: @filters).filters.should include([:location, 'Wellington'], [:country, 'New Zealand'])
+        expect(Search.new(i: @filters).filters).to include([:location, 'Wellington'], [:country, 'New Zealand'])
       end
 
       it 'returns a hash of the current search filters' do
-        Search.new(i: @filters).filters(format: :hash).should include(@filters)
+        expect(Search.new(i: @filters).filters(format: :hash)).to include(@filters)
       end
 
       it 'expands filters that contain arrays' do
         @filters = { location: %w[Wellington Auckland] }
-        Search.new(i: @filters).filters.should include([:location, 'Wellington'], [:location, 'Auckland'])
+        expect(Search.new(i: @filters).filters).to include([:location, 'Wellington'], [:location, 'Auckland'])
       end
 
       it 'removes the location filter' do
         @filters = { location: %w[Wellington Auckland] }
-        Search.new(i: @filters).filters(except: [:location]).should_not include([:location, 'Wellington'], [:location, 'Auckland'])
+        expect(Search.new(i: @filters).filters(except: [:location])).not_to include([:location, 'Wellington'], [:location, 'Auckland'])
       end
     end
 
@@ -142,67 +132,69 @@ module Supplejack
       end
 
       it 'executes the request only once' do
-        @search.should_receive(:execute_request).once
+        expect(@search).to receive(:execute_request).once
+
         @search.facets
         @search.facets
       end
 
       it 'handles a failed request from the API' do
         @search.instance_variable_set(:@response, 'search' => {})
-        @search.facets.should be_empty
+        expect(@search.facets.empty?).to be true
       end
 
       it 'initializes a facet object for each facet' do
-        Supplejack::Facet.should_receive(:new).with('location', 'Wellington' => 100)
-        Supplejack::Facet.should_receive(:new).with('mayor', 'Brake, Brian' => 20)
+        expect(Supplejack::Facet).to receive(:new).with('location', 'Wellington' => 100)
+        expect(Supplejack::Facet).to receive(:new).with('mayor', 'Brake, Brian' => 20)
+
         @search.facets
       end
 
       it 'orders the facets based on the order set in the initializer' do
-        Supplejack.stub(:facets) { %i[mayor location] }
-        @search.facets.first.name.should eq 'mayor'
-        @search.facets.last.name.should eq 'location'
+        allow(Supplejack).to receive(:facets) { %i[mayor location] }
+
+        expect(@search.facets.first.name).to eq 'mayor'
+        expect(@search.facets.last.name).to eq 'location'
       end
 
       it 'orders the facets the other way around' do
-        Supplejack.stub(:facets) { %i[location mayor] }
-        @search.facets.first.name.should eq 'location'
-        @search.facets.last.name.should eq 'mayor'
+        allow(Supplejack).to receive(:facets) { %i[location mayor] }
+
+        expect(@search.facets.first.name).to eq 'location'
+        expect(@search.facets.last.name).to eq 'mayor'
       end
 
       it 'returns the facet values' do
-        @search.facets.first.values.should eq('Wellington' => 100)
+        expect(@search.facets.first.values).to eq('Wellington' => 100)
       end
     end
 
     describe '#facet' do
-      before(:each) do
-        @search = Search.new
-      end
+      before { @search = Search.new }
 
       it 'returns the specified facet' do
         facet = Supplejack::Facet.new('collection', [])
-        @search.stub(:facets) { [facet] }
+        allow(@search).to receive(:facets) { [facet] }
 
-        @search.facet('collection').should eq facet
+        expect(@search.facet('collection')).to eq facet
       end
 
       it 'returns nil when facet is not found' do
-        @search.stub(:facets) { [] }
-        @search.facet('collection').should be_nil
+        allow(@search).to receive(:facets) { [] }
+
+        expect(@search.facet('collection')).to be nil
       end
 
       it 'returns nil if value is nil' do
         facet = Supplejack::Facet.new('collection', [])
-        @search.stub(:facets) { [facet] }
-        @search.facet(nil).should be_nil
+        allow(@search).to receive(:facets) { [facet] }
+
+        expect(@search.facet(nil)).to be nil
       end
     end
 
     describe '#facet_pivots' do
-      before(:each) do
-        @search = Search.new
-      end
+      before { @search = Search.new }
 
       it 'returns empty array when there are no facet pivots' do
         @search.instance_variable_set(:@response, 'search' => {})
@@ -240,24 +232,26 @@ module Supplejack
       end
 
       it 'executes the request only once' do
-        @search.should_receive(:execute_request).once
+        expect(@search).to receive(:execute_request).once
         @search.total
         @search.total
       end
 
       it 'returns the total from the response' do
-        @search.total.should eq 100
+        expect(@search.total).to eq 100
       end
 
       it 'returns 0 when the request to the API failed' do
         @search.instance_variable_set(:@response, 'search' => {})
-        @search.total.should eq 0
+
+        expect(@search.total).to eq 0
       end
     end
 
     describe '#results' do
       before(:each) do
-        Supplejack.stub(:record_klass).and_return('TestRecord')
+        allow(Supplejack).to receive(:record_klass).and_return('TestRecord')
+
         @search = Search.new
         @record1 = { 'id' => 1, 'title' => 'Wellington' }
         @record2 = { 'id' => 2, 'title' => 'Auckland' }
@@ -265,54 +259,63 @@ module Supplejack
       end
 
       it 'executes the request only once' do
-        @search.stub(:total) { 10 }
-        @search.should_receive(:execute_request).once
+        allow(@search).to receive(:total) { 10 }
+
+        expect(@search).to receive(:execute_request).once
+
         @search.results
         @search.results
       end
 
       it 'initializes record objects with the default class' do
-        TestRecord.should_receive(:new).with(@record1)
-        TestRecord.should_receive(:new).with(@record2)
+        expect(TestRecord).to receive(:new).with(@record1)
+        expect(TestRecord).to receive(:new).with(@record2)
+
         @search.results
       end
 
       it 'initializes record objects with the class provided in the params' do
         @search = Search.new(record_klass: 'test_item')
         @search.instance_variable_set(:@response, 'search' => { 'results' => [@record1, @record2] })
-        TestItem.should_receive(:new).with(@record1)
-        TestItem.should_receive(:new).with(@record2)
+
+        expect(TestItem).to receive(:new).with(@record1)
+        expect(TestItem).to receive(:new).with(@record2)
+
         @search.results
       end
 
       it 'returns a array of objects of the provided class' do
-        @search.results.first.class.should eq TestRecord
+        expect(@search.results.first.class).to eq TestRecord
       end
 
       it 'returns an array wraped in paginated collection object' do
-        @search.results.current_page.should eq 1
+        expect(@search.results.current_page).to eq 1
       end
 
       it 'returns empty paginated collection when API request failed' do
         @search.instance_variable_set(:@response, 'search' => {})
-        @search.results.size.should eq 0
+
+        expect(@search.results.size).to eq 0
       end
     end
 
     describe '#counts' do
       before(:each) do
         @search = Search.new
-        @search.stub(:fetch_counts) { { 'images' => 100 } }
+
+        allow(@search).to receive(:fetch_counts) { { 'images' => 100 } }
       end
 
       context 'caching disabled' do
         before(:each) do
-          Supplejack.stub(:enable_caching) { false }
+          allow(Supplejack).to receive(:enable_caching) { false }
         end
 
         it 'fetches the counts' do
           query_params = { 'images' => { category: 'Images' } }
-          @search.should_receive(:fetch_counts).with(query_params)
+
+          expect(@search).to receive(:fetch_counts).with(query_params)
+
           @search.counts(query_params)
         end
       end
@@ -320,70 +323,70 @@ module Supplejack
 
     describe '#fetch_counts' do
       context 'without filters' do
-        before(:each) do
-          @search = Search.new
-        end
+        before { @search = Search.new }
 
         it 'returns a hash with row names and its values' do
-          @search.stub(:get).and_return('search' => { 'facets' => { 'counts' => { 'images' => 151_818 } } })
-          @search.fetch_counts({}).should eq('images' => 151_818)
+          allow(@search).to receive(:get).and_return('search' => { 'facets' => { 'counts' => { 'images' => 151_818 } } })
+
+          expect(@search.fetch_counts({})).to eq('images' => 151_818)
         end
 
         it 'returns every count even when there are no results matching' do
-          @search.stub(:get).and_return('search' => { 'facets' => { 'counts' => { 'images' => 151_818 } } })
-          @search.fetch_counts(images: {}, headings: {}).should eq('images' => 151_818, 'headings' => 0)
+          allow(@search).to receive(:get).and_return('search' => { 'facets' => { 'counts' => { 'images' => 151_818 } } })
+
+          expect(@search.fetch_counts(images: {}, headings: {})).to eq('images' => 151_818, 'headings' => 0)
         end
 
         it 'returns 0 for every facet when the API response fails' do
-          @search.stub(:get).and_raise(StandardError)
-          @search.fetch_counts(images: {}).should eq('images' => 0)
+          allow(@search).to receive(:get).and_raise(StandardError)
+
+          expect(@search.fetch_counts(images: {})).to eq('images' => 0)
         end
       end
     end
 
     describe '#counts_params' do
       context 'without filters' do
-        before(:each) do
-          @search = Search.new
-        end
+        before { @search = Search.new }
 
         it 'requests record_type == all' do
           query_parameters = { headings: { record_type: '1' } }
-          @search.counts_params(query_parameters).should include(facet_query: query_parameters, record_type: 'all')
+
+          expect(@search.counts_params(query_parameters)).to include(facet_query: query_parameters, record_type: 'all')
         end
 
         it 'adds the restrictions set in the without variable' do
           query_parameters = { headings: { record_type: '1' } }
           @search.without = { location: 'Wellington' }
-          @search.counts_params(query_parameters).should include(without: { location: 'Wellington' })
+
+          expect(@search.counts_params(query_parameters)).to include(without: { location: 'Wellington' })
         end
 
         it 'restricts the result set to only ones that match the and filters' do
           query_parameters = { headings: { record_type: '1' } }
           @search.and = { location: 'Wellington' }
-          @search.counts_params(query_parameters).should include(and: { location: 'Wellington' })
+
+          expect(@search.counts_params(query_parameters)).to include(and: { location: 'Wellington' })
         end
 
         it 'restricts the result set to results that match any of the or filters' do
           query_parameters = { headings: { record_type: '1' } }
           @search.or = { location: %w[Wellington Auckland] }
-          @search.counts_params(query_parameters).should include(or: { location: %w[Wellington Auckland] })
+
+          expect(@search.counts_params(query_parameters)).to include(or: { location: %w[Wellington Auckland] })
         end
 
         it 'executes a request with facet_queries' do
           query_parameters = { images: { creator: 'all', record_type: '0' }, headings: { record_type: '1' } }
-          @search.counts_params(query_parameters).should include(facet_query: query_parameters)
+
+          expect(@search.counts_params(query_parameters)).to include(facet_query: query_parameters)
         end
 
         it 'passes the text when present' do
           @search = Search.new(text: 'dogs')
-          @search.counts_params({}).should include(text: 'dogs')
-        end
 
-        # it 'passes the geo_bbox when present' do
-        #   @search = Search.new(geo_bbox: '1,2,3,4')
-        #   @search.counts_params({}).should include(geo_bbox: '1,2,3,4')
-        # end
+          expect(@search.counts_params({})).to include(text: 'dogs')
+        end
 
         it 'merges the :i and :il filters with record_type 0' do
           query_parameters = { images: { 'creator' => 'all', 'record_type' => '0' }, headings: { 'record_type' => '1', :dc_type => 'Group' } }
@@ -392,7 +395,7 @@ module Supplejack
           images_query = { creator: 'all', record_type: '0', category: 'Images', year: '1998' }
           headings_query = { record_type: '1', dc_type: 'Group' }
 
-          @search.counts_params(query_parameters).should include(facet_query: { images: images_query, headings: headings_query })
+          expect(@search.counts_params(query_parameters)).to include(facet_query: { images: images_query, headings: headings_query })
         end
 
         it 'merges *_text fields' do
@@ -401,90 +404,97 @@ module Supplejack
 
           images_query = { creator: 'all', record_type: '0' }
 
-          @search.counts_params(query_parameters).should include(text: 'dog', query_fields: [:subject], facet_query: { images: images_query })
+          expect(@search.counts_params(query_parameters)).to include(text: 'dog', query_fields: [:subject], facet_query: { images: images_query })
         end
       end
 
       context 'with active filters' do
-        before(:each) do
-          @search = Search.new(i: { location: 'Wellington' })
-        end
+        before { @search = Search.new(i: { location: 'Wellington' }) }
 
         it 'merges the existing filters into every facet query' do
           query_parameters = { images: { 'creator' => 'all', 'record_type' => 0 } }
           expected_filters = { images: { creator: 'all', location: 'Wellington', record_type: 0 } }
-          @search.counts_params(query_parameters).should include(facet_query: expected_filters)
+
+          expect(@search.counts_params(query_parameters)).to include(facet_query: expected_filters)
         end
 
         it 'merges existing filters without overriding' do
           query_parameters = { images: { 'location' => 'Matapihi', 'record_type' => 0 } }
           expected_filters = { images: { location: %w[Wellington Matapihi], record_type: 0 } }
-          @search.counts_params(query_parameters).should include(facet_query: expected_filters)
+
+          expect(@search.counts_params(query_parameters)).to include(facet_query: expected_filters)
         end
 
         it 'overrides the record_type' do
           @search = Search.new(record_type: '1')
           query_parameters = { images: { 'record_type' => '0' } }
           expected_filters = { images: { record_type: '0' } }
-          @search.counts_params(query_parameters).should include(facet_query: expected_filters)
+
+          expect(@search.counts_params(query_parameters)).to include(facet_query: expected_filters)
         end
 
         it 'merges existing negative filters' do
           @search = Search.new(i: { '-category' => 'Groups' })
           query_parameters = { photos: { 'has_large_thumbnail_url' => 'Y' } }
           expected_filters = { photos: { has_large_thumbnail_url: 'Y', '-category'.to_sym => 'Groups' } }
-          @search.counts_params(query_parameters).should include(facet_query: expected_filters)
+
+          expect(@search.counts_params(query_parameters)).to include(facet_query: expected_filters)
         end
 
         it 'adds per_page params if present' do
           @search = Search.new(per_page: 0)
-          @search.counts_params({}).should include(per_page: 0)
+
+          expect(@search.counts_params({})).to include(per_page: 0)
         end
       end
     end
 
     describe '#request_path' do
-      before(:each) do
-        @search = Search.new
-      end
+      before { @search = Search.new }
 
       it 'returns /records by default' do
-        @search.request_path.should eq '/records'
+        expect(@search.request_path).to eq '/records'
       end
     end
 
     describe '#execute_request' do
-      before(:each) do
-        @search = Search.new
-      end
+      before { @search = Search.new }
 
       it 'only executes the request once' do
-        @search.should_receive(:get).once.and_return('{}')
+        expect(@search).to receive(:get).once.and_return('{}')
+
         @search.execute_request
         @search.execute_request
       end
 
       it 'removes the results that match the without filters' do
         @search.without = { location: 'Wellington' }
-        @search.should_receive(:get).with('/records', hash_including(without: { location: 'Wellington' }))
+
+        expect(@search).to receive(:get).with('/records', hash_including(without: { location: 'Wellington' }))
+
         @search.execute_request
       end
 
       it 'restricts the result set to only ones that match the and filters' do
         @search.and = { location: 'Wellington' }
-        @search.should_receive(:get).with('/records', hash_including(and: { location: 'Wellington' }))
+
+        expect(@search).to receive(:get).with('/records', hash_including(and: { location: 'Wellington' }))
+
         @search.execute_request
       end
 
       it 'restricts the result set to only ones that match any of the or filters' do
         @search.or = { location: ['Wellington'] }
-        @search.should_receive(:get).with('/records', hash_including(or: { location: ['Wellington'] }))
+
+        expect(@search).to receive(:get).with('/records', hash_including(or: { location: ['Wellington'] }))
+
         @search.execute_request
       end
 
       it 'returns a empty search hash when a error is raised' do
-        @search.stub(:get).and_raise(StandardError)
-        @search.execute_request.should eq('search' => {})
+        allow(@search).to receive(:get).and_raise(StandardError)
+
+        expect(@search.execute_request).to eq('search' => {})
       end
 
       context 'error handling' do
@@ -503,31 +513,32 @@ module Supplejack
         it 'raises no error but returns an empty search' do
           allow(@search).to receive(:get).and_raise(StandardError)
 
-          # rubocop:disable Lint/ParenthesesAsGroupedExpression
-          expect(@search.execute_request).to eq ({ 'search' => {} })
-          # rubocop:enable Lint/ParenthesesAsGroupedExpression
+          expect(@search.execute_request).to eq('search' => {})
         end
       end
 
       context 'caching enabled' do
         before :each do
           @cache = double(:cache).as_null_object
-          Rails.stub(:cache) { @cache }
-          Supplejack.stub(:enable_caching) { true }
+          allow(Rails).to receive(:cache) { @cache }
+          allow(Supplejack).to receive(:enable_caching) { true }
         end
 
         it 'caches the response when it is cacheable' do
           search = Supplejack::Search.new
-          search.stub(:cacheable?) { true }
+          allow(search).to receive(:cacheable?) { true }
           cache_key = Digest::MD5.hexdigest("/records?#{search.api_params.to_query}")
-          Rails.cache.should_receive(:fetch).with(cache_key, expires_in: 1.hour)
+
+          expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 1.hour)
+
           search.execute_request
         end
 
         it 'doesnt cache the response it is not cacheable' do
           search = Supplejack::Search.new(text: 'dogs')
-          search.stub(:cacheable?) { false }
-          Rails.cache.should_not_receive(:fetch)
+          allow(search).to receive(:cacheable?) { false }
+          expect(Rails.cache).not_to receive(:fetch)
+
           search.execute_request
         end
       end
@@ -535,30 +546,30 @@ module Supplejack
 
     describe '#cacheable?' do
       it 'returns true when it doesn\'t have a text parameter' do
-        Supplejack::Search.new.cacheable?.should be_truthy
+        expect(Supplejack::Search.new.cacheable?).to be true
       end
 
       it 'returns false when it has a text parameter' do
-        Supplejack::Search.new(text: 'Dogs').cacheable?.should be_falsey
+        expect(Supplejack::Search.new(text: 'Dogs').cacheable?).to be false
       end
 
       it 'returns false then it\'s not the first page of results' do
-        Supplejack::Search.new(page: '2').cacheable?.should be_falsey
+        expect(Supplejack::Search.new(page: '2').cacheable?).to be false
       end
     end
 
     describe '#has_attribute_name?' do
-      before(:each) do
+      before do
         @search = Search.new
         @search.location = %w[Wellington Auckland]
       end
 
       it 'returns true if value is in filter' do
-        @search.has_location?('Wellington').should be_truthy
+        expect(@search.has_location?('Wellington')).to be true
       end
 
       it 'returns false is value is not in filter' do
-        @search.has_location?('Videos').should be_falsey
+        expect(@search.has_location?('Videos')).to be false
       end
 
       context 'search filter is single valued' do
@@ -568,21 +579,23 @@ module Supplejack
         end
 
         it 'returns true if value matches filter' do
-          @search.has_location?('Wellington').should be_truthy
+          expect(@search.has_location?('Wellington')).to be true
         end
 
         it 'returns false if value does not match the filter' do
-          @search.has_location?('Cats').should be_falsey
+          expect(@search.has_location?('Cats')).to be false
         end
 
         it 'returns false when location has nil value' do
           @search.location = nil
-          @search.has_category?('Cats').should be_falsey
+
+          expect(@search.has_category?('Cats')).to be nil
         end
 
         it 'shouldn\'t search for a non existent search attribute' do
-          Supplejack.stub(:search_attributes) { [] }
-          @search.should_not_receive(:filter_and_value?)
+          allow(Supplejack).to receive(:search_attributes) { [] }
+
+          expect(@search).not_to receive(:filter_and_value?)
           @search.has_category?('Cats')
         end
       end
@@ -591,34 +604,38 @@ module Supplejack
     describe '#categories' do
       before(:each) do
         @search = Search.new(i: { category: 'Books', year: 2001 }, text: 'Dogs')
-        @search.stub(:get) { { 'search' => { 'facets' => { 'category' => { 'Books' => 123 } }, 'result_count' => 123 } } }
+        allow(@search).to receive(:get) { { 'search' => { 'facets' => { 'category' => { 'Books' => 123 } }, 'result_count' => 123 } } }
       end
 
       it 'should call the fetch_values method' do
-        @search.should_receive(:facet_values).with('category', {})
+        expect(@search).to receive(:facet_values).with('category', {})
+
         @search.categories
       end
 
       it 'removes category filter from the search request' do
-        @search.should_receive(:get).with('/records', hash_including(and: { year: 2001 })).and_return('search' => { 'facets' => { 'category' => { 'Books' => 123 } } })
+        expect(@search).to receive(:get).with('/records', hash_including(and: { year: 2001 })).and_return('search' => { 'facets' => { 'category' => { 'Books' => 123 } } })
+
         @search.categories
       end
 
       it 'returns the category facet hash ' do
-        @search.categories.should include('Books' => 123)
+        expect(@search.categories).to include('Books' => 123)
       end
 
       it 'asks the API for 0 results' do
-        @search.should_receive(:get).with('/records', hash_including(per_page: 0))
+        expect(@search).to receive(:get).with('/records', hash_including(per_page: 0))
+
         @search.categories
       end
 
       it 'should return add the All count to the hash' do
-        @search.categories['All'].should eq 123
+        expect(@search.categories['All']).to eq 123
       end
 
       it 'orders the category values by :count' do
-        @search.should_receive(:facet_values).with('category', sort: :count)
+        expect(@search).to receive(:facet_values).with('category', sort: :count)
+
         @search.categories(sort: :count)
       end
     end
@@ -626,28 +643,30 @@ module Supplejack
     describe '#fetch_facet_values' do
       before(:each) do
         @search = Search.new(i: { category: 'Books', year: 2001 }, text: 'Dogs')
-        @search.stub(:get) { { 'search' => { 'facets' => { 'category' => { 'Books' => 123, 'Images' => 100 } }, 'result_count' => 123 } } }
+        allow(@search).to receive(:get) { { 'search' => { 'facets' => { 'category' => { 'Books' => 123, 'Images' => 100 } }, 'result_count' => 123 } } }
       end
 
       it 'returns the category facet hash' do
-        @search.fetch_facet_values('category').should include('Books' => 123)
+        expect(@search.fetch_facet_values('category')).to include('Books' => 123)
       end
 
       it 'returns empty values when the request to the API failed' do
-        @search.stub(:get).and_raise(StandardError)
-        @search.fetch_facet_values('category').should eq('All' => 0)
+        allow(@search).to receive(:get).and_raise(StandardError)
+
+        expect(@search.fetch_facet_values('category')).to eq('All' => 0)
       end
 
       it 'should add the All count to the hash with the sum of all facets' do
-        @search.fetch_facet_values('category')['All'].should eq 223
+        expect(@search.fetch_facet_values('category')['All']).to eq 223
       end
 
       it 'doesnt return the All count ' do
-        @search.fetch_facet_values('category', all: false).should_not have_key('All')
+        expect(@search.fetch_facet_values('category', all: false)).not_to have_key('All')
       end
 
       it 'memoizes the facet_values' do
-        @search.should_receive(:get).once
+        expect(@search).to receive(:get).once
+
         @search.fetch_facet_values('category')
         @search.fetch_facet_values('category')
       end
@@ -655,21 +674,24 @@ module Supplejack
       context 'sorting' do
         before(:each) do
           @facet = Supplejack::Facet.new('category', 'All' => 223, 'Books' => 123, 'Images' => 100)
-          Supplejack::Facet.stub(:new) { @facet }
+          allow(Supplejack::Facet).to receive(:new) { @facet }
         end
 
         it 'initializes a Supplejack::Facet' do
-          Supplejack::Facet.should_receive(:new).with('category', 'All' => 223, 'Books' => 123, 'Images' => 100)
+          expect(Supplejack::Facet).to receive(:new).with('category', 'All' => 223, 'Books' => 123, 'Images' => 100)
+
           @search.fetch_facet_values('category')
         end
 
         it 'tells the facet how to sort the values' do
-          @facet.should_receive(:values).with(:index)
+          expect(@facet).to receive(:values).with(:index)
+
           @search.fetch_facet_values('category', sort: :index)
         end
 
         it 'doesn\'t sort by default' do
-          @facet.should_receive(:values).with(nil)
+          expect(@facet).to receive(:values).with(nil)
+
           @search.fetch_facet_values('category')
         end
       end
@@ -681,100 +703,110 @@ module Supplejack
       end
 
       it 'removes type filter from the search request' do
-        @search.facet_values_params('type').should include(and: { year: 2001 })
+        expect(@search.facet_values_params('type')).to include(and: { year: 2001 })
       end
 
       it 'requests 0 results per_page' do
-        @search.facet_values_params('type').should include(per_page: 0)
+        expect(@search.facet_values_params('type')).to include(per_page: 0)
       end
 
       it 'adds without filters' do
         @search = Search.new(i: { :type => 'Person', :year => 2001, '-group' => 'Group' }, text: 'Dogs')
-        @search.facet_values_params('type').should include(without: { group: 'Group' })
+
+        expect(@search.facet_values_params('type')).to include(without: { group: 'Group' })
       end
 
       it 'only adds the and_filters to :and' do
         @search = Search.new(i: { :type => 'Person', :year => 2001, '-group' => 'Group' }, text: 'Dogs')
-        @search.facet_values_params('type').should include(and: { year: 2001 })
+
+        expect(@search.facet_values_params('type')).to include(and: { year: 2001 })
       end
 
       it 'gets the facet_values for a record_type 1' do
         @search = Search.new(i: { type: 'Person' }, h: { group: 'Group' }, text: 'Dogs', record_type: 1)
-        @search.facet_values_params('group').should include(and: {})
+
+        expect(@search.facet_values_params('group')).to include(and: {})
       end
 
       it 'restricts results to filters specified in without accessor' do
         @search = Search.new
         @search.without = { website: 'Flickr' }
-        @search.facet_values_params('type').should include(without: { website: 'Flickr' })
+
+        expect(@search.facet_values_params('type')).to include(without: { website: 'Flickr' })
       end
 
       it 'merges in the filters specified in without' do
         @search = Search.new(i: { '-type' => 'Person' })
         @search.without = { website: 'Flickr' }
-        @search.facet_values_params('type').should include(without: { website: 'Flickr', type: 'Person' })
+
+        expect(@search.facet_values_params('type')).to include(without: { website: 'Flickr', type: 'Person' })
       end
 
       it 'adds the restrictions set in the and variable' do
         @search = Search.new
         @search.and = { content_partner: 'NLNZ' }
-        @search.facet_values_params('type').should include(and: { content_partner: 'NLNZ' })
+
+        expect(@search.facet_values_params('type')).to include(and: { content_partner: 'NLNZ' })
       end
 
       it 'adds the restrictions set in the or variable' do
         @search = Search.new
         @search.or = { content_partner: 'NLNZ' }
-        @search.facet_values_params('type').should include(or: { content_partner: 'NLNZ' })
+
+        expect(@search.facet_values_params('type')).to include(or: { content_partner: 'NLNZ' })
       end
 
       it 'memoizes the params' do
         @search = Search.new
-        @search.should_receive(:url_format).once.and_return(double(:url_format, and_filters: {}))
+        expect(@search).to receive(:url_format).once.and_return(double(:url_format, and_filters: {}))
+
         @search.facet_values_params('type')
         @search.facet_values_params('type')
       end
 
       it 'adds a parameter for facets_per_page if the option is present' do
-        @search.facet_values_params('type', facets_per_page: 15).should include(facets_per_page: 15)
+        expect(@search.facet_values_params('type', facets_per_page: 15)).to include(facets_per_page: 15)
       end
     end
 
     describe '#facet_values' do
-      before(:each) do
+      before do
         @search = Search.new
-        @search.stub(:fetch_facet_values) { { 'Books' => 100 } }
+        allow(@search).to receive(:fetch_facet_values) { { 'Books' => 100 } }
       end
 
       context 'caching disabled' do
-        before(:each) do
-          Supplejack.stub(:enable_caching) { false }
+        before do
+          allow(Supplejack).to receive(:enable_caching) { false }
         end
 
         it 'fetches the facet values' do
-          @search.should_receive(:fetch_facet_values).with('category', anything)
+          expect(@search).to receive(:fetch_facet_values).with('category', anything)
+
           @search.facet_values('category', anything)
         end
       end
     end
 
     describe '#merge_extra_filters' do
-      before(:each) do
-        @search = Search.new
-      end
+      before { @search = Search.new }
 
       it 'merges the and filters' do
         @search.and = { type: 'Person' }
-        @search.merge_extra_filters(and: { location: 'Wellington' }).should eq(and: { location: 'Wellington', type: 'Person' })
+
+        expect(@search.merge_extra_filters(and: { location: 'Wellington' })).to eq(and: { location: 'Wellington', type: 'Person' })
       end
 
       it 'merges the or filters' do
         @search.or = { type: 'Person' }
-        @search.merge_extra_filters(and: { location: 'Wellington' }).should eq(and: { location: 'Wellington' }, or: { type: 'Person' })
+
+        expect(@search.merge_extra_filters(and: { location: 'Wellington' })).to eq(and: { location: 'Wellington' }, or: { type: 'Person' })
       end
 
       it 'merges the without filters' do
         @search.without = { type: 'Person' }
-        @search.merge_extra_filters(and: { location: 'Wellington' }).should eq(and: { location: 'Wellington' }, without: { type: 'Person' })
+
+        expect(@search.merge_extra_filters(and: { location: 'Wellington' })).to eq(and: { location: 'Wellington' }, without: { type: 'Person' })
       end
     end
   end

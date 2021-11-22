@@ -33,7 +33,7 @@ module Supplejack
 
       it 'triggers a post request to create a set_item with the set api_key' do
         expect(item).to receive(:post).with('/sets/1234/records', { api_key: 'abc' }, record: { record_id: 1 })
-        
+
         expect(item.save).to be true
       end
 
@@ -64,7 +64,7 @@ module Supplejack
 
       it 'triggers a delete request with the user_set api_key' do
         expect(item).to receive(:delete).with('/sets/1234/records/5', api_key: 'abc')
-        
+
         item.destroy
       end
 

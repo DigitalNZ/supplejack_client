@@ -37,7 +37,7 @@ module Supplejack
 
       it 'requests more_like_this api with params' do
         expect(more_like_this).to receive(:get).with('/records/101/more_like_this', { frequency: 2, mlt_fields: 'title,description' }).and_return('record' => {})
-        
+
         more_like_this.records
       end
 

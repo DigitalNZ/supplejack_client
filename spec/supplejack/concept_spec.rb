@@ -36,7 +36,7 @@ module Supplejack
 
     it 'handles a string as params' do
       concept = SupplejackConcept.new('')
-      
+
       expect(concept.attributes).to eq({})
     end
 
@@ -48,26 +48,26 @@ module Supplejack
 
     it 'raises a NoMethodError for every method call that doesn\'t have a key in the attributes' do
       concept = SupplejackConcept.new
-      
+
       expect { concept.something }.to raise_error(NoMethodError)
     end
 
     it 'should return the value when is present in the attributes' do
       concept = SupplejackConcept.new(weird_method: 'Something')
-      
+
       expect(concept.weird_method).to eq 'Something'
     end
 
     describe 'id' do
       it 'returns the concept_id' do
         concept = SupplejackConcept.new('concept_id' => '95')
-        
+
         expect(concept.id).to eq 95
       end
 
       it 'returns the id' do
         concept = SupplejackConcept.new('id' => '96')
-        
+
         expect(concept.id).to eq 96
       end
     end
