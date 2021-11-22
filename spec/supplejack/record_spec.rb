@@ -146,7 +146,7 @@ module Supplejack
     end
 
     describe '#single_value_methods' do
-      before(:each) { Supplejack.single_value_methods = [:description] }
+      before { Supplejack.single_value_methods = [:description] }
 
       it 'converts values defined in the single_value_methods to a string' do
         record = SupplejackRecord.new('description' => %w[One Two])
@@ -219,13 +219,13 @@ module Supplejack
         end
 
         context '#using a special search klass' do
-          before(:each) { @search = ::Search.new }
+          let(:search) { ::Search.new }
 
           it 'uses the specified search klass' do
             allow(SupplejackRecord).to receive(:get) { { 'record' => {} } }
             allow(Supplejack).to receive(:search_klass) { 'Search' }
 
-            expect(::Search).to receive(:new).with(i: { location: 'Wellington' }).and_return(@search)
+            expect(::Search).to receive(:new).with(i: { location: 'Wellington' }).and_return(search)
             SupplejackRecord.find(1, i: { location: 'Wellington' })
           end
 
@@ -233,7 +233,7 @@ module Supplejack
             allow(SupplejackRecord).to receive(:get) { { 'record' => {} } }
             allow(Supplejack).to receive(:search_klass) { nil }
 
-            expect(Supplejack::Search).to receive(:new).with(i: { location: 'Wellington' }).and_return(@search)
+            expect(Supplejack::Search).to receive(:new).with(i: { location: 'Wellington' }).and_return(search)
             SupplejackRecord.find(1, i: { location: 'Wellington' })
           end
 

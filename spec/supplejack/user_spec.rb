@@ -35,10 +35,6 @@ module Supplejack
 
     describe '#sets' do
       it 'initializes a Supplejack::UserSetRelation object' do
-        @relation = relation
-
-        expect(Supplejack::UserSetRelation).to receive(:new).with(user) { @relation }
-
         expect(user.sets).to be_a Supplejack::UserSetRelation
       end
     end
@@ -156,20 +152,20 @@ module Supplejack
     end
 
     describe '.create' do
-      before :each do
-        @attributes = { email: 'dev@boost.com', name: 'dev', username: 'developer', encrypted_password: 'weird_string' }
+      let(:attributes) { { email: 'dev@boost.com', name: 'dev', username: 'developer', encrypted_password: 'weird_string' } }
 
+      before do
         allow(Supplejack::User).to receive(:post) { { 'user' => { 'email' => 'dev@boost.com', 'name' => 'dev', 'username' => 'developer', 'api_key' => '123456' } } }
       end
 
       it 'executes a post request' do
-        expect(Supplejack::User).to receive(:post).with('/users', {}, user: @attributes)
+        expect(Supplejack::User).to receive(:post).with('/users', {}, user: attributes)
 
-        Supplejack::User.create(@attributes)
+        Supplejack::User.create(attributes)
       end
 
       it 'returns a Supplejack::User object with the api_key' do
-        user = Supplejack::User.create(@attributes)
+        user = Supplejack::User.create(attributes)
 
         expect(user).to be_a Supplejack::User
         expect(user.api_key).to eq '123456'

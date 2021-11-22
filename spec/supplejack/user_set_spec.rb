@@ -10,7 +10,7 @@ module Supplejack
   describe UserSet do
     let(:supplejack_set) { Supplejack::UserSet.new(records: [{ record_id: 1, position: 2, title: 'Dogs' }]) }
 
-    before :each do
+    before do
       allow(Supplejack).to receive(:enable_caching) { false }
       allow(Supplejack::UserSet).to receive(:get) { { 'set' => { id: '123abc', name: 'Dogs', count: 0 } } }
     end
@@ -153,10 +153,9 @@ module Supplejack
     end
 
     describe '#save' do
-      before :each do
-        @attributes = { name: 'Dogs', description: 'hi', count: 3 }
-
-        allow(supplejack_set).to receive(:api_attributes) { @attributes }
+      let(:attributes) { { name: 'Dogs', description: 'hi', count: 3 } }
+      before do
+        allow(supplejack_set).to receive(:api_attributes) { attributes }
         allow(supplejack_set).to receive(:api_key) { '123abc' }
       end
 
@@ -164,7 +163,7 @@ module Supplejack
         before { allow(supplejack_set).to receive(:new_record?) { true } }
 
         it 'triggers a POST request to /sets.json' do
-          expect(Supplejack::UserSet).to receive(:post).with('/sets', { api_key: '123abc' }, set: @attributes) { { 'set' => { 'id' => 'new-id' } } }
+          expect(Supplejack::UserSet).to receive(:post).with('/sets', { api_key: '123abc' }, set: attributes) { { 'set' => { 'id' => 'new-id' } } }
 
           expect(supplejack_set.save).to be true
         end
@@ -185,14 +184,14 @@ module Supplejack
       end
 
       context 'user_set is not new' do
-        before :each do
+        before do
           allow(supplejack_set).to receive(:new_record?) { false }
 
           supplejack_set.id = '123'
         end
 
         it 'triggers a PUT request to /sets/123.json with the user set api_key' do
-          expect(Supplejack::UserSet).to receive(:put).with('/sets/123', { api_key: '123abc' }, set: @attributes)
+          expect(Supplejack::UserSet).to receive(:put).with('/sets/123', { api_key: '123abc' }, set: attributes)
 
           supplejack_set.save
         end
@@ -249,10 +248,10 @@ module Supplejack
         end
 
         it 'should accept a Time object too' do
-          @time = Time.now
-          supplejack_set.send("#{attr}=", @time)
+          time = Time.now
+          supplejack_set.send("#{attr}=", time)
 
-          expect(supplejack_set.send(attr)).to eq @time
+          expect(supplejack_set.send(attr)).to eq time
         end
       end
     end
@@ -294,7 +293,7 @@ module Supplejack
     end
 
     describe '#destroy' do
-      before :each do
+      before do
         allow(supplejack_set).to receive(:api_key) { '123abc' }
         allow(supplejack_set).to receive(:id) { '999' }
       end
@@ -323,7 +322,7 @@ module Supplejack
     describe '#reload' do
       let(:supplejack_set) { Supplejack::UserSet.new(id: '123456') }
 
-      before :each do
+      before do
         allow(Supplejack::UserSet).to receive(:get).with('/sets/123456') { { 'set' => { 'id' => 'abc' } } }
       end
 
@@ -402,21 +401,19 @@ module Supplejack
     end
 
     describe '#set_record_id?' do
-      before { @set = supplejack_set }
-
       it 'should return the record_id' do
-        allow(@set).to receive(:record).and_return('record_id' => 123)
+        allow(supplejack_set).to receive(:record).and_return('record_id' => 123)
 
-        expect(@set.set_record_id).to eq 123
+        expect(supplejack_set.set_record_id).to eq 123
       end
 
       it 'should return nil if the set doesn\'t have a record' do
-        expect(@set.set_record_id).to be nil
+        expect(supplejack_set.set_record_id).to be nil
       end
     end
 
     describe '#find' do
-      before :each do
+      before do
         @set = supplejack_set
         allow(Supplejack::UserSet).to receive(:new) { @set }
       end
@@ -449,7 +446,7 @@ module Supplejack
     end
 
     describe '#public_sets' do
-      before :each do
+      before do
         allow(Supplejack::UserSet).to receive(:get) { { 'sets' => [{ 'id' => '123', 'name' => 'Dog' }] } }
       end
 
@@ -460,8 +457,8 @@ module Supplejack
       end
 
       it 'returns an array of user set objects' do
-        @set = supplejack_set
-        expect(Supplejack::UserSet).to receive(:new).once.with('id' => '123', 'name' => 'Dog') { @set }
+        set = supplejack_set
+        expect(Supplejack::UserSet).to receive(:new).once.with('id' => '123', 'name' => 'Dog') { set }
 
         sets = Supplejack::UserSet.public_sets
 
@@ -477,7 +474,7 @@ module Supplejack
     end
 
     describe '#featured_sets' do
-      before :each do
+      before do
         allow(Supplejack::UserSet).to receive(:get) { { 'sets' => [{ 'id' => '123', 'name' => 'Dog' }] } }
       end
 
@@ -488,9 +485,9 @@ module Supplejack
       end
 
       it 'returns an array of user set objects' do
-        @set = supplejack_set
+        set = supplejack_set
 
-        expect(Supplejack::UserSet).to receive(:new).once.with('id' => '123', 'name' => 'Dog') { @set }
+        expect(Supplejack::UserSet).to receive(:new).once.with('id' => '123', 'name' => 'Dog') { set }
         sets = Supplejack::UserSet.featured_sets
 
         expect(sets).to be_a Array

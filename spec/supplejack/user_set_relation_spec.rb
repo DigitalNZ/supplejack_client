@@ -7,14 +7,13 @@ module Supplejack
     let(:user) { Supplejack::User.new(authentication_token: '123abc') }
     let(:relation) { Supplejack::UserSetRelation.new(user) }
 
-    before :each do
+    before do
       allow(relation).to receive(:get) { { 'sets' => [{ 'id' => '1', 'name' => 'dogs', 'count' => 1, 'priority' => 2 }, { 'id' => '2', 'name' => 'Favourites', 'count' => 1, 'priority' => 1 }] } }
     end
 
     describe '#initialize' do
       it 'initializes with a UserSet object' do
-        @user = user
-        expect(Supplejack::UserSetRelation.new(@user).user).to eq @user
+        expect(Supplejack::UserSetRelation.new(user).user).to eq user
       end
     end
 
@@ -106,7 +105,7 @@ module Supplejack
     end
 
     describe '#order' do
-      before :each do
+      before do
         allow(relation).to receive(:get) { { 'sets' => [{ 'name' => 'dogs', 'priority' => 2, 'count' => 3 }, { 'name' => 'zavourites', 'priority' => 1, 'count' => 2 }, { 'name' => 'Favourites', 'priority' => 2, 'count' => 1 }] } }
       end
 

@@ -203,10 +203,10 @@ module Supplejack
           end
 
           it 'memoizes the :i and :h filters separately' do
-            @hash = item_hash(i: { 'location' => 'NZ' }, h: { dc_type: 'Names' })
+            test_hash = item_hash(i: { 'location' => 'NZ' }, h: { dc_type: 'Names' })
 
-            expect(@hash.filters).to eq(location: 'NZ')
-            expect(@hash.filters(:headings)).to eq(dc_type: 'Names')
+            expect(test_hash.filters).to eq(location: 'NZ')
+            expect(test_hash.filters(:headings)).to eq(dc_type: 'Names')
           end
 
           it 'handles a string in the :i hash' do
@@ -259,33 +259,31 @@ module Supplejack
       end
 
       describe '#options' do
-        before(:each) do
-          @search = Supplejack::Search.new
-        end
+        let(:search) { Supplejack::Search.new }
 
         it 'returns a hash with the search parameters' do
           params = { i: { name: 'John' }, il: { type: 'Person' }, h: { heading_type: 'Name' }, hl: { year: '1900' } }
-          expect(item_hash(params, @search).options).to eq params
+          expect(item_hash(params, search).options).to eq params
         end
 
         it 'doesnt return any empty values' do
-          expect(item_hash({ i: { name: '', type: nil, location: 'Wellington' } }, @search).options).to eq(i: { location: 'Wellington' })
+          expect(item_hash({ i: { name: '', type: nil, location: 'Wellington' } }, search).options).to eq(i: { location: 'Wellington' })
         end
 
         it 'returns a empty hash when filters are empty' do
-          expect(item_hash({ i: { name: '', type: nil } }, @search).options).to eq({})
+          expect(item_hash({ i: { name: '', type: nil } }, search).options).to eq({})
         end
 
         it 'doesn\'t return page parameter when page 1' do
-          expect(item_hash({ page: 1 }, @search).options).to eq({})
+          expect(item_hash({ page: 1 }, search).options).to eq({})
         end
 
         it 'doesn\'t return page parameter is empty' do
-          expect(item_hash({}, @search).options).to eq({})
+          expect(item_hash({}, search).options).to eq({})
         end
 
         it 'removes the filters in the :except parameter' do
-          expect(item_hash({ i: { name: 'John' }, il: { type: 'Person' } }, @search).options(except: [:name])).to eq(il: { type: 'Person' })
+          expect(item_hash({ i: { name: 'John' }, il: { type: 'Person' } }, search).options(except: [:name])).to eq(il: { type: 'Person' })
         end
 
         it 'includes the record_type when is 1' do
@@ -321,7 +319,7 @@ module Supplejack
 
         context 'in the items tab' do
           it 'merges filters in the :plus parameter to the unlocked hash' do
-            expect(item_hash({}, @search).options(plus: { i: { 'type' => 'Something' } })[:i]).to include(type: 'Something')
+            expect(item_hash({}, search).options(plus: { i: { 'type' => 'Something' } })[:i]).to include(type: 'Something')
           end
         end
       end
