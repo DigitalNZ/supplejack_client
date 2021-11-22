@@ -70,3 +70,7 @@ Style/FormatStringToken:
 # URISchemes: http, https
 Layout/LineLength:
   Max: 270
+
+RSpec/MessageSpies:
+  Exclude:
+    - 'spec/supplejack/**/*.rb'

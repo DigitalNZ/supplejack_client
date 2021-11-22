@@ -45,12 +45,12 @@ module Supplejack
 
       before do
         controller.class.send(:include, FakeRoutes)
-        controller.class.send(:include, Supplejack::Controllers::Helpers)
+        controller.class.send(:include, described_class)
         controller.class.send(:include, ActionView::Helpers)
       end
 
       describe '#search' do
-        before { allow(controller).to receive(:params) { { text: 'dog' } } }
+        before { allow(controller).to receive(:params).and_return({ text: 'dog' }) }
 
         it 'initializes a search object with the params' do
           expect(Supplejack::Search).to receive(:new).with(text: 'dog')
@@ -59,7 +59,7 @@ module Supplejack
         end
 
         it 'tries to initialize with params[:search] ' do
-          allow(controller).to receive(:params) { { search: { text: 'cat' } } }
+          allow(controller).to receive(:params).and_return({ search: { text: 'cat' } })
 
           expect(Supplejack::Search).to receive(:new).with(text: 'cat')
 
@@ -73,7 +73,7 @@ module Supplejack
         end
 
         it 'uses the special Search class' do
-          allow(Supplejack).to receive(:search_klass) { 'AdvancedSearch' }
+          allow(Supplejack).to receive(:search_klass).and_return('AdvancedSearch')
           expect(AdvancedSearch).to receive(:new).with(text: 'dog')
 
           controller.search
@@ -88,7 +88,7 @@ module Supplejack
       end
 
       describe 'attribute' do
-        context 'nested attributes' do
+        context 'with nested attributes' do
           let(:user_set) { Supplejack::UserSet.new(user: { name: 'Juanito' }) }
 
           it 'supports nested attributes' do
@@ -96,13 +96,13 @@ module Supplejack
           end
 
           it 'correctly uses the translation for the label' do
-            expect(I18n).to receive(:t).with('supplejack_user_sets.user.name', default: 'User.name') { 'By' }
+            allow(I18n).to receive(:t).with('supplejack_user_sets.user.name', default: 'User.name').and_return('By')
 
             controller.attribute(user_set, 'user.name')
           end
         end
 
-        context 'single value' do
+        context 'with single value' do
           let(:record) { mock_record(title: 'Wellington', content_partner: '', description: nil) }
 
           it 'returns the attribute name and its value' do
@@ -129,8 +129,11 @@ module Supplejack
             expect(controller.attribute(record, :title, label: false)).to eq %(<p>Wellington</p>)
           end
 
-          it 'doesn\'t display anything when the value is nil' do
+          it 'doesn\'t display content_partner' do
             expect(controller.attribute(record, :content_partner)).to be nil
+          end
+
+          it 'doesn\'t display description' do
             expect(controller.attribute(record, :description)).to be nil
           end
 
@@ -143,12 +146,12 @@ module Supplejack
           end
 
           it 'uses the translation key' do
-            expect(I18n).to receive(:t).with('item.key', default: 'Title').and_return('Title')
+            allow(I18n).to receive(:t).with('item.key', default: 'Title').and_return('Title')
 
             controller.attribute(record, :title, trans_key: 'item.key')
           end
 
-          context ':link => true' do
+          context 'when :link => true' do
             it 'converts it to a URL when value is a url' do
               url = 'http://google.com/images'
               record = mock_record(landing_url: url)
@@ -184,28 +187,28 @@ module Supplejack
             expect(controller.attribute(record, :title, extra_html: controller.content_tag(:span, 'Hi!'))).to eq %(<p><strong>Title: </strong>Wellington<span>Hi!</span></p>)
           end
 
-          context 'default HTML values' do
+          context 'when default HTML values' do
             it 'uses the tag defined in the config' do
-              allow(Supplejack).to receive(:attribute_tag) { :span }
+              allow(Supplejack).to receive(:attribute_tag).and_return(:span)
 
               expect(controller.attribute(record, :title)).to eq %(<span><strong>Title: </strong>Wellington</span>)
             end
 
             it 'uses the label tag defined in the config' do
-              allow(Supplejack).to receive(:label_tag) { :b }
+              allow(Supplejack).to receive(:label_tag).and_return(:b)
 
               expect(controller.attribute(record, :title)).to eq %(<p><b>Title: </b>Wellington</p>)
             end
 
             it 'uses the label class defined in the config' do
-              allow(Supplejack).to receive(:label_class) { 'label' }
+              allow(Supplejack).to receive(:label_class).and_return('label')
 
               expect(controller.attribute(record, :title)).to eq %(<p><strong class="label">Title: </strong>Wellington</p>)
             end
           end
         end
 
-        context 'multiple values' do
+        context 'with multiple values' do
           let(:record) { mock_record(category: %w[Images Videos]) }
 
           it 'displays the values separated by commas' do
@@ -252,7 +255,7 @@ module Supplejack
           end
         end
 
-        context 'multiple attributes' do
+        context 'with multiple attributes' do
           let(:record) { mock_record(category: %w[Images Videos], creator: 'Federico', object_url: nil, source: nil) }
 
           it 'fetches values from multiple attributes' do
@@ -284,17 +287,17 @@ module Supplejack
         let(:next_record)     { mock_record(record_id: 5678) }
         let(:record)          { mock_record(record_id: 1_234_567, previous_record: previous_record, next_record: next_record) }
 
-        before { allow(controller).to receive(:params) { { search: { text: 'cat' } } } }
+        before { allow(controller).to receive(:params).and_return({ search: { text: 'cat' } }) }
 
         it 'returns empty when there is no search query' do
-          allow(controller).to receive(:params) { {} }
+          allow(controller).to receive(:params).and_return({})
 
           expect(controller.next_previous_links(record)).to eq ''
         end
 
         it 'displays the next and previous links' do
-          allow(controller).to receive(:previous_record_link) { '<a class="prev" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Previous result</a>' }
-          allow(controller).to receive(:next_record_link) { '<a class="next" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Next result</a>' }
+          allow(controller).to receive(:previous_record_link).and_return('<a class="prev" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Previous result</a>')
+          allow(controller).to receive(:next_record_link).and_return('<a class="next" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Next result</a>')
 
           expect(controller.next_previous_links(record)).to eq %(<span class=\"nav\">&lt;a class=&quot;next&quot; href=&quot;/records/37674826?search%5Bpath%5D=items&amp;amp;search%5Btext%5D=Forest+fire&quot;&gt;Next result&lt;/a&gt;</span>)
         end
