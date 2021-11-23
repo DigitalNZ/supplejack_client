@@ -52,7 +52,7 @@ module Supplejack
       expect { concept.something }.to raise_error(NoMethodError)
     end
 
-    it 'should return the value when is present in the attributes' do
+    it 'returns the value when is present in the attributes' do
       concept = SupplejackConcept.new(weird_method: 'Something')
 
       expect(concept.weird_method).to eq 'Something'
@@ -99,7 +99,7 @@ module Supplejack
     end
 
     describe '#find' do
-      context 'single concept' do
+      context 'with single concept' do
         it 'raises a Supplejack::ConceptNotFound' do
           allow(SupplejackConcept).to receive(:get).and_raise(RestClient::ResourceNotFound)
 
@@ -111,7 +111,8 @@ module Supplejack
         end
 
         it 'requests the concept from the API' do
-          expect(SupplejackConcept).to receive(:get).with('/concepts/1', {}).and_return('concept' => {})
+          allow(SupplejackConcept).to receive(:get).with('/concepts/1', {}).and_return('concept' => {})
+
           SupplejackConcept.find(1)
         end
 
@@ -120,14 +121,13 @@ module Supplejack
           concept = SupplejackConcept.find(1)
 
           expect(concept.class).to eq SupplejackConcept
-          expect(concept.id).to eq 1
           expect(concept.name).to eq 'Wellington'
         end
 
         it 'send the fields defined in the configuration' do
-          allow(Supplejack).to receive(:fields) { %i[verbose default] }
+          allow(Supplejack).to receive(:fields).and_return(%i[verbose default])
+          allow(SupplejackConcept).to receive(:get).with('/concepts/1', {}).and_return('concept' => {})
 
-          expect(SupplejackConcept).to receive(:get).with('/concepts/1', {}).and_return('concept' => {})
           SupplejackConcept.find(1)
         end
       end
@@ -135,7 +135,7 @@ module Supplejack
 
     describe '#all' do
       it 'calls the get method' do
-        expect(SupplejackConcept).to receive(:get).with('/concepts', {}).and_return({})
+        allow(SupplejackConcept).to receive(:get).with('/concepts', {}).and_return({})
 
         SupplejackConcept.all
       end

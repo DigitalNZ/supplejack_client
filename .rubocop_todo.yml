@@ -74,3 +74,9 @@ Layout/LineLength:
 RSpec/MessageSpies:
   Exclude:
     - 'spec/supplejack/**/*.rb'
+
+RSpec/MultipleExpectations:
+  Max: 2
+
+RSpec/ExampleLength:
+  Max: 7

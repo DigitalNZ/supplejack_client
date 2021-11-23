@@ -5,7 +5,7 @@ require 'spec_helper'
 module Supplejack
   describe ItemRelation do
     let(:supplejack_set) { Supplejack::UserSet.new(id: '1234567890', records: [{ record_id: 1, position: 1 }]) }
-    let(:relation) { Supplejack::ItemRelation.new(supplejack_set) }
+    let(:relation) { described_class.new(supplejack_set) }
 
     describe '#initialize' do
       it 'assigns the user_set object as @user_set' do
@@ -17,7 +17,7 @@ module Supplejack
       end
 
       it 'returns an empty array of items when the user_set attributes records are nil' do
-        allow(supplejack_set).to receive(:attributes) { {} }
+        allow(supplejack_set).to receive(:attributes).and_return({})
 
         expect(relation.items).to be_empty
       end
@@ -68,7 +68,7 @@ module Supplejack
       end
 
       it 'adds the user_set api_key' do
-        allow(relation).to receive(:user_set) { double(:user_set, api_key: '1234').as_null_object }
+        allow(relation).to receive(:user_set) { instance_double(Supplejack::UserSet, api_key: '1234').as_null_object }
         item = relation.build
 
         expect(item.api_key).to eq '1234'
@@ -76,25 +76,25 @@ module Supplejack
     end
 
     describe '#create' do
-      let(:item) { double(:item).as_null_object }
+      let(:item) { instance_double(Supplejack::UserSet).as_null_object }
 
       it 'builds and saves the item' do
-        expect(relation).to receive(:build) { item }
+        allow(relation).to receive(:build).and_return(item)
         expect(item).to receive(:save)
 
         relation.create
       end
 
       it 'passes the parameters along to the build method' do
-        expect(relation).to receive(:build).with(record_id: 8, position: 3) { item }
+        allow(relation).to receive(:build).with(record_id: 8, position: 3).and_return(item)
 
         relation.create(record_id: 8, position: 3)
       end
     end
 
-    context 'items array behaviour' do
+    context 'when items behaves as array' do
       it 'executes array methods on the @items array' do
-        relation = Supplejack::ItemRelation.new(supplejack_set)
+        relation = described_class.new(supplejack_set)
         items = relation.instance_variable_get('@items')
 
         expect(items).to receive(:size)
@@ -102,13 +102,10 @@ module Supplejack
         relation.size
       end
 
-      it 'should be able to iterate through the items relation' do
-        relation = Supplejack::ItemRelation.new(supplejack_set)
+      it 'iterates through the items relation' do
+        relation = described_class.new(supplejack_set)
 
-        relation.each do |item|
-          expect(item).to be_a Supplejack::Item
-        end
-
+        expect(relation).to all(be_a Supplejack::Item)
         expect(relation.size).to eq 1
       end
     end

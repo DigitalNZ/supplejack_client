@@ -35,7 +35,7 @@ module Supplejack
         end
 
         it 'returns the per_page set in the initializer' do
-          allow(Supplejack).to receive(:per_page) { 15 }
+          allow(Supplejack).to receive(:per_page).and_return(15)
 
           expect(item_hash.to_api_hash).to include(per_page: 15)
         end
@@ -73,7 +73,7 @@ module Supplejack
         end
 
         it 'returns the default set of fields from config' do
-          allow(Supplejack).to receive(:fields) { %i[default atl] }
+          allow(Supplejack).to receive(:fields).and_return(%i[default atl])
 
           expect(item_hash.to_api_hash).to include(fields: 'default,atl')
         end
@@ -90,7 +90,7 @@ module Supplejack
           expect(item_hash(solr_query: 'dc_type:Images').to_api_hash).to include(solr_query: 'dc_type:Images')
         end
 
-        it 'shouldn\'t send the solr_query if empty' do
+        it 'sends no solr_query if empty' do
           expect(item_hash(solr_query: '').to_api_hash).not_to have_key(:solr_query)
         end
       end
@@ -100,7 +100,7 @@ module Supplejack
           expect(item_hash(i: { 'sample_filter' => 'Groups' }).and_filters).to eq(sample_filter: 'Groups')
         end
 
-        it 'returns every filter' do
+        it 'skips restricted filter' do
           expect(item_hash(i: { 'sample_filter' => 'Groups', '-content_partner' => 'nlnz' }).and_filters).to eq(sample_filter: 'Groups')
         end
 
@@ -188,7 +188,7 @@ module Supplejack
       end
 
       describe '#filters' do
-        context 'default records' do
+        context 'with default records' do
           it 'returns the hash within the :i key and symbolizes them' do
             expect(item_hash(i: { 'location' => 'NZ' }).filters).to eq(location: 'NZ')
           end
@@ -218,7 +218,7 @@ module Supplejack
           end
         end
 
-        context 'headings tab' do
+        context 'with headings tab' do
           it 'returns the hash within the :h key' do
             expect(item_hash(h: { 'heading_type' => 'Name' }, record_type: '1').filters).to eq(heading_type: 'Name')
           end
@@ -241,7 +241,7 @@ module Supplejack
           end
         end
 
-        context 'filter_type is provided' do
+        context 'when filter_type is provided' do
           it 'returns "i" when filter_type is :items' do
             expect(item_hash(record_type: 1).filter_symbol(:items)).to eq 'i'
           end
@@ -301,13 +301,15 @@ module Supplejack
           expect(item_hash({ i: { name: 'John' } }, search).options(plus: { i: { name: 'James' } })[:i]).to include(name: %w[John James])
         end
 
-        it 'only removes one value from the same facet' do
+        it 'removes one value from the same 2 facet' do
           search = Supplejack::Search.new(i: { name: %w[John James] })
+
           expect(item_hash({ i: { name: %w[John James] } }, search).options(except: [{ name: 'James' }])[:i]).to include(name: 'John')
         end
 
-        it 'only removes one value from the same facet' do
+        it 'removes one value from the same 3 facet' do
           search = Supplejack::Search.new(i: { name: %w[John James Jake] })
+
           expect(item_hash({ i: { name: %w[John James Jake] } }, search).options(except: [{ name: 'James' }])[:i]).to include(name: %w[John Jake])
         end
 
@@ -317,7 +319,7 @@ module Supplejack
           expect(item_hash(params, search).options(except: [{ name: %w[James John] }])[:i]).not_to have_key(:name)
         end
 
-        context 'in the items tab' do
+        context 'when in the items tab' do
           it 'merges filters in the :plus parameter to the unlocked hash' do
             expect(item_hash({}, search).options(plus: { i: { 'type' => 'Something' } })[:i]).to include(type: 'Something')
           end

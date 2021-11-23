@@ -14,27 +14,27 @@ module Supplejack
   describe Search do
     describe '#params' do
       it 'defaults to facets set in initializer' do
-        allow(Supplejack).to receive(:facets) { %w[location description] }
+        allow(Supplejack).to receive(:facets).and_return(%w[location description])
 
-        expect(Search.new.api_params[:facets]).to eq('location,description')
+        expect(described_class.new.api_params[:facets]).to eq('location,description')
       end
 
       it 'sets the facets through the params' do
-        expect(Search.new(facets: 'name,description').api_params[:facets]).to eq('name,description')
+        expect(described_class.new(facets: 'name,description').api_params[:facets]).to eq('name,description')
       end
 
       it 'defaults to facets_per_page set in initializer' do
-        allow(Supplejack).to receive(:facets_per_page) { 33 }
+        allow(Supplejack).to receive(:facets_per_page).and_return(33)
 
-        expect(Search.new.api_params[:facets_per_page]).to eq 33
+        expect(described_class.new.api_params[:facets_per_page]).to eq 33
       end
 
       it 'sets the facets_per_page through the params' do
-        expect(Search.new(facets_per_page: 13).api_params[:facets_per_page]).to eq 13
+        expect(described_class.new(facets_per_page: 13).api_params[:facets_per_page]).to eq 13
       end
 
       it 'deletes rails specific params' do
-        params = Search.new(controller: 'records', action: 'index').api_params
+        params = described_class.new(controller: 'records', action: 'index').api_params
 
         expect(params).not_to have_key(:controller)
         expect(params).not_to have_key(:action)
@@ -43,57 +43,57 @@ module Supplejack
 
     describe '#text' do
       it 'returns the search text' do
-        expect(Search.new(text: 'dog').text).to eq('dog')
+        expect(described_class.new(text: 'dog').text).to eq('dog')
       end
     end
 
     describe '#page' do
       it 'defaults to 1' do
-        expect(Search.new.page).to eq 1
+        expect(described_class.new.page).to eq 1
       end
 
       it 'converts the page to a number' do
-        expect(Search.new(page: '2').page).to eq 2
+        expect(described_class.new(page: '2').page).to eq 2
       end
     end
 
     describe '#per_page' do
       it 'defaults to the per_page in the initializer' do
-        allow(Supplejack).to receive(:per_page) { 16 }
+        allow(Supplejack).to receive(:per_page).and_return(16)
 
-        expect(Search.new.per_page).to eq 16
+        expect(described_class.new.per_page).to eq 16
       end
 
       it 'sers the per_page through the params' do
-        expect(Search.new(per_page: '3').per_page).to eq 3
+        expect(described_class.new(per_page: '3').per_page).to eq 3
       end
     end
 
     describe '#sort' do
       it 'returns the field to sort on' do
-        expect(Search.new(sort: 'content_partner').sort).to eq 'content_partner'
+        expect(described_class.new(sort: 'content_partner').sort).to eq 'content_partner'
       end
 
       it 'returns nil when not set' do
-        expect(Search.new.sort).to be nil
+        expect(described_class.new.sort).to be nil
       end
     end
 
     describe '#direction' do
       it 'returns the direction to sort the results' do
-        expect(Search.new(direction: 'asc').direction).to eq 'asc'
+        expect(described_class.new(direction: 'asc').direction).to eq 'asc'
       end
 
       it 'returns nil when not set' do
-        expect(Search.new.direction).to be nil
+        expect(described_class.new.direction).to be nil
       end
     end
 
     describe '#search_attributes' do
       it 'sets the filter defined in Supplejack.search_attributes with its current value' do
-        allow(Supplejack).to receive(:search_attributes) { [:location] }
+        allow(Supplejack).to receive(:search_attributes).and_return([:location])
 
-        expect(Search.new(i: { location: 'Wellington' }).location).to eq 'Wellington'
+        expect(described_class.new(i: { location: 'Wellington' }).location).to eq 'Wellington'
       end
     end
 
@@ -101,26 +101,26 @@ module Supplejack
       let(:filters) { { location: 'Wellington', country: 'New Zealand' } }
 
       it 'returns filters in a array format by default' do
-        expect(Search.new(i: filters).filters).to include([:location, 'Wellington'], [:country, 'New Zealand'])
+        expect(described_class.new(i: filters).filters).to include([:location, 'Wellington'], [:country, 'New Zealand'])
       end
 
       it 'returns a hash of the current search filters' do
-        expect(Search.new(i: filters).filters(format: :hash)).to include(filters)
+        expect(described_class.new(i: filters).filters(format: :hash)).to include(filters)
       end
 
       it 'expands filters that contain arrays' do
         filters = { location: %w[Wellington Auckland] }
-        expect(Search.new(i: filters).filters).to include([:location, 'Wellington'], [:location, 'Auckland'])
+        expect(described_class.new(i: filters).filters).to include([:location, 'Wellington'], [:location, 'Auckland'])
       end
 
       it 'removes the location filter' do
         filters = { location: %w[Wellington Auckland] }
-        expect(Search.new(i: filters).filters(except: [:location])).not_to include([:location, 'Wellington'], [:location, 'Auckland'])
+        expect(described_class.new(i: filters).filters(except: [:location])).not_to include([:location, 'Wellington'], [:location, 'Auckland'])
       end
     end
 
     describe '#facets' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
       let(:facets_hash) { { 'location' => { 'Wellington' => 100 }, 'mayor' => { 'Brake, Brian' => 20 } } }
 
       before do
@@ -148,14 +148,14 @@ module Supplejack
       end
 
       it 'orders the facets based on the order set in the initializer' do
-        allow(Supplejack).to receive(:facets) { %i[mayor location] }
+        allow(Supplejack).to receive(:facets).and_return(%i[mayor location])
 
         expect(search.facets.first.name).to eq 'mayor'
         expect(search.facets.last.name).to eq 'location'
       end
 
       it 'orders the facets the other way around' do
-        allow(Supplejack).to receive(:facets) { %i[location mayor] }
+        allow(Supplejack).to receive(:facets).and_return(%i[location mayor])
 
         expect(search.facets.first.name).to eq 'location'
         expect(search.facets.last.name).to eq 'mayor'
@@ -167,7 +167,7 @@ module Supplejack
     end
 
     describe '#facet' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       it 'returns the specified facet' do
         facet = Supplejack::Facet.new('collection', [])
@@ -177,7 +177,7 @@ module Supplejack
       end
 
       it 'returns nil when facet is not found' do
-        allow(search).to receive(:facets) { [] }
+        allow(search).to receive(:facets).and_return([])
 
         expect(search.facet('collection')).to be nil
       end
@@ -191,7 +191,7 @@ module Supplejack
     end
 
     describe '#facet_pivots' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       it 'returns empty array when there are no facet pivots' do
         search.instance_variable_set(:@response, 'search' => {})
@@ -206,24 +206,17 @@ module Supplejack
       end
 
       it 'returns facet_pivots correct when there are facet pivots' do
-        search.instance_variable_set(:@response, 'search' => { facet_pivots:
-          {
-            'display_collection_s' =>
-              [
-                {
-                  'field' => 'display_collection_s',
-                  'value' => 'Auckland Libraries Heritage Images Collection',
-                  'count' => 26
-                }
-              ]
-          } })
+        search.instance_variable_set(
+          :@response,
+          'search' => { facet_pivots: { 'display_collection_s' => [{ 'field' => 'display_collection_s', 'value' => 'Auckland Libraries Heritage Images Collection', 'count' => 26 }] } }
+        )
 
-        expect(search.facet_pivots).to_not eq []
+        expect(search.facet_pivots).not_to eq []
       end
     end
 
     describe '#total' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       before { search.instance_variable_set(:@response, 'search' => { 'result_count' => 100 }) }
 
@@ -245,7 +238,7 @@ module Supplejack
     end
 
     describe '#results' do
-      let(:search)  { Search.new }
+      let(:search)  { described_class.new }
       let(:record1) { { 'id' => 1, 'title' => 'Wellington' } }
       let(:record2) { { 'id' => 2, 'title' => 'Auckland' } }
 
@@ -255,7 +248,7 @@ module Supplejack
       end
 
       it 'executes the request only once' do
-        allow(search).to receive(:total) { 10 }
+        allow(search).to receive(:total).and_return(10)
 
         expect(search).to receive(:execute_request).once
 
@@ -271,7 +264,7 @@ module Supplejack
       end
 
       it 'initializes record objects with the class provided in the params' do
-        search = Search.new(record_klass: 'test_item')
+        search = described_class.new(record_klass: 'test_item')
         search.instance_variable_set(:@response, 'search' => { 'results' => [record1, record2] })
 
         expect(TestItem).to receive(:new).with(record1)
@@ -296,12 +289,12 @@ module Supplejack
     end
 
     describe '#counts' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
-      before { allow(search).to receive(:fetch_counts) { { 'images' => 100 } } }
+      before { allow(search).to receive(:fetch_counts).and_return({ 'images' => 100 }) }
 
-      context 'caching disabled' do
-        before { allow(Supplejack).to receive(:enable_caching) { false } }
+      context 'when caching is disabled' do
+        before { allow(Supplejack).to receive(:enable_caching).and_return(false) }
 
         it 'fetches the counts' do
           query_params = { 'images' => { category: 'Images' } }
@@ -315,7 +308,7 @@ module Supplejack
 
     describe '#fetch_counts' do
       context 'without filters' do
-        let(:search) { Search.new }
+        let(:search) { described_class.new }
 
         it 'returns a hash with row names and its values' do
           allow(search).to receive(:get).and_return('search' => { 'facets' => { 'counts' => { 'images' => 151_818 } } })
@@ -339,7 +332,7 @@ module Supplejack
 
     describe '#counts_params' do
       context 'without filters' do
-        let(:search) { Search.new }
+        let(:search) { described_class.new }
 
         it 'requests record_type == all' do
           query_parameters = { headings: { record_type: '1' } }
@@ -375,14 +368,14 @@ module Supplejack
         end
 
         it 'passes the text when present' do
-          search = Search.new(text: 'dogs')
+          search = described_class.new(text: 'dogs')
 
           expect(search.counts_params({})).to include(text: 'dogs')
         end
 
         it 'merges the :i and :il filters with record_type 0' do
           query_parameters = { images: { 'creator' => 'all', 'record_type' => '0' }, headings: { 'record_type' => '1', :dc_type => 'Group' } }
-          search = Search.new(i: { category: 'Images' }, il: { year: '1998' })
+          search = described_class.new(i: { category: 'Images' }, il: { year: '1998' })
 
           images_query = { creator: 'all', record_type: '0', category: 'Images', year: '1998' }
           headings_query = { record_type: '1', dc_type: 'Group' }
@@ -392,7 +385,7 @@ module Supplejack
 
         it 'merges *_text fields' do
           query_parameters = { images: { 'creator' => 'all', 'record_type' => '0' } }
-          search = Search.new(i: { subject_text: 'dog' })
+          search = described_class.new(i: { subject_text: 'dog' })
 
           images_query = { creator: 'all', record_type: '0' }
 
@@ -401,7 +394,7 @@ module Supplejack
       end
 
       context 'with active filters' do
-        let(:search) { Search.new(i: { location: 'Wellington' }) }
+        let(:search) { described_class.new(i: { location: 'Wellington' }) }
 
         it 'merges the existing filters into every facet query' do
           query_parameters = { images: { 'creator' => 'all', 'record_type' => 0 } }
@@ -418,7 +411,7 @@ module Supplejack
         end
 
         it 'overrides the record_type' do
-          search = Search.new(record_type: '1')
+          search = described_class.new(record_type: '1')
           query_parameters = { images: { 'record_type' => '0' } }
           expected_filters = { images: { record_type: '0' } }
 
@@ -426,7 +419,7 @@ module Supplejack
         end
 
         it 'merges existing negative filters' do
-          search = Search.new(i: { '-category' => 'Groups' })
+          search = described_class.new(i: { '-category' => 'Groups' })
           query_parameters = { photos: { 'has_large_thumbnail_url' => 'Y' } }
           expected_filters = { photos: { has_large_thumbnail_url: 'Y', '-category'.to_sym => 'Groups' } }
 
@@ -434,7 +427,7 @@ module Supplejack
         end
 
         it 'adds per_page params if present' do
-          search = Search.new(per_page: 0)
+          search = described_class.new(per_page: 0)
 
           expect(search.counts_params({})).to include(per_page: 0)
         end
@@ -442,7 +435,7 @@ module Supplejack
     end
 
     describe '#request_path' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       it 'returns /records by default' do
         expect(search.request_path).to eq '/records'
@@ -450,7 +443,7 @@ module Supplejack
     end
 
     describe '#execute_request' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       it 'only executes the request once' do
         expect(search).to receive(:get).once.and_return('{}')
@@ -489,7 +482,7 @@ module Supplejack
         expect(search.execute_request).to eq('search' => {})
       end
 
-      context 'error handling' do
+      context 'when api returns and error' do
         it 'raises a timeout error' do
           allow(search).to receive(:get).and_raise(RestClient::Exceptions::ReadTimeout)
 
@@ -509,17 +502,17 @@ module Supplejack
         end
       end
 
-      context 'caching enabled' do
-        let(:cache) { double(:cache).as_null_object }
+      context 'when caching is enabled' do
+        let(:cache) { instance_double(ActiveSupport::Cache::Store).as_null_object }
 
         before do
           allow(Rails).to receive(:cache) { cache }
-          allow(Supplejack).to receive(:enable_caching) { true }
+          allow(Supplejack).to receive(:enable_caching).and_return(true)
         end
 
         it 'caches the response when it is cacheable' do
-          search = Supplejack::Search.new
-          allow(search).to receive(:cacheable?) { true }
+          search = described_class.new
+          allow(search).to receive(:cacheable?).and_return(true)
           cache_key = Digest::MD5.hexdigest("/records?#{search.api_params.to_query}")
 
           expect(Rails.cache).to receive(:fetch).with(cache_key, expires_in: 1.hour)
@@ -528,8 +521,8 @@ module Supplejack
         end
 
         it 'doesnt cache the response it is not cacheable' do
-          search = Supplejack::Search.new(text: 'dogs')
-          allow(search).to receive(:cacheable?) { false }
+          search = described_class.new(text: 'dogs')
+          allow(search).to receive(:cacheable?).and_return(false)
           expect(Rails.cache).not_to receive(:fetch)
 
           search.execute_request
@@ -539,20 +532,20 @@ module Supplejack
 
     describe '#cacheable?' do
       it 'returns true when it doesn\'t have a text parameter' do
-        expect(Supplejack::Search.new.cacheable?).to be true
+        expect(described_class.new.cacheable?).to be true
       end
 
       it 'returns false when it has a text parameter' do
-        expect(Supplejack::Search.new(text: 'Dogs').cacheable?).to be false
+        expect(described_class.new(text: 'Dogs').cacheable?).to be false
       end
 
       it 'returns false then it\'s not the first page of results' do
-        expect(Supplejack::Search.new(page: '2').cacheable?).to be false
+        expect(described_class.new(page: '2').cacheable?).to be false
       end
     end
 
     describe '#has_attribute_name?' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       before { search.location = %w[Wellington Auckland] }
 
@@ -564,8 +557,8 @@ module Supplejack
         expect(search.has_location?('Videos')).to be false
       end
 
-      context 'search filter is single valued' do
-        let(:search) { Search.new }
+      context 'when search filter is single valued' do
+        let(:search) { described_class.new }
 
         before { search.location = 'Wellington' }
 
@@ -583,8 +576,8 @@ module Supplejack
           expect(search.has_category?('Cats')).to be nil
         end
 
-        it 'shouldn\'t search for a non existent search attribute' do
-          allow(Supplejack).to receive(:search_attributes) { [] }
+        it 'search for onlu existent search attribute' do
+          allow(Supplejack).to receive(:search_attributes).and_return([])
 
           expect(search).not_to receive(:filter_and_value?)
           search.has_category?('Cats')
@@ -593,20 +586,20 @@ module Supplejack
     end
 
     describe '#categories' do
-      let(:search) { Search.new(i: { category: 'Books', year: 2001 }, text: 'Dogs') }
+      let(:search) { described_class.new(i: { category: 'Books', year: 2001 }, text: 'Dogs') }
 
       before do
-        allow(search).to receive(:get) { { 'search' => { 'facets' => { 'category' => { 'Books' => 123 } }, 'result_count' => 123 } } }
+        allow(search).to receive(:get).and_return({ 'search' => { 'facets' => { 'category' => { 'Books' => 123 } }, 'result_count' => 123 } })
       end
 
-      it 'should call the fetch_values method' do
+      it 'calls the fetch_values method' do
         expect(search).to receive(:facet_values).with('category', {})
 
         search.categories
       end
 
       it 'removes category filter from the search request' do
-        expect(search).to receive(:get).with('/records', hash_including(and: { year: 2001 })).and_return('search' => { 'facets' => { 'category' => { 'Books' => 123 } } })
+        allow(search).to receive(:get).with('/records', hash_including(and: { year: 2001 })).and_return('search' => { 'facets' => { 'category' => { 'Books' => 123 } } })
 
         search.categories
       end
@@ -621,7 +614,7 @@ module Supplejack
         search.categories
       end
 
-      it 'should return add the All count to the hash' do
+      it 'returns add the All count to the hash' do
         expect(search.categories['All']).to eq 123
       end
 
@@ -633,10 +626,10 @@ module Supplejack
     end
 
     describe '#fetch_facet_values' do
-      let(:search) { Search.new(i: { category: 'Books', year: 2001 }, text: 'Dogs') }
+      let(:search) { described_class.new(i: { category: 'Books', year: 2001 }, text: 'Dogs') }
 
       before do
-        allow(search).to receive(:get) { { 'search' => { 'facets' => { 'category' => { 'Books' => 123, 'Images' => 100 } }, 'result_count' => 123 } } }
+        allow(search).to receive(:get).and_return({ 'search' => { 'facets' => { 'category' => { 'Books' => 123, 'Images' => 100 } }, 'result_count' => 123 } })
       end
 
       it 'returns the category facet hash' do
@@ -649,7 +642,7 @@ module Supplejack
         expect(search.fetch_facet_values('category')).to eq('All' => 0)
       end
 
-      it 'should add the All count to the hash with the sum of all facets' do
+      it 'adds the All count to the hash with the sum of all facets' do
         expect(search.fetch_facet_values('category')['All']).to eq 223
       end
 
@@ -664,7 +657,7 @@ module Supplejack
         search.fetch_facet_values('category')
       end
 
-      context 'sorting' do
+      context 'when sorting' do
         before do
           @facet = Supplejack::Facet.new('category', 'All' => 223, 'Books' => 123, 'Images' => 100)
           allow(Supplejack::Facet).to receive(:new) { @facet }
@@ -691,7 +684,7 @@ module Supplejack
     end
 
     describe 'facet_values_params' do
-      let(:search) { Search.new(i: { type: 'Person', year: 2001 }, text: 'Dogs') }
+      let(:search) { described_class.new(i: { type: 'Person', year: 2001 }, text: 'Dogs') }
 
       it 'removes type filter from the search request' do
         expect(search.facet_values_params('type')).to include(and: { year: 2001 })
@@ -702,54 +695,54 @@ module Supplejack
       end
 
       it 'adds without filters' do
-        search = Search.new(i: { :type => 'Person', :year => 2001, '-group' => 'Group' }, text: 'Dogs')
+        search = described_class.new(i: { :type => 'Person', :year => 2001, '-group' => 'Group' }, text: 'Dogs')
 
         expect(search.facet_values_params('type')).to include(without: { group: 'Group' })
       end
 
       it 'only adds the and_filters to :and' do
-        search = Search.new(i: { :type => 'Person', :year => 2001, '-group' => 'Group' }, text: 'Dogs')
+        search = described_class.new(i: { :type => 'Person', :year => 2001, '-group' => 'Group' }, text: 'Dogs')
 
         expect(search.facet_values_params('type')).to include(and: { year: 2001 })
       end
 
       it 'gets the facet_values for a record_type 1' do
-        search = Search.new(i: { type: 'Person' }, h: { group: 'Group' }, text: 'Dogs', record_type: 1)
+        search = described_class.new(i: { type: 'Person' }, h: { group: 'Group' }, text: 'Dogs', record_type: 1)
 
         expect(search.facet_values_params('group')).to include(and: {})
       end
 
       it 'restricts results to filters specified in without accessor' do
-        search = Search.new
+        search = described_class.new
         search.without = { website: 'Flickr' }
 
         expect(search.facet_values_params('type')).to include(without: { website: 'Flickr' })
       end
 
       it 'merges in the filters specified in without' do
-        search = Search.new(i: { '-type' => 'Person' })
+        search = described_class.new(i: { '-type' => 'Person' })
         search.without = { website: 'Flickr' }
 
         expect(search.facet_values_params('type')).to include(without: { website: 'Flickr', type: 'Person' })
       end
 
       it 'adds the restrictions set in the and variable' do
-        search = Search.new
+        search = described_class.new
         search.and = { content_partner: 'NLNZ' }
 
         expect(search.facet_values_params('type')).to include(and: { content_partner: 'NLNZ' })
       end
 
       it 'adds the restrictions set in the or variable' do
-        search = Search.new
+        search = described_class.new
         search.or = { content_partner: 'NLNZ' }
 
         expect(search.facet_values_params('type')).to include(or: { content_partner: 'NLNZ' })
       end
 
       it 'memoizes the params' do
-        search = Search.new
-        expect(search).to receive(:url_format).once.and_return(double(:url_format, and_filters: {}))
+        search = described_class.new
+        expect(search).to receive(:url_format).once.and_return(instance_double(Supplejack::UrlFormats::ItemHash, and_filters: {}))
 
         search.facet_values_params('type')
         search.facet_values_params('type')
@@ -761,16 +754,12 @@ module Supplejack
     end
 
     describe '#facet_values' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
-      before do
-        allow(search).to receive(:fetch_facet_values) { { 'Books' => 100 } }
-      end
+      before { allow(search).to receive(:fetch_facet_values).and_return({ 'Books' => 100 }) }
 
-      context 'caching disabled' do
-        before do
-          allow(Supplejack).to receive(:enable_caching) { false }
-        end
+      context 'when caching is disabled' do
+        before { allow(Supplejack).to receive(:enable_caching).and_return(false) }
 
         it 'fetches the facet values' do
           expect(search).to receive(:fetch_facet_values).with('category', anything)
@@ -781,7 +770,7 @@ module Supplejack
     end
 
     describe '#merge_extra_filters' do
-      let(:search) { Search.new }
+      let(:search) { described_class.new }
 
       it 'merges the and filters' do
         search.and = { type: 'Person' }

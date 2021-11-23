@@ -27,7 +27,7 @@ module Supplejack
       end
 
       it 'returns an empty array of items when the user_set attributes records are nil' do
-        expect(supplejack_story).to receive(:attributes).and_return(nil)
+        allow(supplejack_story).to receive(:attributes).and_return(nil)
 
         expect(relation.all).to be_empty
       end
@@ -84,32 +84,29 @@ module Supplejack
     end
 
     describe '#create' do
-      let(:item) { double(:item).as_null_object }
+      let(:item) { instance_double(Supplejack::StoryItem).as_null_object }
 
       it 'builds and saves the item' do
-        expect(relation).to receive(:build) { item }
+        allow(relation).to receive(:build).and_return(item)
         expect(item).to receive(:save)
 
         relation.create
       end
 
       it 'passes the parameters along to the build method' do
-        expect(relation).to receive(:build).with(type: 'embed') { item }
+        allow(relation).to receive(:build).with(type: 'embed').and_return(item)
 
         relation.create(type: 'embed')
       end
     end
 
-    context 'items array behaviour' do
+    context 'when items are arrays' do
       it 'executes array methods on the @items array' do
         expect(relation.any? { |x| x.id == 1 }).to eq(true)
       end
 
-      it 'should be able to iterate through the items relation' do
-        relation.each do |item|
-          expect(item).to be_a Supplejack::StoryItem
-        end
-
+      it 'iterates through the items relation' do
+        expect(relation).to all(be_a Supplejack::StoryItem)
         expect(relation.size).to eq(2)
       end
     end

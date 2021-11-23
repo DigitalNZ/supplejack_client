@@ -26,6 +26,7 @@ module FakeRoutes
 end
 
 def mock_record(stubs = {})
+  # rubocop:disable RSpec/VerifiedDoubles
   (@mock_record ||= double(:record).as_null_object).tap do |record|
     unless stubs.empty?
       stubs.each do |key, value|
@@ -33,6 +34,7 @@ def mock_record(stubs = {})
       end
     end
   end
+  # rubocop:enable RSpec/VerifiedDoubles
 end
 
 class AdvancedSearch < Supplejack::Search
