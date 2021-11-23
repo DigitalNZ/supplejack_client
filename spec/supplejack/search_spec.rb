@@ -218,15 +218,17 @@ module Supplejack
     describe '#total' do
       let(:search) { described_class.new }
 
-      before { search.instance_variable_set(:@response, 'search' => { 'result_count' => 100 }) }
-
       it 'executes the request only once' do
+        search.instance_variable_set(:@response, nil)
+        allow(NIL).to receive(:dig).with('search', 'result_count').and_return(10)
         expect(search).to receive(:execute_request).once
+
         search.total
         search.total
       end
 
       it 'returns the total from the response' do
+        search.instance_variable_set(:@response, 'search' => { 'result_count' => 100 })
         expect(search.total).to eq 100
       end
 
@@ -244,16 +246,22 @@ module Supplejack
 
       before do
         allow(Supplejack).to receive(:record_klass).and_return('TestRecord')
-        search.instance_variable_set(:@response, 'search' => { 'results' => [record1, record2] })
+        search.instance_variable_set(:@response, 'search' => { 'result_count' => 2, 'results' => [record1, record2] })
       end
 
       it 'executes the request only once' do
-        allow(search).to receive(:total).and_return(10)
-
         expect(search).to receive(:execute_request).once
 
         search.results
         search.results
+      end
+
+      it 'stores the total without new requests' do
+        expect(search).to receive(:execute_request).once
+
+        search.results
+        search.total
+        expect(search.total).to eq(2)
       end
 
       it 'initializes record objects with the default class' do

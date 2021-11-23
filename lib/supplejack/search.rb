@@ -149,10 +149,11 @@ module Supplejack
     # @returns [ Integer ] Number of records that match the current search criteria
     #
     def total
-      return @total if @total
+      @total ||= @response&.dig('search', 'result_count')&.to_i
+      return @total unless @total.nil?
 
       execute_request
-      @total = @response['search']['result_count'].to_i
+      @total = @response.dig('search', 'result_count').to_i
     end
 
     def record?
