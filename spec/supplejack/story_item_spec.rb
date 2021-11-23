@@ -6,28 +6,28 @@ module Supplejack
   describe StoryItem do
     describe '#initialize' do
       it 'accepts a hash of attributes' do
-        Supplejack::StoryItem.new(type: 'embed', sub_type: 'supplejack_user')
+        described_class.new(type: 'embed', sub_type: 'supplejack_user')
       end
 
       it 'accepts a hash with string keys' do
-        expect(Supplejack::StoryItem.new('type' => 'embed', 'sub_type' => 'supplejack_user').type).to eq('embed')
+        expect(described_class.new('type' => 'embed', 'sub_type' => 'supplejack_user').type).to eq('embed')
       end
 
       it 'handles nil attributes' do
-        expect(Supplejack::StoryItem.new(nil).type).to be_nil
+        expect(described_class.new(nil).type).to be_nil
       end
 
       Supplejack::StoryItem::ATTRIBUTES.each do |attribute|
-        it "should initialize the attribute #{attribute}" do
-          Supplejack::StoryItem.new(attribute => 'value').send(attribute).should eq 'value'
+        it "initializes the attribute #{attribute}" do
+          expect(described_class.new(attribute => 'value').send(attribute)).to eq 'value'
         end
       end
     end
 
     describe '#save' do
-      let(:item) { Supplejack::StoryItem.new(type: 'embed', sub_type: 'supplejack_user', story_id: '1234', api_key: 'abc') }
+      let(:item) { described_class.new(type: 'embed', sub_type: 'supplejack_user', story_id: '1234', api_key: 'abc') }
 
-      context 'new item' do
+      context 'when item is new ' do
         it 'triggers a POST request to create a story_item with the story api_key' do
           expect(item).to receive(:post).with('/stories/1234/items', { user_key: 'abc' }, item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
@@ -35,7 +35,7 @@ module Supplejack
         end
       end
 
-      context 'existing item' do
+      context 'with existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
           expect(item).to receive(:patch).with('/stories/1234/items/1', { user_key: 'abc' }, item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
@@ -44,8 +44,8 @@ module Supplejack
         end
       end
 
-      context 'HTTP error is raised' do
-        before { item.stub(:post).and_raise(RestClient::Forbidden.new) }
+      context 'when HTTP error is raised' do
+        before { allow(item).to receive(:post).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when an HTTP error is raised' do
           expect(item.save).to eq(false)
@@ -60,7 +60,7 @@ module Supplejack
     end
 
     describe '#destroy' do
-      let(:item) { Supplejack::StoryItem.new(story_id: '1234', api_key: 'abc', id: 5) }
+      let(:item) { described_class.new(story_id: '1234', api_key: 'abc', id: 5) }
 
       it 'triggers a DELETE request with the story api_key' do
         expect(item).to receive(:delete).with('/stories/1234/items/5', user_key: 'abc')
@@ -68,10 +68,8 @@ module Supplejack
         item.destroy
       end
 
-      context 'HTTP error is raised' do
-        before do
-          item.stub(:delete).and_raise(RestClient::Forbidden.new)
-        end
+      context 'when HTTP error is raised' do
+        before { allow(item).to receive(:delete).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when a HTTP error is raised' do
           expect(item.destroy).to eq(false)
@@ -86,7 +84,7 @@ module Supplejack
     end
 
     describe '#update_attributes' do
-      let(:story_item) { Supplejack::StoryItem.new(type: 'foo', sub_type: 'bar') }
+      let(:story_item) { described_class.new(type: 'foo', sub_type: 'bar') }
 
       it 'sets the attributes on the StoryItem' do
         story_item.update_attributes(type: 'Mac')

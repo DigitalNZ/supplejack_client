@@ -3,36 +3,38 @@
 require 'spec_helper'
 
 describe 'PaginatedCollection' do
-  subject { Supplejack::PaginatedCollection.new [], 1, 10, 20 }
+  subject(:collection) { Supplejack::PaginatedCollection.new [], 1, 10, 20 }
 
-  it { subject.should be_an(Array) }
+  it { expect(collection).to be_an Array }
 
-  context 'behaves like a WillPaginate::Collection' do
-    it { subject.total_entries.should eql(20) }
-    it { subject.total_pages.should eql(2) }
-    it { subject.current_page.should eql(1) }
-    it { subject.per_page.should eql(10) }
-    it { subject.previous_page.should be_nil }
-    it { subject.next_page.should eql(2) }
-    it { subject.out_of_bounds?.should_not be_truthy }
-    it { subject.offset.should eql(0) }
+  context 'when behaves like a WillPaginate::Collection' do
+    it { expect(collection.total_entries).to eq 20 }
+    it { expect(collection.total_pages).to eq 2 }
+    it { expect(collection.current_page).to eq 1 }
+    it { expect(collection.per_page).to eq 10 }
+    it { expect(collection.previous_page).to be nil }
+    it { expect(collection.next_page).to eq 2 }
+    it { expect(collection.out_of_bounds?).not_to be true }
+    it { expect(collection.offset).to eq 0 }
 
-    it 'should allow setting total_count' do
-      subject.total_count = 1
-      subject.total_count.should eql(1)
+    it 'allows setting total_count' do
+      collection.total_count = 1
+
+      expect(collection.total_count).to eq 1
     end
 
-    it 'should allow setting total_entries' do
-      subject.total_entries = 1
-      subject.total_entries.should eql(1)
+    it 'allows setting total_entries' do
+      collection.total_entries = 1
+
+      expect(collection.total_entries).to eq 1
     end
   end
 
-  context 'behaves like Kaminari' do
-    it { subject.total_count.should eql(20) }
-    it { subject.num_pages.should eql(2) }
-    it { subject.limit_value.should eql(10) }
-    it { subject.first_page?.should be_truthy }
-    it { subject.last_page?.should_not be_truthy }
+  context 'when behaves like Kaminari' do
+    it { expect(collection.total_count).to eq 20 }
+    it { expect(collection.num_pages).to eq 2 }
+    it { expect(collection.limit_value).to eq 10 }
+    it { expect(collection.first_page?).to be true }
+    it { expect(collection.last_page?).not_to be true }
   end
 end

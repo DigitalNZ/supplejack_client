@@ -2,14 +2,13 @@
 
 require 'spec_helper'
 
-# rubocop:disable Lint/AmbiguousBlockAssociation
 module Supplejack
   describe UserStoryRelation do
     let(:user) { Supplejack::User.new(authentication_token: '123abc') }
-    let(:relation) { Supplejack::UserStoryRelation.new(user) }
+    let(:relation) { described_class.new(user) }
 
     before do
-      relation.stub(:get) do
+      allow(relation).to receive(:get).and_return(
         [
           {
             'id' => '1',
@@ -30,12 +29,12 @@ module Supplejack
             'number_of_items' => 1
           }
         ]
-      end
+      )
     end
 
     describe '#initialize' do
       it 'initializes with a UserSet object' do
-        expect(Supplejack::UserStoryRelation.new(user).user).to eq(user)
+        expect(described_class.new(user).user).to eq(user)
       end
     end
 
@@ -48,7 +47,7 @@ module Supplejack
     end
 
     describe '#fetch' do
-      context 'use_own_api_key? is false' do
+      context 'when use_own_api_key is false' do
         it 'fetches the users stories with the App api_key' do
           expect(relation).to receive(:get).with('/users/123abc/stories', {})
 
@@ -56,7 +55,7 @@ module Supplejack
         end
       end
 
-      context 'use_own_api_key? is true' do
+      context 'when use_own_api_key is true' do
         let(:user) { Supplejack::User.new(api_key: '123abc', use_own_api_key: true) }
 
         it 'fetches the users stories with their api_key' do
@@ -69,20 +68,18 @@ module Supplejack
       it 'returns a array of Story objects' do
         expect(relation.fetch).to be_a Array
 
-        relation.fetch.each do |story|
-          expect(story).to be_a Supplejack::Story
-        end
+        expect(relation).to all(be_a Supplejack::Story)
       end
 
       it 'memoizes the result' do
-        expect(relation).to receive(:fetch_api_stories).once { [] }
+        expect(relation).to receive(:fetch_api_stories).once.and_return([])
 
         relation.fetch
         relation.fetch
       end
 
       it 'lets you force a refetch' do
-        expect(relation).to receive(:fetch_api_stories).twice { [] }
+        expect(relation).to receive(:fetch_api_stories).twice.and_return([])
 
         relation.fetch
         relation.fetch(force: true)
@@ -108,9 +105,8 @@ module Supplejack
     describe '#create' do
       it 'initializes the Story and saves it' do
         story = relation.build(name: 'Dogs')
-        allow(relation).to receive(:build).with(name: 'Dogs') { story }
-
-        expect(story).to receive(:save) { true }
+        allow(relation).to receive(:build).with(name: 'Dogs').and_return(story)
+        allow(story).to receive(:save).and_return(true)
 
         expect(relation.create(name: 'Dogs')).to be_a Supplejack::Story
       end
@@ -124,37 +120,32 @@ module Supplejack
 
     describe '#order' do
       before do
-        relation.stub(:get) do
-          [
-            { 'name' => 'dogs' },
-            { 'name' => 'zavourites' },
-            { 'name' => 'Favourites' }
-          ]
-        end
+        allow(relation).to receive(:get).and_return(
+          [{ 'name' => 'dogs' },
+           { 'name' => 'zavourites' },
+           { 'name' => 'Favourites' }]
+        )
       end
 
       it 'orders the stories based on the supplied field' do
         ordered_relations = relation.order(:name)
 
-        expect(ordered_relations[0].name).to eq('dogs')
-        expect(ordered_relations[1].name).to eq('Favourites')
-        expect(ordered_relations[2].name).to eq('zavourites')
+        expect(ordered_relations.map(&:name)).to eq %w[dogs Favourites zavourites]
       end
     end
 
     describe '#all' do
-      it 'it is an alias to #fetch' do
+      it 'is an alias to #fetch' do
         expect(relation.all).to eq(relation.fetch)
       end
     end
 
-    context 'stories array behaviour' do
+    context 'when stories array behaviour' do
       it 'executes array methods on the @stories array' do
-        relation.stub(:all) { [] }
+        allow(relation).to receive(:all).and_return([])
 
         expect(relation.size).to eq(0)
       end
     end
   end
 end
-# rubocop:enable Lint/AmbiguousBlockAssociation

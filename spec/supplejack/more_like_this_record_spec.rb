@@ -7,12 +7,12 @@ module Supplejack
     describe '#initialize' do
       context 'with non integer record_id' do
         it 'raises Supplejack::MalformedRequest error' do
-          expect { Supplejack::MoreLikeThisRecord.new('notvalidid') }.to raise_error(Supplejack::MalformedRequest)
+          expect { described_class.new('notvalidid') }.to raise_error(Supplejack::MalformedRequest)
         end
       end
 
       context 'with valid id and no options' do
-        let(:more_like_this) { Supplejack::MoreLikeThisRecord.new(101) }
+        let(:more_like_this) { described_class.new(101) }
 
         it 'has default params' do
           expect(more_like_this.params).to eq({ frequency: 1 })
@@ -24,7 +24,7 @@ module Supplejack
       end
 
       context 'with valid id and options' do
-        let(:more_like_this) { Supplejack::MoreLikeThisRecord.new(1, { frequency: 2, mlt_fields: %i[title description] }) }
+        let(:more_like_this) { described_class.new(1, { frequency: 2, mlt_fields: %i[title description] }) }
 
         it 'has default params' do
           expect(more_like_this.params).to eq({ frequency: 2, mlt_fields: 'title,description' })
@@ -33,15 +33,16 @@ module Supplejack
     end
 
     describe '#records' do
-      let(:more_like_this) { Supplejack::MoreLikeThisRecord.new(101, { frequency: 2, mlt_fields: %i[title description] }) }
+      let(:more_like_this) { described_class.new(101, { frequency: 2, mlt_fields: %i[title description] }) }
 
       it 'requests more_like_this api with params' do
-        more_like_this.should_receive(:get).with('/records/101/more_like_this', { frequency: 2, mlt_fields: 'title,description' }).and_return('record' => {})
+        allow(more_like_this).to receive(:get).with('/records/101/more_like_this', { frequency: 2, mlt_fields: 'title,description' }).and_return('record' => {})
+
         more_like_this.records
       end
 
       context 'when record not found' do
-        before { more_like_this.stub(:get).and_raise(RestClient::ResourceNotFound) }
+        before { allow(more_like_this).to receive(:get).and_raise(RestClient::ResourceNotFound) }
 
         it 'raises an error' do
           expect { more_like_this.records }.to raise_error(Supplejack::RecordNotFound)
@@ -49,7 +50,7 @@ module Supplejack
       end
 
       context 'when there is standard error on API call' do
-        before { more_like_this.stub(:get).and_raise(StandardError) }
+        before { allow(more_like_this).to receive(:get).and_raise(StandardError) }
 
         it 'returns an empty array' do
           expect(more_like_this.records).to eq []

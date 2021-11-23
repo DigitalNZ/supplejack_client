@@ -5,9 +5,9 @@ require 'spec_helper'
 module Supplejack
   describe LogSubscriber do
     it 'returns nil when logging not enabled' do
-      Supplejack.stub(:enable_logging) { false }
+      allow(Supplejack).to receive(:enable_logging).and_return(false)
 
-      Supplejack::LogSubscriber.new.log_request(1, {}).should be_nil
+      expect(described_class.new.log_request(1, {})).to be nil
     end
   end
 end
