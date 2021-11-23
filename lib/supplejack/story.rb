@@ -101,9 +101,27 @@ module Supplejack
     def reposition_items(positions)
       response = self.class.post("/stories/#{id}/reposition_items", { user_key: api_key }, items: positions)
 
-      Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
-
       error?(response)
+    rescue StandardError => e
+      self.errors = e.message
+
+      false
+    end
+
+    def multiple_add(stories)
+      self.class.post('/stories/multiple_add', { user_key: api_key }, stories: stories)
+
+      true
+    rescue StandardError => e
+      self.errors = e.message
+
+      false
+    end
+
+    def multiple_remove(stories)
+      self.class.post('/stories/multiple_remove', { user_key: api_key }, stories: stories)
+
+      true
     rescue StandardError => e
       self.errors = e.message
 

@@ -250,6 +250,30 @@ module Supplejack
       end
     end
 
+    describe '#multiple_add' do
+      let(:user) { { api_key: 'foobar' } }
+      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:stories) { [{ id: '1', items: [] }, { id: '2', items: [] }] }
+
+      it 'triggers a POST request to multiple_add' do
+        expect(described_class).to receive(:post).with('/stories/multiple_add', { user_key: user[:api_key] }, stories: stories)
+
+        story.multiple_add(stories)
+      end
+    end
+
+    describe '#multiple_remove' do
+      let(:user) { { api_key: 'foobar' } }
+      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:stories) { [{ id: '1', items: [1] }, { id: '2', items: [2] }] }
+
+      it 'triggers a POST request to multiple_add' do
+        expect(described_class).to receive(:post).with('/stories/multiple_remove', { user_key: user[:api_key] }, stories: stories)
+
+        story.multiple_remove(stories)
+      end
+    end
+
     describe '#update_attributes' do
       let(:story) { described_class.new(name: 'test', description: 'test') }
 
