@@ -54,9 +54,11 @@ module Supplejack
     private
 
     def build_items(items)
-      @items = items.map do |hash|
-        Supplejack::StoryItem.new(hash.merge(story_id: story.id, api_key: story.api_key))
-      end.sort_by(&:position)
+      story_items = items.map do |item|
+        Supplejack::StoryItem.new(item.merge(story_id: story.id, api_key: story.api_key))
+      end
+
+      @items = story_items.sort_by { |i| i.position.to_i }
     end
   end
 end
