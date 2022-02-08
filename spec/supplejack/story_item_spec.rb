@@ -29,7 +29,7 @@ module Supplejack
 
       context 'when item is new ' do
         it 'triggers a POST request to create a story_item with the story api_key' do
-          expect(item).to receive(:post).with('/stories/1234/items', { user_key: 'abc' }, item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
+          expect(item).to receive(:post).with('/stories/1234/items', { user_key: 'abc' }, story_item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
           expect(item.save).to eq(true)
         end
@@ -38,7 +38,7 @@ module Supplejack
       context 'with existing item' do
         it 'triggers a PATCH request to update a story_item with the story api_key' do
           item.id = 1
-          expect(item).to receive(:patch).with('/stories/1234/items/1', { user_key: 'abc' }, item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
+          expect(item).to receive(:patch).with('/stories/1234/items/1', { user_key: 'abc' }, story_item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
           expect(item.save).to eq(true)
         end
