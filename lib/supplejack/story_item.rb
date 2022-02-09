@@ -66,13 +66,13 @@ module Supplejack
                           post(
                             "/stories/#{story_id}/items",
                             { user_key: api_key },
-                            item: api_attributes
+                            story_item: api_attributes
                           )
                         else
                           patch(
                             "/stories/#{story_id}/items/#{id}",
                             { user_key: api_key },
-                            item: api_attributes
+                            story_item: api_attributes
                           )
                         end
 
