@@ -55,7 +55,7 @@ module Supplejack
         before { allow(controller).to receive(:params).and_return({ text: 'dog' }) }
 
         it 'initializes a search object with the params' do
-          expect(Supplejack::Search).to receive(:new).with(text: 'dog')
+          expect(Supplejack::Search).to receive(:new).with({ text: 'dog' })
 
           controller.search
         end
