@@ -146,7 +146,7 @@ module Supplejack
     #
     # @return [ Story ] A Story object
     #
-    def self.find(id, user_key: nil, params: {})
+    def self.find(id, user_key: nil, **params)
       params[:user_key] = user_key if user_key
       begin
         response = get("/stories/#{id}", params)

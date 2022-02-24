@@ -219,8 +219,7 @@ module Supplejack
       let(:search) { described_class.new }
 
       it 'executes the request only once' do
-        search.instance_variable_set(:@response, nil)
-        allow(NIL).to receive(:dig).with('search', 'result_count').and_return(10)
+        search.instance_variable_set(:@response, {})
         expect(search).to receive(:execute_request).once
 
         search.total

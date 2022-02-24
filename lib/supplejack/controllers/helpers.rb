@@ -164,7 +164,7 @@ module Supplejack
 
       def attribute_link_replacement(value, link_pattern)
         if link_pattern.is_a?(String)
-          link_pattern = URI.decode(link_pattern)
+          link_pattern = CGI.unescape(link_pattern)
           url = link_pattern.gsub('{{value}}', value)
           link_to(value, url)
         else

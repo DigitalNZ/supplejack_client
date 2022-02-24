@@ -494,7 +494,7 @@ module Supplejack
       it 'raises a Supplejack::StoryNotFound' do
         allow(described_class).to receive(:get).and_raise(RestClient::ResourceNotFound)
 
-        expect { described_class.find(id: '123') }.to raise_error(Supplejack::StoryNotFound)
+        expect { described_class.find('123') }.to raise_error(Supplejack::StoryNotFound)
       end
     end
 
