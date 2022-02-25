@@ -201,9 +201,9 @@ module Supplejack
 
     describe '#update_attributes' do
       it 'sets the attributes on the user_set' do
-        expect(supplejack_set).to receive('attributes=').with(name: 'Mac')
+        expect(supplejack_set).to receive('attributes=').with({ name: 'Mac' })
 
-        supplejack_set.update_attributes(name: 'Mac')
+        supplejack_set.update_attributes({ name: 'Mac' })
       end
 
       it 'saves the user_set' do
@@ -451,14 +451,14 @@ module Supplejack
       end
 
       it 'fetches the public sets from the api' do
-        expect(described_class).to receive(:get).with('/sets/public', page: 1, per_page: 100)
+        expect(described_class).to receive(:get).with('/sets/public', { page: 1, per_page: 100 })
 
         described_class.public_sets
       end
 
       it 'returns an array of user set objects' do
         set = supplejack_set
-        expect(described_class).to receive(:new).once.with('id' => '123', 'name' => 'Dog') { set }
+        expect(described_class).to receive(:new).once.with({ 'id' => '123', 'name' => 'Dog' }) { set }
 
         sets = described_class.public_sets
 
@@ -466,7 +466,7 @@ module Supplejack
       end
 
       it 'sends pagination information' do
-        expect(described_class).to receive(:get).with('/sets/public', page: 2, per_page: 100)
+        expect(described_class).to receive(:get).with('/sets/public', { page: 2, per_page: 100 })
 
         described_class.public_sets(page: 2)
       end
@@ -486,7 +486,7 @@ module Supplejack
       it 'returns an array of user set objects' do
         set = supplejack_set
 
-        expect(described_class).to receive(:new).once.with('id' => '123', 'name' => 'Dog') { set }
+        expect(described_class).to receive(:new).once.with({ 'id' => '123', 'name' => 'Dog' }) { set }
         sets = described_class.featured_sets
 
         expect(sets).to be_a Array
