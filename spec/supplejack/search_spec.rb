@@ -141,8 +141,8 @@ module Supplejack
       end
 
       it 'initializes a facet object for each facet' do
-        expect(Supplejack::Facet).to receive(:new).with('location', 'Wellington' => 100)
-        expect(Supplejack::Facet).to receive(:new).with('mayor', 'Brake, Brian' => 20)
+        expect(Supplejack::Facet).to receive(:new).with('location', { 'Wellington' => 100 })
+        expect(Supplejack::Facet).to receive(:new).with('mayor', { 'Brake, Brian' => 20 })
 
         search.facets
       end
@@ -626,7 +626,7 @@ module Supplejack
       end
 
       it 'orders the category values by :count' do
-        expect(search).to receive(:facet_values).with('category', sort: :count)
+        expect(search).to receive(:facet_values).with('category', { sort: :count })
 
         search.categories(sort: :count)
       end
@@ -671,7 +671,7 @@ module Supplejack
         end
 
         it 'initializes a Supplejack::Facet' do
-          expect(Supplejack::Facet).to receive(:new).with('category', 'All' => 223, 'Books' => 123, 'Images' => 100)
+          expect(Supplejack::Facet).to receive(:new).with('category', { 'All' => 223, 'Books' => 123, 'Images' => 100 })
 
           search.fetch_facet_values('category')
         end

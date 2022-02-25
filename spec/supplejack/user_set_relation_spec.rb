@@ -51,7 +51,7 @@ module Supplejack
           it 'fetches the user sets with it\'s own API Key' do
             allow(user).to receive(:use_own_api_key?).and_return(true)
 
-            expect(relation).to receive(:get).with('/sets', api_key: '123abc')
+            expect(relation).to receive(:get).with('/sets', { api_key: '123abc' })
 
             relation.sets_response
           end
