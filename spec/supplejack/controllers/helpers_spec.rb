@@ -55,7 +55,7 @@ module Supplejack
         before { allow(controller).to receive(:params).and_return({ text: 'dog' }) }
 
         it 'initializes a search object with the params' do
-          expect(Supplejack::Search).to receive(:new).with(text: 'dog')
+          expect(Supplejack::Search).to receive(:new).with({text: 'dog'})
 
           controller.search
         end
@@ -63,20 +63,20 @@ module Supplejack
         it 'tries to initialize with params[:search] ' do
           allow(controller).to receive(:params).and_return({ search: { text: 'cat' } })
 
-          expect(Supplejack::Search).to receive(:new).with(text: 'cat')
+          expect(Supplejack::Search).to receive(:new).with({text: 'cat'})
 
           controller.search
         end
 
         it 'initializes the search with the passed params' do
-          expect(Supplejack::Search).to receive(:new).with(text: 'elephant')
+          expect(Supplejack::Search).to receive(:new).with({text: 'elephant'})
 
-          controller.search(text: 'elephant')
+          controller.search({text: 'elephant'})
         end
 
         it 'uses the special Search class' do
           allow(Supplejack).to receive(:search_klass).and_return('AdvancedSearch')
-          expect(AdvancedSearch).to receive(:new).with(text: 'dog')
+          expect(AdvancedSearch).to receive(:new).with({text: 'dog'})
 
           controller.search
         end
