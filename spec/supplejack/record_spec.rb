@@ -211,7 +211,7 @@ module Supplejack
         end
 
         it 'sets the correct search options' do
-          allow(SupplejackRecord).to receive(:get).with('/records/1', hash_including(search: hash_including({ text: 'dog' }))).and_return({ 'record' => {}})
+          allow(SupplejackRecord).to receive(:get).with('/records/1', hash_including(search: hash_including({ text: 'dog' }))).and_return({ 'record' => {} })
 
           SupplejackRecord.find(1, text: 'dog')
         end
@@ -230,14 +230,14 @@ module Supplejack
           it 'uses the default search klass' do
             allow(SupplejackRecord).to receive(:get).and_return({ 'record' => {} })
             allow(Supplejack).to receive(:search_klass).and_return(nil)
-            allow(Supplejack::Search).to receive(:new).with({ i: { location: 'Wellington' }}).and_return(search)
+            allow(Supplejack::Search).to receive(:new).with({ i: { location: 'Wellington' } }).and_return(search)
 
-            SupplejackRecord.find(1, { i: { location: 'Wellington' }})
+            SupplejackRecord.find(1, { i: { location: 'Wellington' } })
           end
 
           it 'sends the params from the subclassed search to the API' do
             allow(Supplejack).to receive(:search_klass).and_return('Search')
-            allow(SupplejackRecord).to receive(:get).with('/records/1', hash_including(search: hash_including({ and: { name: 'John' }, or: { type: ['Person'] }}))).and_return('record' => {})
+            allow(SupplejackRecord).to receive(:get).with('/records/1', hash_including(search: hash_including({ and: { name: 'John' }, or: { type: ['Person'] } }))).and_return('record' => {})
 
             SupplejackRecord.find(1, i: { name: 'John' })
           end
