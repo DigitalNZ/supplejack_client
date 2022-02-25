@@ -96,9 +96,9 @@ module Supplejack
       it 'initializes the UserSet and saves it' do
         user_set = relation.build(name: 'Dogs')
 
-        allow(relation).to receive(:build).with(name: 'Dogs').and_return(user_set)
+        allow(relation).to receive(:build).with({ name: 'Dogs' }).and_return(user_set)
         allow(user_set).to receive(:save).and_return(true)
-        expect(relation.create(name: 'Dogs')).to be_a Supplejack::UserSet
+        expect(relation.create({ name: 'Dogs' })).to be_a Supplejack::UserSet
       end
     end
 
