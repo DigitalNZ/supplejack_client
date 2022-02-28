@@ -484,7 +484,7 @@ module Supplejack
       # I've removed this functionality because I don't understand the use case
       # If we _do_ end up needing it in the future we can re add it
       it 'initializes the Story and sets the user api_key' do
-        allow(described_class).to receive(:get).with('/stories/123abc', user_key: '98765').and_return(attributes)
+        allow(described_class).to receive(:get).with('/stories/123abc', { user_key: '98765' }).and_return(attributes)
 
         story = described_class.find('123abc', user_key: '98765')
 
@@ -494,7 +494,7 @@ module Supplejack
       it 'raises a Supplejack::StoryNotFound' do
         allow(described_class).to receive(:get).and_raise(RestClient::ResourceNotFound)
 
-        expect { described_class.find(id: '123') }.to raise_error(Supplejack::StoryNotFound)
+        expect { described_class.find('123') }.to raise_error(Supplejack::StoryNotFound)
       end
     end
 

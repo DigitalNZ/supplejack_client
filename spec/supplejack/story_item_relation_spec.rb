@@ -94,9 +94,9 @@ module Supplejack
       end
 
       it 'passes the parameters along to the build method' do
-        allow(relation).to receive(:build).with(type: 'embed').and_return(item)
+        allow(relation).to receive(:build).with({ type: 'embed' }).and_return(item)
 
-        relation.create(type: 'embed')
+        relation.create({ type: 'embed' })
       end
     end
 

@@ -43,7 +43,7 @@ module Supplejack
       it 'executes a put request with the user attribtues' do
         allow(user).to receive(:api_attributes).and_return({ username: 'John', email: 'john@boost.co.nz' })
 
-        expect(described_class).to receive(:put).with('/users/12345', {}, username: 'John', email: 'john@boost.co.nz')
+        expect(described_class).to receive(:put).with('/users/12345', {}, { username: 'John', email: 'john@boost.co.nz' })
 
         expect(user.save).to be true
       end
@@ -145,7 +145,7 @@ module Supplejack
       end
 
       it 'initializes a user with the response' do
-        expect(described_class).to receive(:new).with('id' => 'abc', 'authentication_token' => '12345')
+        expect(described_class).to receive(:new).with({ 'id' => 'abc', 'authentication_token' => '12345' })
 
         described_class.find('12345')
       end

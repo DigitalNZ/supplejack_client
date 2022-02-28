@@ -59,7 +59,7 @@ module Supplejack
         let(:user) { Supplejack::User.new(api_key: '123abc', use_own_api_key: true) }
 
         it 'fetches the users stories with their api_key' do
-          expect(relation).to receive(:get).with('/stories', api_key: '123abc')
+          expect(relation).to receive(:get).with('/stories', { api_key: '123abc' })
 
           relation.fetch
         end
@@ -105,10 +105,10 @@ module Supplejack
     describe '#create' do
       it 'initializes the Story and saves it' do
         story = relation.build(name: 'Dogs')
-        allow(relation).to receive(:build).with(name: 'Dogs').and_return(story)
+        allow(relation).to receive(:build).with({ name: 'Dogs' }).and_return(story)
         allow(story).to receive(:save).and_return(true)
 
-        expect(relation.create(name: 'Dogs')).to be_a Supplejack::Story
+        expect(relation.create({ name: 'Dogs' })).to be_a Supplejack::Story
       end
 
       it 'adds the new Story to the relation' do

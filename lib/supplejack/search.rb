@@ -150,6 +150,7 @@ module Supplejack
     #
     def total
       @total ||= @response&.dig('search', 'result_count')&.to_i
+
       return @total unless @total.nil?
 
       execute_request
