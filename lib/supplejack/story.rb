@@ -5,7 +5,7 @@ module Supplejack
     extend Supplejack::Request
 
     MODIFIABLE_ATTRIBUTES = %i[name description privacy copyright featured approved tags subjects record_ids count featured_at category errors].freeze
-    UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id username].freeze
+    UNMODIFIABLE_ATTRIBUTES = %i[id created_at updated_at number_of_items contents cover_thumbnail creator user_id username state].freeze
     ATTRIBUTES = (MODIFIABLE_ATTRIBUTES + UNMODIFIABLE_ATTRIBUTES).freeze
 
     attr_accessor(*(ATTRIBUTES + %i[user errors api_key]))

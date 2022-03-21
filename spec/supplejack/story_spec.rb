@@ -463,7 +463,8 @@ module Supplejack
           count: nil,
           user_id: nil,
           username: nil,
-          category: nil
+          category: nil,
+          state: nil
         }
       end
 
