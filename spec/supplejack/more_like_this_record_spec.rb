@@ -29,6 +29,11 @@ module Supplejack
         it 'has default params' do
           expect(more_like_this.params).to eq({ frequency: 2, mlt_fields: 'title,description' })
         end
+
+        it 'has extra given params' do
+          more_like_this = described_class.new(1, { page: 3 })
+          expect(more_like_this.params).to eq({ frequency: 1, page: 3 })
+        end
       end
     end
 

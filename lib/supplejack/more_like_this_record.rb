@@ -6,6 +6,8 @@ module Supplejack
   class MoreLikeThisRecord
     include Supplejack::Request
 
+    DEFAULT_OPTIONS = { frequency: 1 }.freeze
+
     attr_accessor :id, :params, :response
 
     def initialize(id, options = {})
@@ -13,8 +15,8 @@ module Supplejack
 
       raise(Supplejack::MalformedRequest, "'#{id}' is not a valid record id") if @id <= 0
 
-      @params = { frequency: options[:frequency] || 1 }
-      @params[:mlt_fields] = options[:mlt_fields].join(',') unless options[:mlt_fields].blank?
+      @params = options&.reverse_merge(DEFAULT_OPTIONS) || DEFAULT_OPTIONS
+      @params[:mlt_fields] = @params[:mlt_fields].join(',') if @params[:mlt_fields]
     end
 
     # @return [ Array ] Array of Supplejack::Record objects
