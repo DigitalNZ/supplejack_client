@@ -41,7 +41,9 @@ module Supplejack
       let(:more_like_this) { described_class.new(101, { frequency: 2, mlt_fields: %i[title description] }) }
 
       it 'requests more_like_this api with params' do
-        allow(more_like_this).to receive(:get).with('/records/101/more_like_this', { frequency: 2, mlt_fields: 'title,description' }).and_return('record' => {})
+        allow(more_like_this).to receive(:get).with('/records/101/more_like_this', { frequency: 2, mlt_fields: 'title,description' }).and_return(
+          { 'more_like_this' => { 'record' => {} } }
+        )
 
         more_like_this.records
       end
