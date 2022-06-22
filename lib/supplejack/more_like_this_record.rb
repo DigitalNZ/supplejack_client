@@ -15,7 +15,10 @@ module Supplejack
 
       raise(Supplejack::MalformedRequest, "'#{id}' is not a valid record id") if @id <= 0
 
+      url_format = Supplejack.url_format_klass.new(@params, self)
+
       @params = options&.reverse_merge(DEFAULT_OPTIONS) || DEFAULT_OPTIONS
+      @params = @params.reverse_merge(url_format.to_api_hash)
       @params[:mlt_fields] = @params[:mlt_fields].join(',') if @params[:mlt_fields]
     end
 
