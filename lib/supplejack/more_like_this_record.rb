@@ -15,7 +15,10 @@ module Supplejack
 
       raise(Supplejack::MalformedRequest, "'#{id}' is not a valid record id") if @id <= 0
 
+      url_format = Supplejack.url_format_klass.new(@params, self)
+
       @params = options&.reverse_merge(DEFAULT_OPTIONS) || DEFAULT_OPTIONS
+      @params = @params.reverse_merge(url_format.to_api_hash)
       @params[:mlt_fields] = @params[:mlt_fields].join(',') if @params[:mlt_fields]
     end
 
@@ -24,9 +27,9 @@ module Supplejack
     def records
       response = execute_request
 
-      return [] unless response['records'].respond_to?(:map)
+      return [] unless response['more_like_this']['results'].respond_to?(:map)
 
-      response['records'].map do |attributes|
+      response['more_like_this']['results'].map do |attributes|
         Supplejack.record_klass.classify.constantize.new(attributes)
       end
     end
@@ -36,7 +39,7 @@ module Supplejack
     rescue RestClient::ResourceNotFound
       raise Supplejack::RecordNotFound, "Record with ID #{@id} was not found"
     rescue StandardError
-      { 'records' => [] }
+      { 'more_like_this' => { 'results' => [] } }
     end
   end
 end

@@ -15,7 +15,12 @@ module Supplejack
         let(:more_like_this) { described_class.new(101) }
 
         it 'has default params' do
-          expect(more_like_this.params).to eq({ frequency: 1 })
+          expect(more_like_this.params).to eq(
+            {
+              exclude_filters_from_facets: false, page: 1, per_page: 20,
+              record_type: 0, fields: 'default', frequency: 1
+            }
+          )
         end
 
         it 'has id' do
@@ -27,12 +32,22 @@ module Supplejack
         let(:more_like_this) { described_class.new(1, { frequency: 2, mlt_fields: %i[title description] }) }
 
         it 'has default params' do
-          expect(more_like_this.params).to eq({ frequency: 2, mlt_fields: 'title,description' })
+          expect(more_like_this.params).to eq(
+            {
+              exclude_filters_from_facets: false, page: 1, per_page: 20,
+              record_type: 0, fields: 'default', frequency: 2, mlt_fields: 'title,description'
+            }
+          )
         end
 
         it 'has extra given params' do
           more_like_this = described_class.new(1, { page: 3 })
-          expect(more_like_this.params).to eq({ frequency: 1, page: 3 })
+          expect(more_like_this.params).to eq(
+            {
+              exclude_filters_from_facets: false, page: 3, per_page: 20,
+              record_type: 0, fields: 'default', frequency: 1
+            }
+          )
         end
       end
     end
@@ -41,7 +56,12 @@ module Supplejack
       let(:more_like_this) { described_class.new(101, { frequency: 2, mlt_fields: %i[title description] }) }
 
       it 'requests more_like_this api with params' do
-        allow(more_like_this).to receive(:get).with('/records/101/more_like_this', { frequency: 2, mlt_fields: 'title,description' }).and_return('record' => {})
+        params = {
+          exclude_filters_from_facets: false, page: 1, per_page: 20, record_type: 0, fields: 'default', frequency: 2, mlt_fields: 'title,description'
+        }
+        allow(more_like_this).to receive(:get).with('/records/101/more_like_this', params).and_return(
+          { 'more_like_this' => { 'record' => {} } }
+        )
 
         more_like_this.records
       end
