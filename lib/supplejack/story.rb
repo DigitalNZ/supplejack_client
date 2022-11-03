@@ -166,7 +166,8 @@ module Supplejack
     # Fetches featured stories
     #
     def self.featured
-      get('/stories/featured')
+      stories = get('/stories/featured')
+      stories&.map { |story| new(story) }
     rescue RestClient::ServiceUnavailable
       raise Supplejack::ApiNotAvailable, 'API is not responding'
     end
