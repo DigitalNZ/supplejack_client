@@ -100,7 +100,7 @@ module Supplejack
     end
 
     # Any method missing on this class is delegated to the Stories objects array
-    # so that the developer can easily execute any Array method on the UserSttoryRelation
+    # so that the developer can easily execute any Array method on the UserStoryRelation
     #
     # @example
     #   user.stories.each ....     => Iterate through the Story objects array
@@ -117,14 +117,8 @@ module Supplejack
     private
 
     def fetch_api_stories
-      params = {}
-
-      if user.use_own_api_key?
-        path = '/stories'
-        params[:api_key] = user.api_key
-      else
-        path = "/users/#{user.api_key}/stories"
-      end
+      params = { user_key: user.api_key }
+      path = user.use_own_api_key? ? '/stories' : "/users/#{user.id}/stories"
 
       if Supplejack.enable_caching
         Rails.cache.fetch(path, expires_in: 1.day) do

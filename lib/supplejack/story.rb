@@ -55,9 +55,9 @@ module Supplejack
     #
     def save
       response = if new_record?
-                   self.class.post('/stories', { user_key: api_key }, story: api_attributes)
+                   self.class.post('/stories', { user_key: api_key }, { story: api_attributes })
                  else
-                   self.class.patch("/stories/#{id}", { user_key: api_key }, story: api_attributes)
+                   self.class.patch("/stories/#{id}", { user_key: api_key }, { story: api_attributes })
                  end
 
       Rails.cache.delete("/users/#{api_key}/stories") if Supplejack.enable_caching
@@ -234,11 +234,38 @@ module Supplejack
     # all public UserSet objects.
     #
     # @return [ Array ] A array of Supplejack::UserSet objects
-
-    def self.all_public_stories(options = {})
-      response = get('/stories/moderations', options)
+    def self.all_public_stories(params = {})
+      response = get('/stories/moderations', params)
       response['sets'].map! { |attrs| new(attrs) } || []
-      options[:meta_included] ? response : response['sets']
+      params[:meta_included] ? response : response['sets']
+    end
+
+    # Executes a GET request to the API /stories/#{id}/history endpoint to retrieve
+    # the history of changes on a specific story
+    #
+    # @return [ Array ] A array of Supplejack::ModerationRecord objects
+    def self.history(user_key:, id: nil, page: 1, per_page: 20)
+      id ||= attributes[:id]
+      response = get("/stories/#{id}/history", user_key: user_key, page: page, per_page: per_page)
+      response.map { |attributes| Supplejack::ModerationRecord.new(**attributes.deep_symbolize_keys) }
+    end
+
+    def history(params)
+      self.class.history(id: id, **params)
+    end
+
+    def send_event(event, api_token)
+      self.attributes = self.class.patch(
+        "/stories/#{id}/event",
+        { user_key: api_token },
+        { event: event }
+      )
+
+      true
+    rescue StandardError => e
+      self.errors = e.message
+
+      false
     end
 
     # Compares the api_key of the user and the api_key assigned to the Story

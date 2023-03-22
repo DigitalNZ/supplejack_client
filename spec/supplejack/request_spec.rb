@@ -21,7 +21,7 @@ module Supplejack
     describe '#get' do
       before { allow(RestClient::Request).to receive(:execute).and_return(%( {"search": {}} )) }
 
-      context 'when authetication_token not passed in options' do
+      context 'when authentication_token not passed in options' do
         it 'serializes the parameters in the url' do
           expect(RestClient::Request).to receive(:execute)
             .with(url: "http://api.org/records.json?#{{ and: { name: 'John' } }.to_query}",
@@ -79,11 +79,16 @@ module Supplejack
         end
       end
 
-      context 'when authetication_token is passed in options' do
+      context 'when authentication_token is passed in options' do
         it 'overrides the Supplejack.api_key' do
-          expect(RestClient::Request).to receive(:execute).with(hash_including(url: 'http://api.org/records.json', headers: { 'Authentication-Token': '456' }))
+          expect(RestClient::Request).to receive(:execute).with(
+            hash_including(
+              url: 'http://api.org/records.json',
+              headers: { 'Authentication-Token': '456' }
+            )
+          )
 
-          requester.get('/records', {}, { authetication_token: '456' })
+          requester.get('/records', {}, { authentication_token: '456' })
         end
       end
     end
@@ -91,7 +96,7 @@ module Supplejack
     describe '#post' do
       before { allow(RestClient::Request).to receive(:execute).and_return(true) }
 
-      context 'when authetication_token not passed in options' do
+      context 'when authentication_token not passed in options' do
         it 'executes a post request' do
           expect(RestClient::Request).to receive(:execute).with(hash_including(method: :post))
 
@@ -130,7 +135,7 @@ module Supplejack
         end
       end
 
-      context 'when authetication_token is passed in options' do
+      context 'when authentication_token is passed in options' do
         it 'overrides the Supplejack.api_key' do
           expect(RestClient::Request).to receive(:execute).with(
             hash_including(
@@ -139,7 +144,7 @@ module Supplejack
             )
           )
 
-          requester.post('/records/1/ucm', {}, { records: [{ record_id: 1 }] }, { authetication_token: '456' })
+          requester.post('/records/1/ucm', {}, { records: [{ record_id: 1 }] }, { authentication_token: '456' })
         end
       end
     end

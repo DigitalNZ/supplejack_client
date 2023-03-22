@@ -4,7 +4,7 @@ require 'spec_helper'
 
 module Supplejack
   describe UserStoryRelation do
-    let(:user) { Supplejack::User.new(authentication_token: '123abc') }
+    let(:user) { Supplejack::User.new(id: 'user_id_1', authentication_token: '123abc') }
     let(:relation) { described_class.new(user) }
 
     before do
@@ -49,17 +49,17 @@ module Supplejack
     describe '#fetch' do
       context 'when use_own_api_key is false' do
         it 'fetches the users stories with the App api_key' do
-          expect(relation).to receive(:get).with('/users/123abc/stories', {})
+          expect(relation).to receive(:get).with('/users/user_id_1/stories', { user_key: '123abc' })
 
           relation.fetch
         end
       end
 
       context 'when use_own_api_key is true' do
-        let(:user) { Supplejack::User.new(api_key: '123abc', use_own_api_key: true) }
+        let(:user) { Supplejack::User.new(id: 'user_id_1', api_key: '123abc', use_own_api_key: true) }
 
         it 'fetches the users stories with their api_key' do
-          expect(relation).to receive(:get).with('/stories', { api_key: '123abc' })
+          expect(relation).to receive(:get).with('/stories', { user_key: '123abc' })
 
           relation.fetch
         end

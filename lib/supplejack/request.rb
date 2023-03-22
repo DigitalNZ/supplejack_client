@@ -14,7 +14,14 @@ module Supplejack
       payload = { path: path, params: params, options: options }
 
       begin
-        result = RestClient::Request.execute(url: url, method: :get, read_timeout: timeout(options), headers: { 'Authentication-Token': authentication_token(options) })
+        result = RestClient::Request.execute(
+          url: url,
+          method: :get,
+          read_timeout: timeout(options),
+          headers: {
+            'Authentication-Token': authentication_token(options)
+          }
+        )
         result = JSON.parse(result) if result
       rescue RestClient::ServiceUnavailable => e
         retry unless (tries -= 1).zero?
@@ -89,11 +96,17 @@ module Supplejack
 
       log_request(:patch, path, params, payload) do
         response = begin
-          RestClient::Request.execute(url: full_url(path, nil, params),
-                                      method: :patch,
-                                      payload: payload.to_json,
-                                      timeout: timeout(options),
-                                      headers: { content_type: :json, accept: :json, 'Authentication-Token': authentication_token(options) })
+          RestClient::Request.execute(
+            url: full_url(path, nil, params),
+            method: :patch,
+            payload: payload.to_json,
+            timeout: timeout(options),
+            headers: {
+              content_type: :json,
+              accept: :json,
+              'Authentication-Token': authentication_token(options)
+            }
+          )
         rescue RestClient::ExceptionWithResponse => e
           e.response.body
         end
@@ -125,7 +138,7 @@ module Supplejack
     end
 
     def authentication_token(options)
-      options[:authetication_token] || Supplejack.api_key
+      options[:authentication_token] || Supplejack.api_key
     end
 
     def log_request(method, path, params = {}, payload = {})

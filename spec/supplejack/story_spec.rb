@@ -150,7 +150,11 @@ module Supplejack
         let(:story) { described_class.new(attributes.merge(user: user)) }
 
         before do
-          allow(described_class).to receive(:post).with('/stories', { user_key: 'foobar' }, story: attributes) do
+          allow(described_class).to receive(:post).with(
+            '/stories',
+            { user_key: 'foobar' },
+            { story: attributes }
+          ) do
             {
               'id' => 'new-id',
               'name' => attributes[:name],
@@ -194,7 +198,11 @@ module Supplejack
         let(:story) { described_class.new(attributes.merge(user: user, id: '123')) }
 
         before do
-          allow(described_class).to receive(:patch).with('/stories/123', { user_key: user[:api_key] }, story: attributes) do
+          allow(described_class).to receive(:patch).with(
+            '/stories/123',
+            { user_key: user[:api_key] },
+            { story: attributes }
+          ) do
             {
               'id' => 'new-id',
               'name' => attributes[:name],
@@ -436,6 +444,35 @@ module Supplejack
         )
 
         expect(described_class.all_public_stories(meta_included: true)).to include('sets', 'total_filtered', 'total', 'page', 'per_page')
+      end
+    end
+
+    describe '#history' do
+      let(:api_key) { '123456' }
+      let(:story) { described_class.new(id: 'story_1') }
+      let(:response) do
+        [
+          {
+            id: 'moderation_record_id_1',
+            created_at: '2023-03-23T13:11:44.828+13:00',
+            updated_at: '2023-03-23T13:11:44.828+13:00',
+            user: { id: 'user_id_1', username: 'username_1' },
+            state: 'Remoderate'
+          },
+          {
+            id: 'moderation_record_id_2',
+            created_at: '2023-03-23T23:22:44.828+23:00',
+            updated_at: '2023-03-23T23:22:44.828+23:00',
+            user: { id: 'user_id_2', username: 'username_2' },
+            state: 'Remoderate'
+          }
+        ]
+      end
+
+      it 'returns an array with moderation records' do
+        allow(described_class).to receive(:get).and_return(response)
+
+        expect(story.history(user_key: api_key).count).to eq(2)
       end
     end
 
