@@ -12,9 +12,9 @@ module Supplejack
 
       name = format('%s (%.1fms)', "Supplejack API #{Rails.env}", duration)
 
-      parameters = payload[:params].map { |k, v| "#{k}: #{colorize(v, MODES[:bold])}" }.join(', ')
-      body = payload[:payload].map { |k, v| "#{k}: #{colorize(v, MODES[:bold])}" }.join(', ')
-      options = payload[:options].map { |k, v| "#{k}: #{colorize(v, MODES[:bold])}" }.join(', ')
+      parameters = payload[:params].map { |k, v| "#{k}: #{colorize(v, BOLD)}" }.join(', ')
+      body = payload[:payload].map { |k, v| "#{k}: #{colorize(v, BOLD)}" }.join(', ')
+      options = payload[:options].map { |k, v| "#{k}: #{colorize(v, BOLD)}" }.join(', ')
       request = "#{method.to_s.upcase} path=#{payload[:path]} params={#{parameters}}, body={#{body}} options={#{options}}"
 
       if payload[:exception]
@@ -22,7 +22,7 @@ module Supplejack
       else
         info = ''
         if solr_request_params.try(:any?)
-          solr_request_params = solr_request_params.map { |k, v| "#{k}: #{colorize(v, MODES[:bold])}" }.join(', ')
+          solr_request_params = solr_request_params.map { |k, v| "#{k}: #{colorize(v, BOLD)}" }.join(', ')
           info = "\n  #{colorize('SOLR Request', YELLOW)} [ #{solr_request_params} ]"
         end
       end
@@ -35,7 +35,7 @@ module Supplejack
       when Array then "[#{text.map { |e| colorize(e, color) }.join(', ')}]"
       when Hash then "{#{text.map { |k, v| "#{k}: #{colorize(v, color)}" }.join(', ')}}"
       else
-        "#{MODES[:bold]}#{color}#{text}#{MODES[:clear]}"
+        "#{BOLD}#{color}#{text}#{CLEAR}"
       end
     end
   end
