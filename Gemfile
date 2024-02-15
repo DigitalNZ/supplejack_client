@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
+  gem 'codeclimate_diff', github: 'boost/codeclimate_diff'
   if RUBY_VERSION >= '2.2.5'
     gem 'guard'
     gem 'guard-rspec'
