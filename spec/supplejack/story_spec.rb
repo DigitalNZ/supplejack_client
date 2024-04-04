@@ -147,7 +147,7 @@ module Supplejack
       context 'when story is a new_record' do
         let(:attributes) { { name: 'Story Name', description: nil, errors: nil, privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
         let(:user) { { api_key: 'foobar' } }
-        let(:story) { described_class.new(attributes.merge(user: user)) }
+        let(:story) { described_class.new(attributes.merge(user:)) }
 
         before do
           allow(described_class).to receive(:post).with(
@@ -195,7 +195,7 @@ module Supplejack
       context 'when story is not new' do
         let(:attributes) { { name: 'Story Name', description: 'desc', errors: nil, privacy: nil, copyright: nil, featured_at: nil, featured: nil, approved: nil, tags: nil, subjects: nil, record_ids: nil, count: nil, category: nil } }
         let(:user) { { api_key: 'foobar' } }
-        let(:story) { described_class.new(attributes.merge(user: user, id: '123')) }
+        let(:story) { described_class.new(attributes.merge(user:, id: '123')) }
 
         before do
           allow(described_class).to receive(:patch).with(
@@ -237,7 +237,7 @@ module Supplejack
 
     describe '#reposition_items' do
       let(:user) { { api_key: 'foobar' } }
-      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user:, id: '123' }) }
       let(:reposition_attributes) { [{ id: '111', position: 1 }, { id: '112', position: 2 }] }
 
       context 'when request is successful' do
@@ -260,11 +260,11 @@ module Supplejack
 
     describe '#multiple_add' do
       let(:user) { { api_key: 'foobar' } }
-      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user:, id: '123' }) }
       let(:stories) { [{ id: '1', items: [] }, { id: '2', items: [] }] }
 
       it 'triggers a POST request to multiple_add' do
-        expect(described_class).to receive(:post).with('/stories/multiple_add', { user_key: user[:api_key] }, stories: stories)
+        expect(described_class).to receive(:post).with('/stories/multiple_add', { user_key: user[:api_key] }, stories:)
 
         story.multiple_add(stories)
       end
@@ -272,11 +272,11 @@ module Supplejack
 
     describe '#multiple_remove' do
       let(:user) { { api_key: 'foobar' } }
-      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user: user, id: '123' }) }
+      let(:story) { described_class.new({ name: 'Story Name', description: 'desc', user:, id: '123' }) }
       let(:stories) { [{ id: '1', items: [1] }, { id: '2', items: [2] }] }
 
       it 'triggers a POST request to multiple_add' do
-        expect(described_class).to receive(:post).with('/stories/multiple_remove', { user_key: user[:api_key] }, stories: stories)
+        expect(described_class).to receive(:post).with('/stories/multiple_remove', { user_key: user[:api_key] }, stories:)
 
         story.multiple_remove(stories)
       end
@@ -368,7 +368,7 @@ module Supplejack
 
     describe '#viewable_by?' do
       let(:api_key) { '123' }
-      let(:user) { { api_key: api_key } }
+      let(:user) { { api_key: } }
 
       it 'returns true when the Story is public' do
         story = described_class.new(privacy: 'public')
@@ -383,7 +383,7 @@ module Supplejack
       end
 
       context 'when set is private' do
-        let(:story) { described_class.new(privacy: 'private', user: user) }
+        let(:story) { described_class.new(privacy: 'private', user:) }
 
         it 'returns false when the user is not present' do
           expect(story.viewable_by?(nil)).to eq(false)
@@ -395,7 +395,7 @@ module Supplejack
 
         it 'returns false if both the api_key in the user and the set are nil' do
           user = { api_key: nil }
-          story = described_class.new(privacy: 'private', user: user)
+          story = described_class.new(privacy: 'private', user:)
 
           expect(story.viewable_by?(Supplejack::User.new(user))).to eq(false)
         end
@@ -404,8 +404,8 @@ module Supplejack
 
     describe '#owned_by?' do
       let(:api_key) { '123456' }
-      let(:user) { Supplejack::User.new(api_key: api_key) }
-      let(:users_story) { described_class.new(user: { api_key: api_key }) }
+      let(:user) { Supplejack::User.new(api_key:) }
+      let(:users_story) { described_class.new(user: { api_key: }) }
       let(:other_story) { described_class.new(user: { api_key: '123' }) }
       let(:nil_api_key_story) { described_class.new(user: { api_key: nil }) }
 
@@ -428,8 +428,8 @@ module Supplejack
       it 'returns an array with all stories from /stories/moderations endpoint' do
         allow(described_class).to receive(:get).and_return(
           'sets' => [
-            Supplejack::User.new(api_key: api_key).attributes,
-            Supplejack::User.new(api_key: api_key).attributes
+            Supplejack::User.new(api_key:).attributes,
+            Supplejack::User.new(api_key:).attributes
           ]
         )
 
@@ -438,7 +438,7 @@ module Supplejack
 
       it 'includes stories metadata if :meta_included option passed' do
         allow(described_class).to receive(:get).and_return(
-          'sets' => [Supplejack::User.new(api_key: api_key).attributes, Supplejack::User.new(api_key: api_key).attributes],
+          'sets' => [Supplejack::User.new(api_key:).attributes, Supplejack::User.new(api_key:).attributes],
           'per_page' => 10, 'page' => 1,
           'total' => 2, 'total_filtered' => 2
         )

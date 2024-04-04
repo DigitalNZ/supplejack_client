@@ -109,7 +109,7 @@ module Supplejack
     end
 
     def multiple_add(stories)
-      self.class.post('/stories/multiple_add', { user_key: api_key }, stories: stories)
+      self.class.post('/stories/multiple_add', { user_key: api_key }, stories:)
 
       true
     rescue StandardError => e
@@ -119,7 +119,7 @@ module Supplejack
     end
 
     def multiple_remove(stories)
-      self.class.post('/stories/multiple_remove', { user_key: api_key }, stories: stories)
+      self.class.post('/stories/multiple_remove', { user_key: api_key }, stories:)
 
       true
     rescue StandardError => e
@@ -246,19 +246,19 @@ module Supplejack
     # @return [ Array ] A array of Supplejack::ModerationRecord objects
     def self.history(user_key:, id: nil, page: 1, per_page: 20)
       id ||= attributes[:id]
-      response = get("/stories/#{id}/history", user_key: user_key, page: page, per_page: per_page)
+      response = get("/stories/#{id}/history", user_key:, page:, per_page:)
       response.map { |attributes| Supplejack::ModerationRecord.new(**attributes.deep_symbolize_keys) }
     end
 
     def history(params)
-      self.class.history(id: id, **params)
+      self.class.history(id:, **params)
     end
 
     def send_event(event, api_token)
       self.attributes = self.class.patch(
         "/stories/#{id}/event",
         { user_key: api_token },
-        { event: event }
+        { event: }
       )
 
       true
@@ -286,7 +286,7 @@ module Supplejack
     end
 
     def to_json(include_contents: true)
-      as_json(include_contents: include_contents).to_json
+      as_json(include_contents:).to_json
     end
 
     private

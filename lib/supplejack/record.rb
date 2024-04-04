@@ -79,7 +79,7 @@ module Supplejack
 
           field = field.to_s.sub(/#{schema}_/, '')
           values.each do |value|
-            metadata << { name: field, schema: schema.to_s, value: value }
+            metadata << { name: field, schema: schema.to_s, value: }
           end
         end
       end
