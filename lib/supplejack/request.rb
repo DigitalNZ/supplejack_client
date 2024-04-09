@@ -11,11 +11,11 @@ module Supplejack
       url = full_url(path, options[:format], params)
 
       started = Time.now
-      payload = { path: path, params: params, options: options }
+      payload = { path:, params:, options: }
 
       begin
         result = RestClient::Request.execute(
-          url: url,
+          url:,
           method: :get,
           read_timeout: timeout(options),
           headers: {
@@ -142,7 +142,7 @@ module Supplejack
     end
 
     def log_request(method, path, params = {}, payload = {})
-      information = { path: path }
+      information = { path: }
       information[:params] = params
       information[:payload] = payload
       information[:method] = method
