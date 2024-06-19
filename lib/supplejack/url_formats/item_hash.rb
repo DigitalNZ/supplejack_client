@@ -35,7 +35,7 @@ module Supplejack
         hash[:exclude_filters_from_facets] = params[:exclude_filters_from_facets] || false
         hash[:group_by]         = params[:group_by]
         hash[:group_order_by]   = params[:group_order_by]
-        hash[:group_sort_by]    = params[:group_sort_by]
+        hash[:group_sort]    = params[:group_sort]
 
         if params[:sort].present?
           hash[:sort] = params[:sort]

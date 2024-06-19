@@ -70,7 +70,7 @@ module Supplejack
       url_format
       group_by
       group_order_by
-      group_sort_by
+      group_sort
     ].freeze
 
     attr_accessor(*VALID_OPTIONS_KEYS)
