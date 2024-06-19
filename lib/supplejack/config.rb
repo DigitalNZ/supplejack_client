@@ -68,6 +68,9 @@ module Supplejack
       supplejack_fields
       timeout
       url_format
+      group_by
+      group_order_by
+      group_sort_by
     ].freeze
 
     attr_accessor(*VALID_OPTIONS_KEYS)
