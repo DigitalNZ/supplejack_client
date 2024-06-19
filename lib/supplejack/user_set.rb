@@ -146,10 +146,10 @@ module Supplejack
     #
     def save
       if new_record?
-        response = self.class.post('/sets', { api_key: api_key }, set: api_attributes)
+        response = self.class.post('/sets', { api_key: }, set: api_attributes)
         self.id = response['set']['id']
       else
-        self.class.put("/sets/#{id}", { api_key: api_key }, set: api_attributes)
+        self.class.put("/sets/#{id}", { api_key: }, set: api_attributes)
       end
       Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
       true
@@ -222,7 +222,7 @@ module Supplejack
         false
       else
         begin
-          self.class.delete("/sets/#{id}", api_key: api_key)
+          self.class.delete("/sets/#{id}", api_key:)
           Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
           true
         rescue StandardError => e

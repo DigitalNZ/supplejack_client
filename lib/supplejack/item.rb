@@ -50,9 +50,9 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def save
-      api_attributes = { record_id: record_id }
+      api_attributes = { record_id: }
       api_attributes[:position] = position if position.present?
-      post("/sets/#{user_set_id}/records", { api_key: api_key }, record: api_attributes)
+      post("/sets/#{user_set_id}/records", { api_key: }, record: api_attributes)
       Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
       true
     rescue StandardError => e
@@ -65,7 +65,7 @@ module Supplejack
     # @return [ true, false ] True if the API response was successful, false if not.
     #
     def destroy
-      delete("/sets/#{user_set_id}/records/#{record_id}", api_key: api_key)
+      delete("/sets/#{user_set_id}/records/#{record_id}", api_key:)
       Rails.cache.delete("/users/#{api_key}/sets") if Supplejack.enable_caching
       true
     rescue StandardError => e

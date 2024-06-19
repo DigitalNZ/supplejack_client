@@ -96,7 +96,7 @@ module Supplejack
     end
 
     def to_json(include_contents: true)
-      all.map { |story| story.as_json(include_contents: include_contents) }.to_json
+      all.map { |story| story.as_json(include_contents:) }.to_json
     end
 
     # Any method missing on this class is delegated to the Stories objects array

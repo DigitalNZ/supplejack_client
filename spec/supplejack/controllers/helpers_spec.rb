@@ -287,7 +287,7 @@ module Supplejack
       describe '#next_previous_links' do
         let(:previous_record) { mock_record(record_id: 1234) }
         let(:next_record)     { mock_record(record_id: 5678) }
-        let(:record)          { mock_record(record_id: 1_234_567, previous_record: previous_record, next_record: next_record) }
+        let(:record)          { mock_record(record_id: 1_234_567, previous_record:, next_record:) }
 
         before { allow(controller).to receive(:params).and_return({ search: { text: 'cat' } }) }
 

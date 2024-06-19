@@ -367,7 +367,7 @@ module Supplejack
     def merge_extra_filters(existing_filters)
       and_filters = self.and.try(:any?) ? { and: self.and } : {}
       or_filters = self.or.try(:any?) ? { or: self.or } : {}
-      without_filters = without.try(:any?) ? { without: without } : {}
+      without_filters = without.try(:any?) ? { without: } : {}
       extra_filters = and_filters.merge(or_filters).merge(without_filters)
 
       Util.deep_merge(existing_filters, extra_filters)
