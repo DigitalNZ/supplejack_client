@@ -45,8 +45,7 @@ module Supplejack
           expect(more_like_this.params).to eq(
             {
               exclude_filters_from_facets: false, page: 3, per_page: 20,
-              record_type: 0, fields: 'default', frequency: 1,
-              group_by: nil, group_order_by: nil, group_sort: nil
+              record_type: 0, fields: 'default', frequency: 1, group_by: nil, group_order_by: nil, group_sort: nil
             }
           )
         end
