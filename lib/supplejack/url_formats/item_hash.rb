@@ -33,6 +33,9 @@ module Supplejack
         hash[:solr_query]       = params[:solr_query] if params[:solr_query].present?
         hash[:ignore_metrics]   = params[:ignore_metrics] if params[:ignore_metrics].present?
         hash[:exclude_filters_from_facets] = params[:exclude_filters_from_facets] || false
+        hash[:group_by]         = params[:group_by]
+        hash[:group_order_by]   = params[:group_order_by]
+        hash[:group_sort] = params[:group_sort]
 
         if params[:sort].present?
           hash[:sort] = params[:sort]

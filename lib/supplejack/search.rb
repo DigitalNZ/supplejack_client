@@ -10,7 +10,7 @@ module Supplejack
 
     attr_accessor :results, :text, :page, :per_page, :pagination_limit, :direction,
                   :sort, :filters, :record_type, :record_klass, :geo_bbox,
-                  :url_format, :without, :and, :or, :params, :api_params
+                  :url_format, :without, :and, :or, :params, :api_params, :group_by, :group_order_by, :group_sort
 
     def initialize(params = {})
       @params = params.clone || {}
@@ -29,6 +29,10 @@ module Supplejack
       @direction        = @params[:direction]
       @url_format       = Supplejack.url_format_klass.new(@params, self)
       @filters          = @url_format.filters
+
+      @group_by = @params[:group_by]
+      @group_order_by = @params[:group_order_by]
+      @group_sort = @params[:group_sort]
 
       @api_params       = @url_format.to_api_hash
       @record_klass     = @params[:record_klass] || Supplejack.record_klass
