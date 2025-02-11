@@ -130,10 +130,6 @@ module Supplejack
           response['records'].map { |attributes| new(attributes) }
         else
           begin
-            # handle malformed id's before requesting anything.
-            id = id_or_array.to_i
-            raise(Supplejack::MalformedRequest, "'#{id_or_array}' is not a valid record id") if id <= 0
-
             # Do not send any parameters in the :search key when the user didn't specify any options
             # And also always send the :fields parameter
             #
@@ -150,7 +146,7 @@ module Supplejack
             options[:fields] = options[:search].delete(:fields)
             options.delete(:search) unless any_options
 
-            response = get("/records/#{id}", options)
+            response = get("/records/#{id_or_array}", options)
             new(response['record'])
           rescue RestClient::ResourceNotFound
             raise Supplejack::RecordNotFound, "Record with ID #{id_or_array} was not found"
