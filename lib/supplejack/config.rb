@@ -52,6 +52,7 @@ module Supplejack
       facets
       facets_per_page
       facets_sort
+      facet_missing
       fields
       label_tag
       label_class
