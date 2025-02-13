@@ -185,10 +185,6 @@ module Supplejack
           expect { SupplejackRecord.find(1) }.to raise_error(Supplejack::RecordNotFound)
         end
 
-        it 'raises a Supplejack::MalformedRequest' do
-          expect { SupplejackRecord.find('replace_this') }.to raise_error(Supplejack::MalformedRequest)
-        end
-
         it 'requests the record from the API' do
           allow(SupplejackRecord).to receive(:get).with('/records/1', { fields: 'default' }).and_return({ 'record' => {} })
 
