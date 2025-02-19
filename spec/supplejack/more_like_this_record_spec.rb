@@ -18,7 +18,7 @@ module Supplejack
           expect(more_like_this.params).to eq(
             {
               exclude_filters_from_facets: false, page: 1, per_page: 20,
-              record_type: 0, fields: 'default', frequency: 1, group_by: nil, group_order_by: nil, group_sort: nil
+              record_type: 0, fields: 'default', frequency: 1
             }
           )
         end
@@ -35,7 +35,7 @@ module Supplejack
           expect(more_like_this.params).to eq(
             {
               exclude_filters_from_facets: false, page: 1, per_page: 20,
-              record_type: 0, fields: 'default', frequency: 2, mlt_fields: 'title,description', group_by: nil, group_order_by: nil, group_sort: nil
+              record_type: 0, fields: 'default', frequency: 2, mlt_fields: 'title,description'
             }
           )
         end
@@ -45,7 +45,7 @@ module Supplejack
           expect(more_like_this.params).to eq(
             {
               exclude_filters_from_facets: false, page: 3, per_page: 20,
-              record_type: 0, fields: 'default', frequency: 1, group_by: nil, group_order_by: nil, group_sort: nil
+              record_type: 0, fields: 'default', frequency: 1
             }
           )
         end
@@ -57,7 +57,7 @@ module Supplejack
 
       it 'requests more_like_this api with params' do
         params = {
-          exclude_filters_from_facets: false, page: 1, per_page: 20, record_type: 0, fields: 'default', frequency: 2, mlt_fields: 'title,description', group_by: nil, group_order_by: nil, group_sort: nil
+          exclude_filters_from_facets: false, page: 1, per_page: 20, record_type: 0, fields: 'default', frequency: 2, mlt_fields: 'title,description'
         }
         allow(more_like_this).to receive(:get).with('/records/101/more_like_this', params).and_return(
           { 'more_like_this' => { 'record' => {} } }
