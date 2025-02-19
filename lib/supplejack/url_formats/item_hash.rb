@@ -14,6 +14,7 @@ module Supplejack
         @h_locked   = filters_of_type(:hl)
       end
 
+      # rubocop:disable Metrics/AbcSize
       def to_api_hash
         hash = {}
         text_value = text(params[:text])
@@ -23,8 +24,8 @@ module Supplejack
         hash[:record_type]      = hash[:record_type].to_i unless hash[:record_type] == 'all'
         hash[:page]             = (params[:page] || 1).to_i
         hash[:per_page]         = (params[:per_page] || Supplejack.per_page).to_i
-        hash[:and]              = and_filters if and_filters.try(:any?)
-        hash[:without]          = without_filters if without_filters.try(:any?)
+        hash[:and]              = and_filters if and_filters&.any?
+        hash[:without]          = without_filters if without_filters&.any?
         hash[:facets]           = params[:facets] if params[:facets].present?
         hash[:facet_pivots]     = params[:facet_pivots] if params[:facet_pivots].present?
         hash[:facets_per_page]  = params[:facets_per_page].to_i if params[:facets_per_page].present?
@@ -45,6 +46,7 @@ module Supplejack
 
         hash
       end
+      # rubocop:enable Metrics/AbcSize
 
       # Returns all the active filters for the current search
       # These filters are used to scope the search results
