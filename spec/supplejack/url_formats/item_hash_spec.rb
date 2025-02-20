@@ -56,6 +56,10 @@ module Supplejack
           expect(item_hash(facets: 'description,creator').to_api_hash).to include(facets: 'description,creator')
         end
 
+        it 'returns the facets page' do
+          expect(item_hash(facets_page: '12').to_api_hash).to include(facets_page: 12)
+        end
+
         it 'returns the facets per page' do
           expect(item_hash(facets_per_page: '12').to_api_hash).to include(facets_per_page: 12)
         end

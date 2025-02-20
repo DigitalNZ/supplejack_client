@@ -14,39 +14,40 @@ module Supplejack
         @h_locked   = filters_of_type(:hl)
       end
 
-      # rubocop:disable Metrics/AbcSize
       def to_api_hash
-        hash = {}
-        text_value = text(params[:text])
-        hash[:text]             = text_value if text_value
-        hash[:geo_bbox]         = params[:geo_bbox] if params[:geo_bbox]
-        hash[:record_type]      = params[:record_type] || 0
-        hash[:record_type]      = hash[:record_type].to_i unless hash[:record_type] == 'all'
-        hash[:page]             = (params[:page] || 1).to_i
-        hash[:per_page]         = (params[:per_page] || Supplejack.per_page).to_i
-        hash[:and]              = and_filters if and_filters&.any?
-        hash[:without]          = without_filters if without_filters&.any?
-        hash[:facets]           = params[:facets] if params[:facets].present?
-        hash[:facet_pivots]     = params[:facet_pivots] if params[:facet_pivots].present?
-        hash[:facets_per_page]  = params[:facets_per_page].to_i if params[:facets_per_page].present?
-        hash[:facet_missing]    = params[:facet_missing] if params[:facet_missing].present?
-        hash[:fields]           = params[:fields] || Supplejack.fields.join(',')
-        hash[:query_fields]     = query_fields if query_fields
-        hash[:solr_query]       = params[:solr_query] if params[:solr_query].present?
-        hash[:ignore_metrics]   = params[:ignore_metrics] if params[:ignore_metrics].present?
-        hash[:exclude_filters_from_facets] = params[:exclude_filters_from_facets] || false
-        hash[:group_by]         = params[:group_by]
-        hash[:group_order_by]   = params[:group_order_by]
-        hash[:group_sort] = params[:group_sort]
-
-        if params[:sort].present?
-          hash[:sort] = params[:sort]
-          hash[:direction] = params[:direction] || 'asc'
-        end
-
-        hash
+        {
+          text: text(params[:text]),
+          geo_bbox: params[:geo_bbox],
+          record_type: record_type_value,
+          page: (params[:page] || 1).to_i,
+          per_page: (params[:per_page] || Supplejack.per_page).to_i,
+          and: and_filters.presence,
+          without: without_filters.presence,
+          facets: params[:facets].presence,
+          facet_pivots: params[:facet_pivots].presence,
+          facets_page: params[:facets_page].presence && params[:facets_page].to_i,
+          facets_per_page: params[:facets_per_page].presence && params[:facets_per_page].to_i,
+          facet_missing: params[:facet_missing].presence,
+          fields: params[:fields] || Supplejack.fields.join(','),
+          query_fields:,
+          solr_query: params[:solr_query].presence,
+          ignore_metrics: params[:ignore_metrics].presence,
+          exclude_filters_from_facets: params[:exclude_filters_from_facets] || false,
+          group_by: params[:group_by],
+          group_order_by: params[:group_order_by],
+          group_sort: params[:group_sort]
+        }.tap do |hash|
+          if params[:sort].present?
+            hash[:sort] = params[:sort]
+            hash[:direction] = params[:direction] || 'asc'
+          end
+        end.compact
       end
-      # rubocop:enable Metrics/AbcSize
+
+      def record_type_value
+        rt = params[:record_type] || 0
+        rt == 'all' ? rt : rt.to_i
+      end
 
       # Returns all the active filters for the current search
       # These filters are used to scope the search results
