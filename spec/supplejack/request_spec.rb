@@ -13,9 +13,7 @@ module Supplejack
     subject(:requester) { Supplejack::TestClass.new }
 
     before do
-      allow(Supplejack).to receive(:api_key).and_return('123')
-      allow(Supplejack).to receive(:api_url).and_return('http://api.org')
-      allow(Supplejack).to receive(:timeout).and_return(20)
+      allow(Supplejack).to receive_messages(api_key: '123', api_url: 'http://api.org', timeout: 20)
     end
 
     describe '#get' do

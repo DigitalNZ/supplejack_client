@@ -156,8 +156,7 @@ module Supplejack
       let(:attributes) { { name: 'Dogs', description: 'hi', count: 3 } }
 
       before do
-        allow(supplejack_set).to receive(:api_attributes).and_return(attributes)
-        allow(supplejack_set).to receive(:api_key).and_return('123abc')
+        allow(supplejack_set).to receive_messages(api_attributes: attributes, api_key: '123abc')
       end
 
       context 'when user_set is a new_record' do
@@ -245,7 +244,7 @@ module Supplejack
         it 'sets nil when the time is incorrect' do
           supplejack_set.send("#{attr}=", '838927587hdfhsjdf')
 
-          expect(supplejack_set.send(attr)).to be nil
+          expect(supplejack_set.send(attr)).to be_nil
         end
 
         it 'accepts a Time object too' do
@@ -295,8 +294,7 @@ module Supplejack
 
     describe '#destroy' do
       before do
-        allow(supplejack_set).to receive(:api_key).and_return('123abc')
-        allow(supplejack_set).to receive(:id).and_return('999')
+        allow(supplejack_set).to receive_messages(api_key: '123abc', id: '999')
       end
 
       it 'executes a delete request to the API with the user set api_key' do
@@ -337,7 +335,7 @@ module Supplejack
         supplejack_set.items
         supplejack_set.reload
 
-        expect(supplejack_set.instance_variable_get('@items')).to be nil
+        expect(supplejack_set.instance_variable_get('@items')).to be_nil
       end
     end
 
@@ -408,7 +406,7 @@ module Supplejack
       end
 
       it 'returns nil if the set doesn\'t have a record' do
-        expect(supplejack_set.set_record_id).to be nil
+        expect(supplejack_set.set_record_id).to be_nil
       end
     end
 

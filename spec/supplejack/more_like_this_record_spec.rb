@@ -63,7 +63,7 @@ module Supplejack
           { 'more_like_this' => { 'record' => {} } }
         )
 
-        more_like_this.records
+        expect(more_like_this.records).not_to be_nil
       end
 
       context 'when record not found' do

@@ -96,13 +96,13 @@ module Supplejack
       it 'passes the parameters along to the build method' do
         allow(relation).to receive(:build).with({ type: 'embed' }).and_return(item)
 
-        relation.create({ type: 'embed' })
+        expect(relation.create({ type: 'embed' })).not_to be_nil
       end
     end
 
     context 'when items are arrays' do
       it 'executes array methods on the @items array' do
-        expect(relation.any? { |x| x.id == 1 }).to eq(true)
+        expect(relation.any? { |x| x.id == 1 }).to be(true)
       end
 
       it 'iterates through the items relation' do

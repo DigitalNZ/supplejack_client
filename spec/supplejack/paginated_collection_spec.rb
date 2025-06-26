@@ -12,7 +12,7 @@ describe 'PaginatedCollection' do
     it { expect(collection.total_pages).to eq 2 }
     it { expect(collection.current_page).to eq 1 }
     it { expect(collection.per_page).to eq 10 }
-    it { expect(collection.previous_page).to be nil }
+    it { expect(collection.previous_page).to be_nil }
     it { expect(collection.next_page).to eq 2 }
     it { expect(collection.out_of_bounds?).not_to be true }
     it { expect(collection.offset).to eq 0 }

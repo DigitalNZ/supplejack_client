@@ -60,7 +60,7 @@ module Supplejack
           controller.search
         end
 
-        it 'tries to initialize with params[:search] ' do
+        it 'tries to initialize with params[:search]' do
           allow(controller).to receive(:params).and_return({ search: { text: 'cat' } })
 
           expect(Supplejack::Search).to receive(:new).with({ text: 'cat' })
@@ -100,7 +100,7 @@ module Supplejack
           it 'correctly uses the translation for the label' do
             allow(I18n).to receive(:t).with('supplejack_user_sets.user.name', default: 'User.name').and_return('By')
 
-            controller.attribute(user_set, 'user.name')
+            expect(controller.attribute(user_set, 'user.name')).not_to be_nil
           end
         end
 
@@ -132,11 +132,11 @@ module Supplejack
           end
 
           it 'doesn\'t display content_partner' do
-            expect(controller.attribute(record, :content_partner)).to be nil
+            expect(controller.attribute(record, :content_partner)).to be_nil
           end
 
           it 'doesn\'t display description' do
-            expect(controller.attribute(record, :description)).to be nil
+            expect(controller.attribute(record, :description)).to be_nil
           end
 
           it 'displays span label tag' do
@@ -150,7 +150,7 @@ module Supplejack
           it 'uses the translation key' do
             allow(I18n).to receive(:t).with('item.key', default: 'Title').and_return('Title')
 
-            controller.attribute(record, :title, trans_key: 'item.key')
+            expect(controller.attribute(record, :title, trans_key: 'item.key')).not_to be_nil
           end
 
           context 'when :link => true' do
@@ -175,14 +175,14 @@ module Supplejack
             end
 
             it 'returns nothing when value is nil' do
-              expect(controller.attribute(record, :description, link: true)).to be nil
+              expect(controller.attribute(record, :description, link: true)).to be_nil
             end
           end
 
           it 'returns nothing when value is "Not specified"' do
             record = mock_record(description: 'Not specified')
 
-            expect(controller.attribute(record, :description)).to be nil
+            expect(controller.attribute(record, :description)).to be_nil
           end
 
           it 'adds extra_html inside of the <p>' do
@@ -265,7 +265,7 @@ module Supplejack
           end
 
           it 'returns nothing when both values are nil' do
-            expect(controller.attribute(record, %i[object_url source], link: true)).to be nil
+            expect(controller.attribute(record, %i[object_url source], link: true)).to be_nil
           end
         end
       end
@@ -298,8 +298,8 @@ module Supplejack
         end
 
         it 'displays the next and previous links' do
-          allow(controller).to receive(:previous_record_link).and_return('<a class="prev" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Previous result</a>')
-          allow(controller).to receive(:next_record_link).and_return('<a class="next" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Next result</a>')
+          allow(controller).to receive_messages(previous_record_link: '<a class="prev" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Previous result</a>',
+                                                next_record_link: '<a class="next" href="/records/37674826?search%5Bpath%5D=items&amp;search%5Btext%5D=Forest+fire">Next result</a>')
 
           expect(controller.next_previous_links(record)).to eq %(<span class=\"nav\">&lt;a class=&quot;next&quot; href=&quot;/records/37674826?search%5Bpath%5D=items&amp;amp;search%5Btext%5D=Forest+fire&quot;&gt;Next result&lt;/a&gt;</span>)
         end

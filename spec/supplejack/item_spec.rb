@@ -93,13 +93,13 @@ module Supplejack
       it 'returns nil when the date is not in the correct format' do
         item = described_class.new(date: ['afsdfgsdfg'])
 
-        expect(item.date).to be nil
+        expect(item.date).to be_nil
       end
     end
 
     describe '#method_missing' do
       it 'returns nil for any unknown attribute' do
-        expect(described_class.new.non_existent_method).to be nil
+        expect(described_class.new.non_existent_method).to be_nil
       end
     end
   end

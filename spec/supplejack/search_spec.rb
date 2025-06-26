@@ -75,7 +75,7 @@ module Supplejack
       end
 
       it 'returns nil when not set' do
-        expect(described_class.new.sort).to be nil
+        expect(described_class.new.sort).to be_nil
       end
     end
 
@@ -85,7 +85,7 @@ module Supplejack
       end
 
       it 'returns nil when not set' do
-        expect(described_class.new.direction).to be nil
+        expect(described_class.new.direction).to be_nil
       end
     end
 
@@ -179,14 +179,14 @@ module Supplejack
       it 'returns nil when facet is not found' do
         allow(search).to receive(:facets).and_return([])
 
-        expect(search.facet('collection')).to be nil
+        expect(search.facet('collection')).to be_nil
       end
 
       it 'returns nil if value is nil' do
         facet = Supplejack::Facet.new('collection', [])
         allow(search).to receive(:facets) { [facet] }
 
-        expect(search.facet(nil)).to be nil
+        expect(search.facet(nil)).to be_nil
       end
     end
 
@@ -239,13 +239,13 @@ module Supplejack
     end
 
     describe '#results' do
-      let(:search)  { described_class.new }
-      let(:record1) { { 'id' => 1, 'title' => 'Wellington' } }
-      let(:record2) { { 'id' => 2, 'title' => 'Auckland' } }
+      let(:search) { described_class.new }
+      let(:recordone) { { 'id' => 1, 'title' => 'Wellington' } }
+      let(:recordtwo) { { 'id' => 2, 'title' => 'Auckland' } }
 
       before do
         allow(Supplejack).to receive(:record_klass).and_return('TestRecord')
-        search.instance_variable_set(:@response, 'search' => { 'result_count' => 2, 'results' => [record1, record2] })
+        search.instance_variable_set(:@response, 'search' => { 'result_count' => 2, 'results' => [recordone, recordtwo] })
       end
 
       it 'executes the request only once' do
@@ -264,18 +264,18 @@ module Supplejack
       end
 
       it 'initializes record objects with the default class' do
-        expect(TestRecord).to receive(:new).with(record1)
-        expect(TestRecord).to receive(:new).with(record2)
+        expect(TestRecord).to receive(:new).with(recordone)
+        expect(TestRecord).to receive(:new).with(recordtwo)
 
         search.results
       end
 
       it 'initializes record objects with the class provided in the params' do
         search = described_class.new(record_klass: 'test_item')
-        search.instance_variable_set(:@response, 'search' => { 'results' => [record1, record2] })
+        search.instance_variable_set(:@response, 'search' => { 'results' => [recordone, recordtwo] })
 
-        expect(TestItem).to receive(:new).with(record1)
-        expect(TestItem).to receive(:new).with(record2)
+        expect(TestItem).to receive(:new).with(recordone)
+        expect(TestItem).to receive(:new).with(recordtwo)
 
         search.results
       end
@@ -580,7 +580,7 @@ module Supplejack
         it 'returns false when location has nil value' do
           search.location = nil
 
-          expect(search.has_category?('Cats')).to be nil
+          expect(search.has_category?('Cats')).to be_nil
         end
 
         it 'search for onlu existent search attribute' do
@@ -608,10 +608,10 @@ module Supplejack
       it 'removes category filter from the search request' do
         allow(search).to receive(:get).with('/records', hash_including(and: { year: 2001 })).and_return('search' => { 'facets' => { 'category' => { 'Books' => 123 } } })
 
-        search.categories
+        expect(search.categories).not_to be_nil
       end
 
-      it 'returns the category facet hash ' do
+      it 'returns the category facet hash' do
         expect(search.categories).to include('Books' => 123)
       end
 
@@ -653,7 +653,7 @@ module Supplejack
         expect(search.fetch_facet_values('category')['All']).to eq 223
       end
 
-      it 'doesnt return the All count ' do
+      it 'doesnt return the All count' do
         expect(search.fetch_facet_values('category', all: false)).not_to have_key('All')
       end
 

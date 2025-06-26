@@ -99,41 +99,41 @@ module Supplejack
 
     describe '#private?' do
       it 'returns true when the privacy is private' do
-        expect(described_class.new(privacy: 'private').private?).to eq true
+        expect(described_class.new(privacy: 'private').private?).to be true
       end
 
       it 'returns false when the privacy is something else' do
-        expect(described_class.new(privacy: 'public').private?).to eq false
+        expect(described_class.new(privacy: 'public').private?).to be false
       end
     end
 
     describe '#public?' do
       it 'returns false when the privacy is private' do
-        expect(described_class.new(privacy: 'private').public?).to eq false
+        expect(described_class.new(privacy: 'private').public?).to be false
       end
 
       it 'returns true when the privacy is public' do
-        expect(described_class.new(privacy: 'public').public?).to eq true
+        expect(described_class.new(privacy: 'public').public?).to be true
       end
     end
 
     describe '#hidden?' do
       it 'returns false when the privacy is not hidden' do
-        expect(described_class.new(privacy: 'public').hidden?).to eq false
+        expect(described_class.new(privacy: 'public').hidden?).to be false
       end
 
       it 'returns true when the privacy is hidden' do
-        expect(described_class.new(privacy: 'hidden').hidden?).to eq true
+        expect(described_class.new(privacy: 'hidden').hidden?).to be true
       end
     end
 
     describe '#new_record?' do
       it "returns true when the user_set doesn't have a id" do
-        expect(described_class.new.new_record?).to eq true
+        expect(described_class.new.new_record?).to be true
       end
 
       it 'returns false when the user_set has a id' do
-        expect(described_class.new(id: '1234abc').new_record?).to eq false
+        expect(described_class.new(id: '1234abc').new_record?).to be false
       end
     end
 
@@ -169,7 +169,7 @@ module Supplejack
         end
 
         it 'triggers a POST request to /stories.json' do
-          expect(story.save).to eq true
+          expect(story.save).to be true
         end
 
         it 'stores the id of the user_set' do
@@ -188,7 +188,7 @@ module Supplejack
           RSpec::Mocks.space.proxy_for(described_class).reset
           allow(described_class).to receive(:post).and_raise(RestClient::Forbidden.new)
 
-          expect(story.save).to eq false
+          expect(story.save).to be false
         end
       end
 
@@ -321,13 +321,13 @@ module Supplejack
       it 'executes a delete request to the API with the user set api_key' do
         expect(described_class).to receive(:delete).with('/stories/999', user_key: 'keysome')
 
-        expect(story.destroy).to eq(true)
+        expect(story.destroy).to be(true)
       end
 
       it 'returns false when the response is not a 200' do
         allow(described_class).to receive(:delete).and_raise(RestClient::Forbidden.new)
 
-        expect(story.destroy).to eq(false)
+        expect(story.destroy).to be(false)
         expect(story.errors).to eq 'Forbidden'
       end
 
@@ -335,7 +335,7 @@ module Supplejack
         allow(story).to receive(:new_record?).and_return(true)
 
         expect(described_class).not_to receive(:delete)
-        expect(story.destroy).to eq(false)
+        expect(story.destroy).to be(false)
       end
     end
 
@@ -373,31 +373,31 @@ module Supplejack
       it 'returns true when the Story is public' do
         story = described_class.new(privacy: 'public')
 
-        expect(story.viewable_by?(nil)).to eq(true)
+        expect(story.viewable_by?(nil)).to be(true)
       end
 
       it 'returns true when the user_set is hidden' do
         story = described_class.new(privacy: 'hidden')
 
-        expect(story.viewable_by?(nil)).to eq(true)
+        expect(story.viewable_by?(nil)).to be(true)
       end
 
       context 'when set is private' do
         let(:story) { described_class.new(privacy: 'private', user:) }
 
         it 'returns false when the user is not present' do
-          expect(story.viewable_by?(nil)).to eq(false)
+          expect(story.viewable_by?(nil)).to be(false)
         end
 
         it 'returns true when the user has the same api_key as the user_set' do
-          expect(story.viewable_by?(Supplejack::User.new(user))).to eq(true)
+          expect(story.viewable_by?(Supplejack::User.new(user))).to be(true)
         end
 
         it 'returns false if both the api_key in the user and the set are nil' do
           user = { api_key: nil }
           story = described_class.new(privacy: 'private', user:)
 
-          expect(story.viewable_by?(Supplejack::User.new(user))).to eq(false)
+          expect(story.viewable_by?(Supplejack::User.new(user))).to be(false)
         end
       end
     end
@@ -410,15 +410,15 @@ module Supplejack
       let(:nil_api_key_story) { described_class.new(user: { api_key: nil }) }
 
       it "returns true when the users api_key is the same as the set's" do
-        expect(users_story.owned_by?(user)).to eq(true)
+        expect(users_story.owned_by?(user)).to be(true)
       end
 
       it 'returns false when the set and user have different api_keys' do
-        expect(other_story.owned_by?(user)).to eq(false)
+        expect(other_story.owned_by?(user)).to be(false)
       end
 
       it 'returns false when both keys are nil' do
-        expect(nil_api_key_story.owned_by?(user)).to eq(false)
+        expect(nil_api_key_story.owned_by?(user)).to be(false)
       end
     end
 
@@ -508,7 +508,7 @@ module Supplejack
       it 'fetches the Story from the API' do
         allow(described_class).to receive(:get).with('/stories/123abc', {}).and_return(attributes)
 
-        described_class.find('123abc')
+        expect(described_class.find('123abc')).not_to be_nil
       end
 
       it 'initializes a Story object' do
