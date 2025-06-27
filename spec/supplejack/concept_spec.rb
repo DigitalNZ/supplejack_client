@@ -113,7 +113,7 @@ module Supplejack
         it 'requests the concept from the API' do
           allow(SupplejackConcept).to receive(:get).with('/concepts/1', {}).and_return('concept' => {})
 
-          SupplejackConcept.find(1)
+          expect(SupplejackConcept.find(1)).not_to be_nil
         end
 
         it 'initializes a new SupplejackConcept object' do
@@ -128,7 +128,7 @@ module Supplejack
           allow(Supplejack).to receive(:fields).and_return(%i[verbose default])
           allow(SupplejackConcept).to receive(:get).with('/concepts/1', {}).and_return('concept' => {})
 
-          SupplejackConcept.find(1)
+          expect(SupplejackConcept.find(1)).not_to be_nil
         end
       end
     end
@@ -137,7 +137,7 @@ module Supplejack
       it 'calls the get method' do
         allow(SupplejackConcept).to receive(:get).with('/concepts', {}).and_return({})
 
-        SupplejackConcept.all
+        expect(SupplejackConcept.all).not_to be_nil
       end
     end
   end

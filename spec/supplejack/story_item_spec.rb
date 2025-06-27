@@ -6,7 +6,7 @@ module Supplejack
   describe StoryItem do
     describe '#initialize' do
       it 'accepts a hash of attributes' do
-        described_class.new(type: 'embed', sub_type: 'supplejack_user')
+        expect(described_class.new(type: 'embed', sub_type: 'supplejack_user')).not_to be_nil
       end
 
       it 'accepts a hash with string keys' do
@@ -27,11 +27,11 @@ module Supplejack
     describe '#save' do
       let(:item) { described_class.new(type: 'embed', sub_type: 'supplejack_user', story_id: '1234', api_key: 'abc') }
 
-      context 'when item is new ' do
+      context 'when item is new' do
         it 'triggers a POST request to create a story_item with the story api_key' do
           expect(item).to receive(:post).with('/stories/1234/items', { user_key: 'abc' }, story_item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
-          expect(item.save).to eq(true)
+          expect(item.save).to be(true)
         end
       end
 
@@ -40,7 +40,7 @@ module Supplejack
           item.id = 1
           expect(item).to receive(:patch).with('/stories/1234/items/1', { user_key: 'abc' }, story_item: { meta: {}, type: 'embed', sub_type: 'supplejack_user' })
 
-          expect(item.save).to eq(true)
+          expect(item.save).to be(true)
         end
       end
 
@@ -48,7 +48,7 @@ module Supplejack
         before { allow(item).to receive(:post).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when an HTTP error is raised' do
-          expect(item.save).to eq(false)
+          expect(item.save).to be(false)
         end
 
         it 'stores the error when a error is raised' do
@@ -72,7 +72,7 @@ module Supplejack
         before { allow(item).to receive(:delete).and_raise(RestClient::Forbidden.new) }
 
         it 'returns false when a HTTP error is raised' do
-          expect(item.destroy).to eq(false)
+          expect(item.destroy).to be(false)
         end
 
         it 'stores the error when a error is raised' do

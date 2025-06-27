@@ -3,7 +3,7 @@
 require File.expand_path('lib/supplejack/version', __dir__)
 
 Gem::Specification.new do |spec|
-  spec.required_ruby_version = '>= 3.2.2'
+  spec.required_ruby_version = '>= 3.4.4'
   spec.authors               = ['Supplejack']
   spec.email                 = ['info@digitalnz.org']
   spec.description           = ' Library to abstract the interaction with the Supplejack API '
@@ -24,5 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry', '~> 0.14.1'
   spec.add_development_dependency 'rspec', '~> 3.10'
   spec.add_development_dependency 'rubocop', '~> 1.22', '>= 1.22.1'
-  spec.add_development_dependency 'rubocop-rspec', '~> 2.4'
+  spec.add_development_dependency 'rubocop-capybara', '~> 2.2'
+  spec.add_development_dependency 'rubocop-rspec', '~> 3.0'
 end

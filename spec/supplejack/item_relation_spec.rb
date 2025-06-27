@@ -82,13 +82,13 @@ module Supplejack
         allow(relation).to receive(:build).and_return(item)
         expect(item).to receive(:save)
 
-        relation.create
+        expect(relation.create).not_to be_nil
       end
 
       it 'passes the parameters along to the build method' do
         allow(relation).to receive(:build).with({ record_id: 8, position: 3 }).and_return(item)
 
-        relation.create({ record_id: 8, position: 3 })
+        expect(relation.create({ record_id: 8, position: 3 })).not_to be_nil
       end
     end
 

@@ -106,7 +106,7 @@ module Supplejack
         it 'returns a nil authentication_token' do
           expect(user.api_attributes).to have_key(:authentication_token)
 
-          expect(user.api_attributes[:authentication_token]).to be nil
+          expect(user.api_attributes[:authentication_token]).to be_nil
         end
       end
 
